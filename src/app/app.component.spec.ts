@@ -2,14 +2,25 @@ import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatDialog } from '@angular/material/dialog';
+import { IdeaService } from './core/services/idea.service';
+import { of } from 'rxjs';
 
 describe('AppComponent', () => {
+  let mockDialog: jasmine.SpyObj<MatDialog>;
+  let mockIdeaService: jasmine.SpyObj<IdeaService>;
+
   beforeEach(async () => {
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    mockIdeaService = jasmine.createSpyObj('IdeaService', ['addIdea']);
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
         provideRouter([]),
-        provideAnimationsAsync()
+        provideAnimationsAsync(),
+        { provide: MatDialog, useValue: mockDialog },
+        { provide: IdeaService, useValue: mockIdeaService }
       ]
     }).compileComponents();
   });
@@ -26,14 +37,37 @@ describe('AppComponent', () => {
     expect(app.viewMode).toBe('grid');
   });
 
-  it('should handle new idea event', () => {
+  it('should open dialog when new idea is clicked', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    spyOn(console, 'log');
-    
+    const mockDialogRef = { afterClosed: () => of(null) };
+    mockDialog.open.and.returnValue(mockDialogRef as any);
+
     app.onNewIdea();
-    
-    expect(console.log).toHaveBeenCalledWith('New idea clicked');
+
+    expect(mockDialog.open).toHaveBeenCalled();
+  });
+
+  it('should call addIdea when dialog returns data', (done) => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    const mockIdeaData = {
+      title: 'Test Idea',
+      description: 'Test description',
+      keywords: ['test'],
+      status: 'new' as const,
+      priority: 'medium' as const,
+      color: '#3B82F6'
+    };
+    const mockDialogRef = { afterClosed: () => of(mockIdeaData) };
+    mockDialog.open.and.returnValue(mockDialogRef as any);
+
+    app.onNewIdea();
+
+    setTimeout(() => {
+      expect(mockIdeaService.addIdea).toHaveBeenCalledWith(mockIdeaData);
+      done();
+    }, 0);
   });
 
   it('should handle view mode change event', () => {
