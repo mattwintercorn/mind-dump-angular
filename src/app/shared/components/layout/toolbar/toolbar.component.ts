@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
-export type ViewMode = 'grid' | 'list';
+export type ViewMode = 'grid' | 'graph';
 
 @Component({
   selector: 'app-toolbar',
