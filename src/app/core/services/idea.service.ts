@@ -3,6 +3,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from './database.service';
 import { ColorService } from './color.service';
+import { ComponentService } from './component.service';
 import { Idea, CreateIdeaData, UpdateIdeaData } from '../models/idea.model';
 
 @Injectable({
@@ -11,6 +12,7 @@ import { Idea, CreateIdeaData, UpdateIdeaData } from '../models/idea.model';
 export class IdeaService {
   private db = inject(DatabaseService);
   private colorService = inject(ColorService);
+  private componentService = inject(ComponentService);
 
   // Private writable signals
   private ideasSignal = signal<Idea[]>([]);
@@ -64,6 +66,11 @@ export class IdeaService {
 
       console.log('IdeaService.addIdea creating idea:', idea);
 
+      // Register component if provided
+      if (data.component) {
+        await this.componentService.getOrCreateComponent(data.component);
+      }
+
       await this.db.ideas.add(idea);
       await this.loadIdeas();
       
@@ -87,6 +94,11 @@ export class IdeaService {
     console.log('IdeaService.updateIdea received data:', data);
 
     try {
+      // Register component if provided
+      if (data.component) {
+        await this.componentService.getOrCreateComponent(data.component);
+      }
+
       await this.db.ideas.update(id, {
         ...data,
         updatedAt: new Date()
@@ -134,6 +146,19 @@ export class IdeaService {
     try {
       const allIdeas = await this.db.ideas.toArray();
       this.ideasSignal.set(allIdeas);
+      
+      // Extract and register any components from existing ideas
+      const components = new Set<string>();
+      allIdeas.forEach(idea => {
+        if (idea.component) {
+          components.add(idea.component);
+        }
+      });
+      
+      // Register all unique components
+      for (const componentName of components) {
+        await this.componentService.getOrCreateComponent(componentName);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load ideas';
       this.errorSignal.set(message);
