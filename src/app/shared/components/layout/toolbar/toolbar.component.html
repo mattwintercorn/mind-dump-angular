@@ -1,0 +1,27 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span class="toolbar-title">{{ title }}</span>
+  
+  <span class="spacer"></span>
+  
+  <button 
+    mat-raised-button 
+    color="accent" 
+    aria-label="New Idea"
+    (click)="onNewIdea()">
+    <mat-icon>add</mat-icon>
+    New Idea
+  </button>
+  
+  <mat-button-toggle-group 
+    [value]="currentViewMode"
+    (change)="onViewModeChange($event.value)"
+    aria-label="View mode"
+    class="view-toggle">
+    <mat-button-toggle value="grid" aria-label="Grid view">
+      <mat-icon>grid_view</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="list" aria-label="List view">
+      <mat-icon>view_list</mat-icon>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</mat-toolbar>
