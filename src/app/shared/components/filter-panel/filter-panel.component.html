@@ -1,0 +1,113 @@
+<div class="filter-panel">
+  <div class="filter-header">
+    <h3>
+      <mat-icon>filter_list</mat-icon>
+      Filters
+    </h3>
+    @if (filterService.hasActiveFilters()) {
+      <button mat-button color="warn" (click)="clearFilters()">
+        <mat-icon>clear</mat-icon>
+        Clear All
+      </button>
+    }
+  </div>
+
+  <!-- Search Box -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search</mat-label>
+    <input 
+      matInput 
+      [(ngModel)]="searchQuery"
+      placeholder="Search ideas..."
+    />
+    <mat-icon matPrefix>search</mat-icon>
+    @if (searchQuery) {
+      <button matSuffix mat-icon-button (click)="searchQuery = ''">
+        <mat-icon>clear</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
+  <!-- Status Filter -->
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>flag</mat-icon>
+        Status
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Status</mat-label>
+      <mat-select [(ngModel)]="selectedStatus">
+        <mat-option [value]="null">All Statuses</mat-option>
+        @for (status of statusOptions; track status) {
+          <mat-option [value]="status">
+            <span class="status-option status-{{ status }}">
+              {{ status | titlecase }}
+            </span>
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </mat-expansion-panel>
+
+  <!-- Component Filter -->
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>widgets</mat-icon>
+        Component
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Component</mat-label>
+      <mat-select [(ngModel)]="selectedComponent">
+        <mat-option [value]="null">All Components</mat-option>
+        @for (component of componentService.componentNames(); track component) {
+          <mat-option [value]="component">{{ component }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </mat-expansion-panel>
+
+  <!-- Keywords Filter -->
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>label</mat-icon>
+        Keywords
+        @if (filterService.selectedKeywords().length > 0) {
+          <span class="keyword-count">({{ filterService.selectedKeywords().length }})</span>
+        }
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    
+    <div class="keyword-chips">
+      @if (ideaService.allKeywords().length === 0) {
+        <p class="no-keywords">No keywords yet</p>
+      } @else {
+        @for (keyword of ideaService.allKeywords(); track keyword) {
+          <mat-chip 
+            [class.selected]="isKeywordSelected(keyword)"
+            (click)="toggleKeyword(keyword)"
+            class="keyword-chip">
+            {{ keyword }}
+            @if (isKeywordSelected(keyword)) {
+              <mat-icon>check</mat-icon>
+            }
+          </mat-chip>
+        }
+      }
+    </div>
+  </mat-expansion-panel>
+
+  <!-- Filter Summary -->
+  @if (filterService.hasActiveFilters()) {
+    <div class="filter-summary">
+      <mat-icon>info</mat-icon>
+      <span>{{ filterService.activeFilterCount() }} active filter(s)</span>
+    </div>
+  }
+</div>

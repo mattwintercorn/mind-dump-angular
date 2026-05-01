@@ -1,50 +1,47 @@
 <div class="idea-list-container">
-  @if (filterService.hasActiveFilters()) {
-    <div class="filter-bar">
-      <div class="filter-chips">
-        <span class="filter-label">Filters:</span>
-        @for (keyword of filterService.selectedKeywords(); track keyword) {
-          <mat-chip (removed)="onRemoveKeywordFilter(keyword)" class="filter-chip">
-            {{ keyword }}
-            <button matChipRemove>
-              <mat-icon>cancel</mat-icon>
-            </button>
-          </mat-chip>
-        }
-      </div>
-      <button mat-button (click)="onClearFilters()" class="clear-filters-btn">
-        <mat-icon>clear_all</mat-icon>
-        Clear All
-      </button>
-    </div>
-  }
+  <div class="layout-wrapper">
+    <!-- Filter Panel Sidebar -->
+    <aside class="filter-sidebar">
+      <app-filter-panel></app-filter-panel>
+    </aside>
 
-  @if (loading) {
-    <div class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Loading ideas...</p>
-    </div>
-  } @else if (ideas.length === 0) {
-    <div class="empty-state">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>
-      <h2>{{ filterService.hasActiveFilters() ? 'No matching ideas' : 'No ideas yet' }}</h2>
-      <p>{{ filterService.hasActiveFilters() ? 'Try adjusting your filters' : 'Start capturing your thoughts by creating your first idea.' }}</p>
-    </div>
-  } @else {
-    <div class="idea-grid">
-      @for (idea of ideas; track idea.id) {
-        <app-idea-card
-          [idea]="idea"
-          (select)="onIdeaClick(idea)"
-          (edit)="onIdeaEdit(idea)"
-          (delete)="onIdeaDelete($event)"
-          (keywordClick)="onKeywordClick($event)"
-        />
+    <!-- Main Content Area -->
+    <main class="content-area">
+      @if (filterService.hasActiveFilters()) {
+        <div class="active-filters-banner">
+          <mat-icon>filter_alt</mat-icon>
+          <span>Showing filtered results ({{ ideas.length }} {{ ideas.length === 1 ? 'idea' : 'ideas' }})</span>
+        </div>
       }
-    </div>
-  }
+
+      @if (loading) {
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading ideas...</p>
+        </div>
+      } @else if (ideas.length === 0) {
+        <div class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <h2>{{ filterService.hasActiveFilters() ? 'No matching ideas' : 'No ideas yet' }}</h2>
+          <p>{{ filterService.hasActiveFilters() ? 'Try adjusting your filters' : 'Start capturing your thoughts by creating your first idea.' }}</p>
+        </div>
+      } @else {
+        <div class="idea-grid">
+          @for (idea of ideas; track idea.id) {
+            <app-idea-card
+              [idea]="idea"
+              (select)="onIdeaClick(idea)"
+              (edit)="onIdeaEdit(idea)"
+              (delete)="onIdeaDelete($event)"
+              (keywordClick)="onKeywordClick($event)"
+            />
+          }
+        </div>
+      }
+    </main>
+  </div>
 </div>

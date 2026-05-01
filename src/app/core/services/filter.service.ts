@@ -9,11 +9,13 @@ export class FilterService {
   private readonly _searchQuery = signal<string>('');
   private readonly _selectedKeywords = signal<string[]>([]);
   private readonly _selectedStatus = signal<IdeaStatus | null>(null);
+  private readonly _selectedComponent = signal<string | null>(null);
 
   // Public read-only signals
   readonly searchQuery = this._searchQuery.asReadonly();
   readonly selectedKeywords = this._selectedKeywords.asReadonly();
   readonly selectedStatus = this._selectedStatus.asReadonly();
+  readonly selectedComponent = this._selectedComponent.asReadonly();
 
   // Computed values
   readonly activeFilterCount = computed(() => {
@@ -21,6 +23,7 @@ export class FilterService {
     if (this._searchQuery()) count++;
     if (this._selectedKeywords().length > 0) count += this._selectedKeywords().length;
     if (this._selectedStatus() !== null) count++;
+    if (this._selectedComponent() !== null) count++;
     return count;
   });
 
@@ -44,10 +47,15 @@ export class FilterService {
     this._selectedStatus.set(status);
   }
 
+  setComponent(component: string | null): void {
+    this._selectedComponent.set(component);
+  }
+
   clearFilters(): void {
     this._searchQuery.set('');
     this._selectedKeywords.set([]);
     this._selectedStatus.set(null);
+    this._selectedComponent.set(null);
   }
 
   // Apply all filters to an array of ideas
@@ -83,6 +91,12 @@ export class FilterService {
     const status = this._selectedStatus();
     if (status !== null) {
       filtered = filtered.filter((idea) => idea.status === status);
+    }
+
+    // Apply component filter
+    const component = this._selectedComponent();
+    if (component !== null) {
+      filtered = filtered.filter((idea) => idea.component === component);
     }
 
     return filtered;

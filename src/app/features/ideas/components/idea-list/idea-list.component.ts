@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { IdeaCardComponent } from '../idea-card/idea-card.component';
 import { IdeaFormComponent } from '../idea-form/idea-form.component';
+import { FilterPanelComponent } from '../../../../shared/components/filter-panel/filter-panel.component';
 import { IdeaService } from '../../../../core/services/idea.service';
 import { FilterService } from '../../../../core/services/filter.service';
 import { Idea } from '../../../../core/models/idea.model';
@@ -13,7 +14,14 @@ import { Idea } from '../../../../core/models/idea.model';
 @Component({
   selector: 'app-idea-list',
   standalone: true,
-  imports: [CommonModule, IdeaCardComponent, MatButtonModule, MatIconModule, MatChipsModule],
+  imports: [
+    CommonModule, 
+    IdeaCardComponent, 
+    FilterPanelComponent,
+    MatButtonModule, 
+    MatIconModule, 
+    MatChipsModule
+  ],
   templateUrl: './idea-list.component.html',
   styleUrls: ['./idea-list.component.scss']
 })
