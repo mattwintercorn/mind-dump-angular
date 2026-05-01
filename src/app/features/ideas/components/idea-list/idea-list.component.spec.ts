@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, WritableSignal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import { IdeaListComponent } from './idea-list.component';
 import { IdeaService } from '../../../../core/services/idea.service';
 import { Idea } from '../../../../core/models/idea.model';
@@ -8,6 +10,7 @@ describe('IdeaListComponent', () => {
   let component: IdeaListComponent;
   let fixture: ComponentFixture<IdeaListComponent>;
   let mockIdeaService: any;
+  let mockDialog: any;
   let ideasSignal: WritableSignal<Idea[]>;
   let loadingSignal: WritableSignal<boolean>;
 
@@ -40,7 +43,7 @@ describe('IdeaListComponent', () => {
     ideasSignal = signal<Idea[]>([]);
     loadingSignal = signal<boolean>(false);
 
-    mockIdeaService = jasmine.createSpyObj('IdeaService', ['deleteIdea']);
+    mockIdeaService = jasmine.createSpyObj('IdeaService', ['deleteIdea', 'updateIdea']);
     Object.defineProperty(mockIdeaService, 'ideas', {
       get: () => ideasSignal.asReadonly()
     });
@@ -48,13 +51,16 @@ describe('IdeaListComponent', () => {
       get: () => loadingSignal.asReadonly()
     });
 
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+
     await TestBed.configureTestingModule({
       imports: [IdeaListComponent]
     })
       .overrideComponent(IdeaListComponent, {
         set: {
           providers: [
-            { provide: IdeaService, useValue: mockIdeaService }
+            { provide: IdeaService, useValue: mockIdeaService },
+            { provide: MatDialog, useValue: mockDialog }
           ]
         }
       })
@@ -101,15 +107,25 @@ describe('IdeaListComponent', () => {
     expect(component.ideaSelected.emit).toHaveBeenCalledWith(mockIdeas[0]);
   });
 
-  it('should emit ideaEdit when edit is triggered', () => {
+  it('should open dialog when edit is triggered', () => {
     ideasSignal.set(mockIdeas);
     fixture.detectChanges();
 
-    spyOn(component.ideaEdit, 'emit');
+    const mockDialogRef = {
+      afterClosed: () => of({ title: 'Updated Title', description: 'Updated Description' })
+    };
+    mockDialog.open.and.returnValue(mockDialogRef);
 
     component.onIdeaEdit(mockIdeas[0]);
 
-    expect(component.ideaEdit.emit).toHaveBeenCalledWith(mockIdeas[0]);
+    expect(mockDialog.open).toHaveBeenCalledWith(jasmine.any(Function), {
+      width: '600px',
+      data: mockIdeas[0]
+    });
+    expect(mockIdeaService.updateIdea).toHaveBeenCalledWith(
+      mockIdeas[0].id,
+      { title: 'Updated Title', description: 'Updated Description' }
+    );
   });
 
   it('should call deleteIdea service method when delete is triggered', () => {

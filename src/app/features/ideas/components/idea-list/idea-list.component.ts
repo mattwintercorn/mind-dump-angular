@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 import { IdeaCardComponent } from '../idea-card/idea-card.component';
+import { IdeaFormComponent } from '../idea-form/idea-form.component';
 import { IdeaService } from '../../../../core/services/idea.service';
 import { Idea } from '../../../../core/models/idea.model';
 
@@ -13,9 +15,9 @@ import { Idea } from '../../../../core/models/idea.model';
 })
 export class IdeaListComponent {
   private ideaService = inject(IdeaService);
+  private dialog = inject(MatDialog);
 
   @Output() ideaSelected = new EventEmitter<Idea>();
-  @Output() ideaEdit = new EventEmitter<Idea>();
 
   get ideas() {
     return this.ideaService.ideas();
@@ -30,7 +32,16 @@ export class IdeaListComponent {
   }
 
   onIdeaEdit(idea: Idea): void {
-    this.ideaEdit.emit(idea);
+    const dialogRef = this.dialog.open(IdeaFormComponent, {
+      width: '600px',
+      data: idea
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.ideaService.updateIdea(idea.id, result);
+      }
+    });
   }
 
   onIdeaDelete(ideaId: string): void {
