@@ -4,6 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export type ViewMode = 'grid' | 'graph' | 'cluster';
 
@@ -14,7 +15,8 @@ export type ViewMode = 'grid' | 'graph' | 'cluster';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatTooltipModule
   ],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss'

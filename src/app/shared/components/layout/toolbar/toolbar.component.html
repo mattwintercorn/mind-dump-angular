@@ -7,6 +7,8 @@
     mat-raised-button 
     color="accent" 
     aria-label="New Idea"
+    matTooltip="Create a new idea"
+    matTooltipPosition="below"
     (click)="onNewIdea()">
     <mat-icon>add</mat-icon>
     New Idea
@@ -17,13 +19,25 @@
     (change)="onViewModeChange($event.value)"
     aria-label="View mode"
     class="view-toggle">
-    <mat-button-toggle value="grid" aria-label="Grid view">
+    <mat-button-toggle 
+      value="grid" 
+      aria-label="Grid view"
+      matTooltip="Grid View - Card layout with filters"
+      matTooltipPosition="below">
       <mat-icon>grid_view</mat-icon>
     </mat-button-toggle>
-    <mat-button-toggle value="graph" aria-label="Graph view">
+    <mat-button-toggle 
+      value="graph" 
+      aria-label="Graph view"
+      matTooltip="Graph View - Force-directed connections"
+      matTooltipPosition="below">
       <mat-icon>bubble_chart</mat-icon>
     </mat-button-toggle>
-    <mat-button-toggle value="cluster" aria-label="Cluster view">
+    <mat-button-toggle 
+      value="cluster" 
+      aria-label="Cluster view"
+      matTooltip="Cluster View - Group by keyword/component/project"
+      matTooltipPosition="below">
       <mat-icon>hub</mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>

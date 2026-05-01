@@ -117,22 +117,41 @@
 }
 
 .idea-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
+  align-content: flex-start;
+
+  app-idea-card {
+    flex: 1 1 300px;
+    max-width: 400px;
+    min-width: 280px;
+  }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
     gap: 1rem;
+    
+    app-idea-card {
+      flex: 1 1 100%;
+      max-width: none;
+    }
   }
 
   @media (min-width: 769px) and (max-width: 1280px) {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.25rem;
+    
+    app-idea-card {
+      flex: 1 1 300px;
+      max-width: 380px;
+    }
   }
 
   @media (min-width: 1281px) {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
+    
+    app-idea-card {
+      flex: 1 1 320px;
+      max-width: 420px;
+    }
   }
 }
