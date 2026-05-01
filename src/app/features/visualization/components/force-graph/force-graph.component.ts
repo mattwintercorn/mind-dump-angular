@@ -23,6 +23,7 @@ interface GraphNode extends d3.SimulationNodeDatum {
 interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
   source: string | GraphNode;
   target: string | GraphNode;
+  sharedKeywords?: string[];
 }
 
 @Component({
@@ -124,10 +125,16 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
           this.links.push({
             source: ideas[i].id,
             target: ideas[j].id,
+            sharedKeywords: sharedKeywords
           });
         }
       }
     }
+
+    console.log(`Graph: ${this.nodes.length} nodes, ${this.links.length} links`);
+    this.links.forEach(link => {
+      console.log(`  Link: ${(link.source as any).id || link.source} ↔ ${(link.target as any).id || link.target} via [${link.sharedKeywords?.join(', ')}]`);
+    });
 
     this.render();
   }
@@ -145,7 +152,12 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
       .enter()
       .append('line')
       .attr('stroke', '#999')
-      .attr('stroke-width', 2);
+      .attr('stroke-width', (d) => Math.min(2 + (d.sharedKeywords?.length || 0), 6))
+      .attr('stroke-opacity', 0.8);
+
+    // Add title (tooltip) to links showing shared keywords
+    link.append('title')
+      .text((d) => `Shared: ${d.sharedKeywords?.join(', ') || ''}`);
 
     // Render nodes
     const node = this.g
@@ -160,7 +172,13 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
     node
       .append('circle')
       .attr('r', 20)
-      .attr('fill', (d) => d.idea.color);
+      .attr('fill', (d) => d.idea.color)
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2);
+
+    // Add tooltip to nodes
+    node.append('title')
+      .text((d) => `${d.idea.title}\nKeywords: ${d.idea.keywords.join(', ')}`);
 
     node
       .append('text')
