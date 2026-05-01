@@ -15,6 +15,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import * as d3 from 'd3';
 import { Idea } from '../../../../core/models/idea.model';
 import { IdeaService } from '../../../../core/services/idea.service';
+import { FilterService } from '../../../../core/services/filter.service';
+import { FilterPanelComponent } from '../../../../shared/components/filter-panel/filter-panel.component';
 
 interface GraphNode extends d3.SimulationNodeDatum {
   id: string;
@@ -31,12 +33,13 @@ interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
 @Component({
   selector: 'app-force-graph',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatChipsModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatChipsModule, FilterPanelComponent],
   templateUrl: './force-graph.component.html',
   styleUrls: ['./force-graph.component.scss'],
 })
 export class ForceGraphComponent implements OnInit, OnDestroy {
   private ideaService = inject(IdeaService);
+  private filterService = inject(FilterService);
 
   @ViewChild('svgContainer', { static: true })
   svgContainer!: ElementRef<SVGSVGElement>;
@@ -55,18 +58,20 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
   constructor() {
     effect(() => {
       const ideas = this.ideaService.ideas();
-      if (ideas && this.simulation) {
-        this.updateGraph(ideas);
+      const filteredIdeas = this.filterService.filterIdeas(ideas);
+      if (filteredIdeas && this.simulation) {
+        this.updateGraph(filteredIdeas);
       }
     });
   }
 
   ngOnInit(): void {
     this.initializeSimulation();
-    // Trigger initial graph render with current ideas
+    // Trigger initial graph render with current filtered ideas
     const ideas = this.ideaService.ideas();
-    if (ideas && ideas.length > 0) {
-      this.updateGraph(ideas);
+    const filteredIdeas = this.filterService.filterIdeas(ideas);
+    if (filteredIdeas && filteredIdeas.length > 0) {
+      this.updateGraph(filteredIdeas);
     }
   }
 
