@@ -5,13 +5,14 @@ import {
   ViewChild,
   ElementRef,
   effect,
-  input,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import * as d3 from 'd3';
 import { Idea } from '../../../../core/models/idea.model';
+import { IdeaService } from '../../../../core/services/idea.service';
 
 interface GraphNode extends d3.SimulationNodeDatum {
   id: string;
@@ -32,7 +33,7 @@ interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
   styleUrls: ['./force-graph.component.scss'],
 })
 export class ForceGraphComponent implements OnInit, OnDestroy {
-  ideas = input.required<Idea[]>();
+  private ideaService = inject(IdeaService);
 
   @ViewChild('svgContainer', { static: true })
   svgContainer!: ElementRef<SVGSVGElement>;
@@ -47,7 +48,7 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
 
   constructor() {
     effect(() => {
-      const ideas = this.ideas();
+      const ideas = this.ideaService.ideas();
       if (ideas && this.simulation) {
         this.updateGraph(ideas);
       }
@@ -56,6 +57,11 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeSimulation();
+    // Trigger initial graph render with current ideas
+    const ideas = this.ideaService.ideas();
+    if (ideas && ideas.length > 0) {
+      this.updateGraph(ideas);
+    }
   }
 
   ngOnDestroy(): void {
