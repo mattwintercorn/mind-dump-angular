@@ -9,7 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Idea } from '../../../../core/models/idea.model';
+import { ComponentService } from '../../../../core/services/component.service';
 
 @Component({
   selector: 'app-idea-form',
@@ -24,7 +26,8 @@ import { Idea } from '../../../../core/models/idea.model';
     MatSelectModule,
     MatRadioModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatAutocompleteModule
   ],
   templateUrl: './idea-form.component.html',
   styleUrls: ['./idea-form.component.scss']
@@ -33,6 +36,7 @@ export class IdeaFormComponent {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<IdeaFormComponent>);
   public data = inject<Idea | null>(MAT_DIALOG_DATA);
+  public componentService = inject(ComponentService);
 
   ideaForm: FormGroup;
   keywords = signal<string[]>([]);
@@ -41,6 +45,7 @@ export class IdeaFormComponent {
     this.ideaForm = this.fb.group({
       title: [this.data?.title || '', Validators.required],
       description: [this.data?.description || ''],
+      component: [this.data?.component || ''],
       status: [this.data?.status || 'new'],
       priority: [this.data?.priority || 'medium']
     });

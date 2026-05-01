@@ -25,6 +25,15 @@
           </mat-chip-set>
         </div>
 
+        @if (selectedNode()!.idea.component) {
+          <div class="detail-section">
+            <label>Component:</label>
+            <span class="badge component-badge">
+              {{ selectedNode()!.idea.component }}
+            </span>
+          </div>
+        }
+
         <div class="detail-section">
           <label>Status:</label>
           <span class="badge status-{{ selectedNode()!.idea.status }}">

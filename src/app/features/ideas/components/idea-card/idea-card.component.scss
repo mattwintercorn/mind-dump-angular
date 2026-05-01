@@ -47,6 +47,25 @@ mat-card {
   }
 }
 
+.component-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #FEF3C7;
+  color: #92400E;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
 mat-chip-set {
   margin-top: 12px;
 }
@@ -54,4 +73,18 @@ mat-chip-set {
 mat-chip {
   color: white;
   font-weight: 500;
+
+  &.clickable-chip {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
 }

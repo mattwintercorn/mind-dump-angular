@@ -1,4 +1,24 @@
 <div class="idea-list-container">
+  @if (filterService.hasActiveFilters()) {
+    <div class="filter-bar">
+      <div class="filter-chips">
+        <span class="filter-label">Filters:</span>
+        @for (keyword of filterService.selectedKeywords(); track keyword) {
+          <mat-chip (removed)="onRemoveKeywordFilter(keyword)" class="filter-chip">
+            {{ keyword }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        }
+      </div>
+      <button mat-button (click)="onClearFilters()" class="clear-filters-btn">
+        <mat-icon>clear_all</mat-icon>
+        Clear All
+      </button>
+    </div>
+  }
+
   @if (loading) {
     <div class="loading-spinner">
       <div class="spinner"></div>
@@ -11,8 +31,8 @@
         <path d="M2 17l10 5 10-5"/>
         <path d="M2 12l10 5 10-5"/>
       </svg>
-      <h2>No ideas yet</h2>
-      <p>Start capturing your thoughts by creating your first idea.</p>
+      <h2>{{ filterService.hasActiveFilters() ? 'No matching ideas' : 'No ideas yet' }}</h2>
+      <p>{{ filterService.hasActiveFilters() ? 'Try adjusting your filters' : 'Start capturing your thoughts by creating your first idea.' }}</p>
     </div>
   } @else {
     <div class="idea-grid">
@@ -22,6 +42,7 @@
           (select)="onIdeaClick(idea)"
           (edit)="onIdeaEdit(idea)"
           (delete)="onIdeaDelete($event)"
+          (keywordClick)="onKeywordClick($event)"
         />
       }
     </div>

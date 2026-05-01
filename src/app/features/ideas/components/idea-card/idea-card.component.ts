@@ -26,6 +26,7 @@ export class IdeaCardComponent {
   @Output() select = new EventEmitter<Idea>();
   @Output() edit = new EventEmitter<Idea>();
   @Output() delete = new EventEmitter<string>();
+  @Output() keywordClick = new EventEmitter<string>();
 
   private colorService = inject(ColorService);
 
@@ -41,6 +42,11 @@ export class IdeaCardComponent {
   onDeleteClick(event: Event): void {
     event.stopPropagation();
     this.delete.emit(this.idea.id);
+  }
+
+  onKeywordClick(event: Event, keyword: string): void {
+    event.stopPropagation();
+    this.keywordClick.emit(keyword);
   }
 
   getKeywordColor(keyword: string): string {

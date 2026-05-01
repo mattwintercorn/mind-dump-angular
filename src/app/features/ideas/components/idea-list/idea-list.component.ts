@@ -1,26 +1,31 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 import { IdeaCardComponent } from '../idea-card/idea-card.component';
 import { IdeaFormComponent } from '../idea-form/idea-form.component';
 import { IdeaService } from '../../../../core/services/idea.service';
+import { FilterService } from '../../../../core/services/filter.service';
 import { Idea } from '../../../../core/models/idea.model';
 
 @Component({
   selector: 'app-idea-list',
   standalone: true,
-  imports: [CommonModule, IdeaCardComponent],
+  imports: [CommonModule, IdeaCardComponent, MatButtonModule, MatIconModule, MatChipsModule],
   templateUrl: './idea-list.component.html',
   styleUrls: ['./idea-list.component.scss']
 })
 export class IdeaListComponent {
   private ideaService = inject(IdeaService);
+  filterService = inject(FilterService); // Make public for template access
   private dialog = inject(MatDialog);
 
   @Output() ideaSelected = new EventEmitter<Idea>();
 
   get ideas() {
-    return this.ideaService.ideas();
+    return this.filterService.filterIdeas(this.ideaService.ideas());
   }
 
   get loading() {
@@ -49,5 +54,17 @@ export class IdeaListComponent {
     if (confirmed) {
       this.ideaService.deleteIdea(ideaId);
     }
+  }
+
+  onKeywordClick(keyword: string): void {
+    this.filterService.toggleKeyword(keyword);
+  }
+
+  onRemoveKeywordFilter(keyword: string): void {
+    this.filterService.toggleKeyword(keyword);
+  }
+
+  onClearFilters(): void {
+    this.filterService.clearFilters();
   }
 }

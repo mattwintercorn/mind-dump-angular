@@ -6,6 +6,12 @@
       <span class="status-badge status-{{ idea.status }}">
         {{ idea.status }}
       </span>
+      @if (idea.component) {
+        <span class="component-badge">
+          <mat-icon>widgets</mat-icon>
+          {{ idea.component }}
+        </span>
+      }
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -15,7 +21,10 @@
     @if (idea.keywords.length > 0) {
       <mat-chip-set>
         @for (keyword of idea.keywords; track keyword) {
-          <mat-chip [style.background-color]="getKeywordColor(keyword)">
+          <mat-chip 
+            [style.background-color]="getKeywordColor(keyword)"
+            (click)="onKeywordClick($event, keyword)"
+            class="clickable-chip">
             {{ keyword }}
           </mat-chip>
         }

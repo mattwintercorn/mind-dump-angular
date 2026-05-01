@@ -7,6 +7,7 @@ export interface Idea {
   status: IdeaStatus;
   priority: IdeaPriority;
   color: string;
+  component?: string; // System component this idea relates to
   createdAt: Date;
   updatedAt: Date;
   attachments?: string[];

@@ -16,6 +16,22 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
+      <mat-label>Component</mat-label>
+      <input 
+        matInput 
+        formControlName="component" 
+        [matAutocomplete]="auto"
+        placeholder="e.g., Auth System, User Dashboard..."
+      />
+      <mat-autocomplete #auto="matAutocomplete">
+        @for (componentName of componentService.componentNames(); track componentName) {
+          <mat-option [value]="componentName">{{ componentName }}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-hint>Link this idea to a system component</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
       <mat-label>Keywords</mat-label>
       <mat-chip-grid #chipGrid>
         @for (keyword of keywords(); track keyword) {
