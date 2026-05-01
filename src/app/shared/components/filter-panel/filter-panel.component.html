@@ -28,6 +28,19 @@
     }
   </mat-form-field>
 
+  <!-- Sort Dropdown -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Sort By</mat-label>
+    <mat-select [(ngModel)]="selectedSort">
+      @for (option of sortOptions; track option.value) {
+        <mat-option [value]="option.value">
+          <mat-icon>sort</mat-icon>
+          {{ option.label }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
   <!-- Status Filter -->
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>

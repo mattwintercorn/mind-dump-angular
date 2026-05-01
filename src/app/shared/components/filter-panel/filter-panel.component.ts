@@ -9,7 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { FilterService } from '../../../core/services/filter.service';
+import { FilterService, SortOption } from '../../../core/services/filter.service';
 import { IdeaService } from '../../../core/services/idea.service';
 import { ComponentService } from '../../../core/services/component.service';
 import { ProjectService } from '../../../core/services/project.service';
@@ -39,6 +39,17 @@ export class FilterPanelComponent {
   projectService = inject(ProjectService);
 
   statusOptions: IdeaStatus[] = ['new', 'active', 'completed', 'archived'];
+  
+  sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'title-asc', label: 'Title (A-Z)' },
+    { value: 'title-desc', label: 'Title (Z-A)' },
+    { value: 'created-desc', label: 'Newest First' },
+    { value: 'created-asc', label: 'Oldest First' },
+    { value: 'updated-desc', label: 'Recently Updated' },
+    { value: 'updated-asc', label: 'Least Recently Updated' },
+    { value: 'priority-desc', label: 'Priority (High-Low)' },
+    { value: 'priority-asc', label: 'Priority (Low-High)' },
+  ];
 
   get searchQuery(): string {
     return this.filterService.searchQuery();
@@ -70,6 +81,14 @@ export class FilterPanelComponent {
 
   set selectedProject(value: string | null) {
     this.filterService.setProject(value);
+  }
+
+  get selectedSort(): SortOption {
+    return this.filterService.sortOption();
+  }
+
+  set selectedSort(value: SortOption) {
+    this.filterService.setSortOption(value);
   }
 
   isKeywordSelected(keyword: string): boolean {

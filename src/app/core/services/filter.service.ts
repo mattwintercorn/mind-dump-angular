@@ -1,6 +1,16 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { Idea, IdeaStatus } from '../models/idea.model';
 
+export type SortOption = 
+  | 'title-asc' 
+  | 'title-desc' 
+  | 'created-asc' 
+  | 'created-desc' 
+  | 'updated-asc' 
+  | 'updated-desc'
+  | 'priority-desc'
+  | 'priority-asc';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -11,6 +21,7 @@ export class FilterService {
   private readonly _selectedStatus = signal<IdeaStatus | null>(null);
   private readonly _selectedComponent = signal<string | null>(null);
   private readonly _selectedProject = signal<string | null>(null);
+  private readonly _sortOption = signal<SortOption>('title-asc');
 
   // Public read-only signals
   readonly searchQuery = this._searchQuery.asReadonly();
@@ -18,6 +29,7 @@ export class FilterService {
   readonly selectedStatus = this._selectedStatus.asReadonly();
   readonly selectedComponent = this._selectedComponent.asReadonly();
   readonly selectedProject = this._selectedProject.asReadonly();
+  readonly sortOption = this._sortOption.asReadonly();
 
   // Computed values
   readonly activeFilterCount = computed(() => {
@@ -58,12 +70,17 @@ export class FilterService {
     this._selectedProject.set(project);
   }
 
+  setSortOption(option: SortOption): void {
+    this._sortOption.set(option);
+  }
+
   clearFilters(): void {
     this._searchQuery.set('');
     this._selectedKeywords.set([]);
     this._selectedStatus.set(null);
     this._selectedComponent.set(null);
     this._selectedProject.set(null);
+    // Don't reset sort on clear filters
   }
 
   // Apply all filters to an array of ideas
@@ -113,6 +130,37 @@ export class FilterService {
       filtered = filtered.filter((idea) => idea.project === project);
     }
 
+    // Apply sorting
+    const sort = this._sortOption();
+    filtered = this.sortIdeas(filtered, sort);
+
     return filtered;
+  }
+
+  private sortIdeas(ideas: Idea[], sortOption: SortOption): Idea[] {
+    const sorted = [...ideas];
+
+    switch (sortOption) {
+      case 'title-asc':
+        return sorted.sort((a, b) => a.title.localeCompare(b.title));
+      case 'title-desc':
+        return sorted.sort((a, b) => b.title.localeCompare(a.title));
+      case 'created-asc':
+        return sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case 'created-desc':
+        return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case 'updated-asc':
+        return sorted.sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
+      case 'updated-desc':
+        return sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      case 'priority-desc':
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        return sorted.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+      case 'priority-asc':
+        const priorityOrderAsc = { high: 3, medium: 2, low: 1 };
+        return sorted.sort((a, b) => priorityOrderAsc[a.priority] - priorityOrderAsc[b.priority]);
+      default:
+        return sorted;
+    }
   }
 }
