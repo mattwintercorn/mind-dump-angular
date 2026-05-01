@@ -1,0 +1,40 @@
+<!-- src/app/features/ideas/components/idea-card/idea-card.component.html -->
+<mat-card (click)="onCardClick()" [style.border-left]="'4px solid ' + getPriorityBorderColor()">
+  <mat-card-header>
+    <mat-card-title>{{ idea.title }}</mat-card-title>
+    <mat-card-subtitle>
+      <span class="status-badge status-{{ idea.status }}">
+        {{ idea.status }}
+      </span>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="description">{{ idea.description }}</p>
+
+    @if (idea.keywords.length > 0) {
+      <mat-chip-set>
+        @for (keyword of idea.keywords; track keyword) {
+          <mat-chip [style.background-color]="getKeywordColor(keyword)">
+            {{ keyword }}
+          </mat-chip>
+        }
+      </mat-chip-set>
+    }
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button 
+      mat-icon-button 
+      (click)="onEditClick($event)"
+      aria-label="Edit idea">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      (click)="onDeleteClick($event)"
+      aria-label="Delete idea">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
