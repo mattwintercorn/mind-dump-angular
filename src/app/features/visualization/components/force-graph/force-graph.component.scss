@@ -3,19 +3,24 @@
   grid-template-columns: 280px 1fr;
   gap: 24px;
   padding: 16px;
-  height: calc(100vh - 64px);
+  height: 100%;
   background: #fafafa;
+  overflow: hidden;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 16px;
-    height: auto;
+    overflow-y: auto;
   }
 }
 
 .filter-sidebar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  
   @media (max-width: 1024px) {
     order: -1;
+    max-height: 400px;
   }
 }
 

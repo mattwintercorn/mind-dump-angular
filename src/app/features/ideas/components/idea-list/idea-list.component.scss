@@ -1,7 +1,10 @@
 .idea-list-container {
   width: 100%;
-  min-height: calc(100vh - 64px);
+  height: 100%;
   background: #fafafa;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .layout-wrapper {
@@ -9,8 +12,10 @@
   grid-template-columns: 280px 1fr;
   gap: 24px;
   padding: 16px;
+  height: 100%;
   max-width: 1800px;
   margin: 0 auto;
+  overflow: hidden;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
@@ -19,13 +24,20 @@
 }
 
 .filter-sidebar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  
   @media (max-width: 1024px) {
     order: -1;
+    max-height: 400px;
   }
 }
 
 .content-area {
   min-width: 0; // Prevent grid blowout
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 .active-filters-banner {

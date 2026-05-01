@@ -24,11 +24,19 @@ $mind-dump-theme: mat.define-light-theme((
 // Global styles
 html, body {
   height: 100%;
+  margin: 0;
+  overflow: hidden; // Prevent body scroll
 }
 
 body {
-  margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+#root, app-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .full-width {
