@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+mat-dialog-content {
+  min-width: 500px;
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.priority-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  mat-radio-group {
+    display: flex;
+    gap: 16px;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 8px;
+}

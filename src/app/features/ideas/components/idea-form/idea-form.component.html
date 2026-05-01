@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Idea' : 'New Idea' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="ideaForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" required />
+      @if (ideaForm.get('title')?.hasError('required') && ideaForm.get('title')?.touched) {
+        <mat-error>Title is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="4"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Keywords</mat-label>
+      <mat-chip-grid #chipGrid>
+        @for (keyword of keywords(); track keyword) {
+          <mat-chip-row (removed)="removeKeyword(keyword)">
+            {{ keyword }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        }
+        <input
+          placeholder="Add keyword..."
+          [matChipInputFor]="chipGrid"
+          (keydown)="addKeyword($event)"
+        />
+      </mat-chip-grid>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="new">New</mat-option>
+        <mat-option value="in-progress">In Progress</mat-option>
+        <mat-option value="completed">Completed</mat-option>
+        <mat-option value="archived">Archived</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="priority-section">
+      <label>Priority</label>
+      <mat-radio-group formControlName="priority">
+        <mat-radio-button value="low">Low</mat-radio-button>
+        <mat-radio-button value="medium">Medium</mat-radio-button>
+        <mat-radio-button value="high">High</mat-radio-button>
+      </mat-radio-group>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onSave()"
+    [disabled]="ideaForm.invalid"
+  >
+    Save
+  </button>
+</mat-dialog-actions>
