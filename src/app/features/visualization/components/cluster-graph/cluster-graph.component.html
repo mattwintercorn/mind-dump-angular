@@ -1,0 +1,68 @@
+<div class="cluster-graph-wrapper">
+  <!-- Filter Panel Sidebar -->
+  <aside class="filter-sidebar">
+    <app-filter-panel></app-filter-panel>
+  </aside>
+
+  <!-- Graph Container -->
+  <div class="cluster-graph-container">
+    <!-- Cluster Mode Toggle -->
+    <div class="mode-toggle">
+      <mat-button-toggle-group 
+        [value]="clusterMode()"
+        (change)="switchClusterMode($event.value)"
+        aria-label="Cluster mode">
+        <mat-button-toggle value="keyword">
+          <mat-icon>label</mat-icon>
+          By Keyword
+        </mat-button-toggle>
+        <mat-button-toggle value="component">
+          <mat-icon>widgets</mat-icon>
+          By Component
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <svg #svgContainer class="cluster-graph-svg"></svg>
+
+    <!-- Info Panel -->
+    <div class="info-panel">
+      <h4>
+        <mat-icon>info</mat-icon>
+        Cluster View
+      </h4>
+      <p>Ideas are organized around {{ clusterMode() === 'keyword' ? 'keywords' : 'components' }}.</p>
+      <ul>
+        <li>Large circles = cluster anchors</li>
+        <li>Small circles = ideas</li>
+        <li>Ideas pull toward their clusters</li>
+        <li>Drag ideas to reposition</li>
+      </ul>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div class="zoom-controls">
+      <button
+        mat-mini-fab
+        color="primary"
+        (click)="zoomIn()"
+        aria-label="Zoom in">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button
+        mat-mini-fab
+        color="primary"
+        (click)="zoomOut()"
+        aria-label="Zoom out">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button
+        mat-mini-fab
+        color="primary"
+        (click)="resetZoom()"
+        aria-label="Reset zoom">
+        <mat-icon>center_focus_strong</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

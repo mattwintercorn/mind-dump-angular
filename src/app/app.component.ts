@@ -64,8 +64,10 @@ export class AppComponent implements OnInit {
     this.viewMode = mode;
     if (mode === 'grid') {
       this.router.navigate(['/ideas']);
-    } else {
+    } else if (mode === 'graph') {
       this.router.navigate(['/graph']);
+    } else {
+      this.router.navigate(['/cluster']);
     }
   }
 }

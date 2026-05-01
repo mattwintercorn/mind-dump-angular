@@ -1,0 +1,154 @@
+.cluster-graph-wrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  padding: 16px;
+  height: calc(100vh - 64px);
+  background: #fafafa;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    height: auto;
+  }
+}
+
+.filter-sidebar {
+  @media (max-width: 1024px) {
+    order: -1;
+  }
+}
+
+.cluster-graph-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  @media (max-width: 1024px) {
+    height: 600px;
+  }
+}
+
+.cluster-graph-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.mode-toggle {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: white;
+  padding: 8px;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  mat-button-toggle-group {
+    border: none;
+  }
+
+  mat-button-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+
+    mat-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.info-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 250px;
+  z-index: 10;
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #667eea;
+    }
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #666;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    color: #777;
+
+    li {
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+// D3 graph styles
+::ng-deep {
+  .anchor-node {
+    cursor: default;
+
+    circle {
+      transition: opacity 0.3s;
+    }
+
+    &:hover circle {
+      opacity: 0.4 !important;
+    }
+  }
+
+  .idea-node {
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover circle {
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px rgba(102, 126, 234, 0.6));
+    }
+  }
+}
