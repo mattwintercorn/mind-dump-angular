@@ -8,6 +8,30 @@
   <div class="force-graph-container">
     <svg #svgContainer class="force-graph-svg"></svg>
 
+    <!-- Size Legend -->
+    <div class="size-legend">
+      <h4>Node Size</h4>
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-circle" style="width: 20px; height: 20px; background: #bbb;"></div>
+          <span>Low Priority</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-circle" style="width: 25px; height: 25px; background: #999;"></div>
+          <span>Medium Priority</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-circle" style="width: 30px; height: 30px; background: #666;"></div>
+          <span>High Priority</span>
+        </div>
+        <div class="legend-divider"></div>
+        <div class="legend-note">
+          <mat-icon>info</mat-icon>
+          <span>Size increases with more connections</span>
+        </div>
+      </div>
+    </div>
+
     @if (selectedNode()) {
       <div class="node-details-panel">
         <div class="panel-header">

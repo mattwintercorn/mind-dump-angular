@@ -22,6 +22,8 @@ interface GraphNode extends d3.SimulationNodeDatum {
   id: string;
   label: string;
   idea: Idea;
+  radius?: number; // Dynamic size based on importance
+  connectionCount?: number; // Number of connections
 }
 
 interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
@@ -99,7 +101,7 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
 
     this.svg.call(this.zoom);
 
-    // Initialize simulation
+    // Initialize simulation with collision detection based on node radius
     this.simulation = d3
       .forceSimulation<GraphNode, GraphLink>()
       .force(
@@ -107,11 +109,11 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
         d3
           .forceLink<GraphNode, GraphLink>()
           .id((d) => d.id)
-          .distance(100)
+          .distance(150)
       )
-      .force('charge', d3.forceManyBody().strength(-300))
+      .force('charge', d3.forceManyBody().strength(-400))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(50));
+      .force('collision', d3.forceCollide<GraphNode>().radius((d) => (d.radius || 20) + 5));
   }
 
   private updateGraph(ideas: Idea[]): void {
@@ -140,6 +142,31 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    // Calculate connection count for each node
+    const connectionCounts = new Map<string, number>();
+    this.links.forEach(link => {
+      const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+      const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+      connectionCounts.set(sourceId, (connectionCounts.get(sourceId) || 0) + 1);
+      connectionCounts.set(targetId, (connectionCounts.get(targetId) || 0) + 1);
+    });
+
+    // Calculate node radius based on priority and connection count
+    this.nodes.forEach(node => {
+      const connectionCount = connectionCounts.get(node.id) || 0;
+      node.connectionCount = connectionCount;
+      
+      // Base size by priority: high=30, medium=25, low=20
+      let baseRadius = 20;
+      if (node.idea.priority === 'high') baseRadius = 30;
+      else if (node.idea.priority === 'medium') baseRadius = 25;
+      
+      // Add bonus for connections (max +15)
+      const connectionBonus = Math.min(connectionCount * 2, 15);
+      
+      node.radius = baseRadius + connectionBonus;
+    });
 
     console.log(`Graph: ${this.nodes.length} nodes, ${this.links.length} links`);
     this.links.forEach(link => {
@@ -187,20 +214,28 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
 
     node
       .append('circle')
-      .attr('r', 20)
+      .attr('r', (d) => d.radius || 20)
       .attr('fill', (d) => d.idea.color)
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
       .attr('class', 'node-circle');
 
-    // Add tooltip to nodes
+    // Add tooltip to nodes with size info
     node.append('title')
-      .text((d) => `${d.idea.title}\nKeywords: ${d.idea.keywords.join(', ')}`);
+      .text((d) => {
+        const parts = [
+          `${d.idea.title}`,
+          `Priority: ${d.idea.priority}`,
+          `Connections: ${d.connectionCount || 0}`,
+          `Keywords: ${d.idea.keywords.join(', ')}`
+        ];
+        return parts.join('\n');
+      });
 
     node
       .append('text')
       .text((d) => d.label)
-      .attr('x', 25)
+      .attr('x', (d) => (d.radius || 20) + 5)
       .attr('y', 5)
       .attr('font-size', '12px')
       .attr('fill', '#333')
