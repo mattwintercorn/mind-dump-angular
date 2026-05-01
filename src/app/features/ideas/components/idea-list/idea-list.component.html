@@ -1,0 +1,29 @@
+<div class="idea-list-container">
+  @if (loading) {
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading ideas...</p>
+    </div>
+  } @else if (ideas.length === 0) {
+    <div class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      <h2>No ideas yet</h2>
+      <p>Start capturing your thoughts by creating your first idea.</p>
+    </div>
+  } @else {
+    <div class="idea-grid">
+      @for (idea of ideas; track idea.id) {
+        <app-idea-card
+          [idea]="idea"
+          (ideaClick)="onIdeaClick(idea)"
+          (ideaEdit)="onIdeaEdit(idea)"
+          (ideaDelete)="onIdeaDelete(idea.id)"
+        />
+      }
+    </div>
+  }
+</div>
