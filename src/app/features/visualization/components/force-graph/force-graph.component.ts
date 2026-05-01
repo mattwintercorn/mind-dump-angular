@@ -6,10 +6,12 @@ import {
   ElementRef,
   effect,
   inject,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 import * as d3 from 'd3';
 import { Idea } from '../../../../core/models/idea.model';
 import { IdeaService } from '../../../../core/services/idea.service';
@@ -29,7 +31,7 @@ interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
 @Component({
   selector: 'app-force-graph',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatChipsModule],
   templateUrl: './force-graph.component.html',
   styleUrls: ['./force-graph.component.scss'],
 })
@@ -46,6 +48,9 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
 
   private nodes: GraphNode[] = [];
   private links: GraphLink[] = [];
+
+  // Selected node for details panel
+  selectedNode = signal<GraphNode | null>(null);
 
   constructor() {
     effect(() => {
@@ -153,7 +158,8 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
       .append('line')
       .attr('stroke', '#999')
       .attr('stroke-width', (d) => Math.min(2 + (d.sharedKeywords?.length || 0), 6))
-      .attr('stroke-opacity', 0.8);
+      .attr('stroke-opacity', 0.8)
+      .attr('class', 'graph-link');
 
     // Add title (tooltip) to links showing shared keywords
     link.append('title')
@@ -167,14 +173,20 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
       .data(this.nodes)
       .enter()
       .append('g')
-      .call(this.createDragBehavior());
+      .attr('class', 'graph-node')
+      .call(this.createDragBehavior())
+      .on('click', (event, d) => {
+        event.stopPropagation();
+        this.selectNode(d);
+      });
 
     node
       .append('circle')
       .attr('r', 20)
       .attr('fill', (d) => d.idea.color)
       .attr('stroke', '#fff')
-      .attr('stroke-width', 2);
+      .attr('stroke-width', 2)
+      .attr('class', 'node-circle');
 
     // Add tooltip to nodes
     node.append('title')
@@ -186,7 +198,8 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
       .attr('x', 25)
       .attr('y', 5)
       .attr('font-size', '12px')
-      .attr('fill', '#333');
+      .attr('fill', '#333')
+      .attr('pointer-events', 'none');
 
     // Update simulation
     this.simulation.nodes(this.nodes);
@@ -205,6 +218,7 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
     });
 
     this.simulation.alpha(1).restart();
+    this.updateHighlights();
   }
 
   private createDragBehavior() {
@@ -238,5 +252,83 @@ export class ForceGraphComponent implements OnInit, OnDestroy {
     this.svg
       .transition()
       .call(this.zoom.transform, d3.zoomIdentity);
+  }
+
+  selectNode(node: GraphNode): void {
+    this.selectedNode.set(node);
+    this.updateHighlights();
+  }
+
+  clearSelection(): void {
+    this.selectedNode.set(null);
+    this.updateHighlights();
+  }
+
+  getConnectedNodes(): Array<{ node: GraphNode; sharedKeywords: string[] }> {
+    const selected = this.selectedNode();
+    if (!selected) return [];
+
+    const connections: Array<{ node: GraphNode; sharedKeywords: string[] }> = [];
+
+    this.links.forEach(link => {
+      const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+      const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+
+      if (sourceId === selected.id) {
+        const targetNode = this.nodes.find(n => n.id === targetId);
+        if (targetNode) {
+          connections.push({
+            node: targetNode,
+            sharedKeywords: link.sharedKeywords || []
+          });
+        }
+      } else if (targetId === selected.id) {
+        const sourceNode = this.nodes.find(n => n.id === sourceId);
+        if (sourceNode) {
+          connections.push({
+            node: sourceNode,
+            sharedKeywords: link.sharedKeywords || []
+          });
+        }
+      }
+    });
+
+    return connections;
+  }
+
+  private updateHighlights(): void {
+    const selected = this.selectedNode();
+    
+    if (!selected) {
+      // Clear all highlights
+      this.g.selectAll('.graph-node').classed('dimmed', false).classed('highlighted', false);
+      this.g.selectAll('.graph-link').classed('dimmed', false).classed('highlighted', false);
+      return;
+    }
+
+    const connectedNodeIds = new Set<string>();
+    const highlightedLinks = new Set<number>();
+
+    // Find all connected nodes and links
+    this.links.forEach((link, index) => {
+      const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+      const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+
+      if (sourceId === selected.id || targetId === selected.id) {
+        connectedNodeIds.add(sourceId);
+        connectedNodeIds.add(targetId);
+        highlightedLinks.add(index);
+      }
+    });
+
+    // Update node styles
+    this.g.selectAll('.graph-node')
+      .classed('dimmed', (d: any) => !connectedNodeIds.has(d.id))
+      .classed('highlighted', (d: any) => d.id === selected.id);
+
+    // Update link styles
+    this.g.selectAll('.graph-link')
+      .classed('dimmed', (d: any, i: number) => !highlightedLinks.has(i))
+      .classed('highlighted', (d: any, i: number) => highlightedLinks.has(i));
   }
 }

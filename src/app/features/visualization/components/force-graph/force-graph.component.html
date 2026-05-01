@@ -1,6 +1,68 @@
 <div class="force-graph-container">
   <svg #svgContainer class="force-graph-svg"></svg>
 
+  @if (selectedNode()) {
+    <div class="node-details-panel">
+      <div class="panel-header">
+        <h3>{{ selectedNode()!.idea.title }}</h3>
+        <button mat-icon-button (click)="clearSelection()" aria-label="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="panel-content">
+        <div class="detail-section">
+          <label>Description:</label>
+          <p>{{ selectedNode()!.idea.description || 'No description' }}</p>
+        </div>
+
+        <div class="detail-section">
+          <label>Keywords:</label>
+          <mat-chip-set>
+            @for (keyword of selectedNode()!.idea.keywords; track keyword) {
+              <mat-chip>{{ keyword }}</mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+
+        <div class="detail-section">
+          <label>Status:</label>
+          <span class="badge status-{{ selectedNode()!.idea.status }}">
+            {{ selectedNode()!.idea.status }}
+          </span>
+        </div>
+
+        <div class="detail-section">
+          <label>Priority:</label>
+          <span class="badge priority-{{ selectedNode()!.idea.priority }}">
+            {{ selectedNode()!.idea.priority }}
+          </span>
+        </div>
+
+        @if (getConnectedNodes().length > 0) {
+          <div class="detail-section">
+            <label>Connected Ideas ({{ getConnectedNodes().length }}):</label>
+            <div class="connections-list">
+              @for (conn of getConnectedNodes(); track conn.node.id) {
+                <div class="connection-item">
+                  <div class="connection-title">{{ conn.node.idea.title }}</div>
+                  <div class="connection-keywords">
+                    via: {{ conn.sharedKeywords.join(', ') }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="detail-section">
+            <label>Connections:</label>
+            <p class="no-connections">No connections to other ideas</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
   <div class="zoom-controls">
     <button
       mat-mini-fab
