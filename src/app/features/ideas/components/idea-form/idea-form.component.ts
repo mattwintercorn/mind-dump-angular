@@ -77,6 +77,8 @@ export class IdeaFormComponent {
         ...this.ideaForm.value,
         keywords: this.keywords()
       };
+      console.log('Form saving with data:', formValue);
+      console.log('Keywords:', this.keywords());
       this.dialogRef.close(formValue);
     }
   }

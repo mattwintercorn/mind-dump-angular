@@ -15,5 +15,7 @@ export interface Idea {
 export type IdeaStatus = 'new' | 'active' | 'completed' | 'archived';
 export type IdeaPriority = 'low' | 'medium' | 'high';
 
-export type CreateIdeaData = Omit<Idea, 'id' | 'createdAt' | 'updatedAt'>;
+export type CreateIdeaData = Omit<Idea, 'id' | 'color' | 'createdAt' | 'updatedAt'> & {
+  color?: string;
+};
 export type UpdateIdeaData = Partial<Omit<Idea, 'id' | 'createdAt' | 'updatedAt'>>;

@@ -43,6 +43,8 @@ export class IdeaService {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
+    console.log('IdeaService.addIdea received data:', data);
+
     try {
       const id = uuidv4();
       const now = new Date();
@@ -59,6 +61,8 @@ export class IdeaService {
         createdAt: now,
         updatedAt: now
       };
+
+      console.log('IdeaService.addIdea creating idea:', idea);
 
       await this.db.ideas.add(idea);
       await this.loadIdeas();
@@ -79,6 +83,8 @@ export class IdeaService {
   async updateIdea(id: string, data: UpdateIdeaData): Promise<void> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
+
+    console.log('IdeaService.updateIdea received data:', data);
 
     try {
       await this.db.ideas.update(id, {
