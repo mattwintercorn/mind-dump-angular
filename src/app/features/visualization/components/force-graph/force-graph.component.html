@@ -1,0 +1,30 @@
+<div class="force-graph-container">
+  <svg #svgContainer class="force-graph-svg"></svg>
+
+  <div class="zoom-controls">
+    <button
+      mat-mini-fab
+      color="primary"
+      (click)="zoomIn()"
+      aria-label="Zoom in"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+    <button
+      mat-mini-fab
+      color="primary"
+      (click)="zoomOut()"
+      aria-label="Zoom out"
+    >
+      <mat-icon>remove</mat-icon>
+    </button>
+    <button
+      mat-mini-fab
+      color="primary"
+      (click)="resetZoom()"
+      aria-label="Reset zoom"
+    >
+      <mat-icon>center_focus_strong</mat-icon>
+    </button>
+  </div>
+</div>
