@@ -4,15 +4,21 @@ import { Router, provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatDialog } from '@angular/material/dialog';
 import { IdeaService } from './core/services/idea.service';
-import { of } from 'rxjs';
+import { SwUpdate } from '@angular/service-worker';
+import { of, NEVER } from 'rxjs';
 
 describe('AppComponent', () => {
   let mockDialog: jasmine.SpyObj<MatDialog>;
   let mockIdeaService: jasmine.SpyObj<IdeaService>;
+  let mockSwUpdate: jasmine.SpyObj<SwUpdate>;
 
   beforeEach(async () => {
     mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     mockIdeaService = jasmine.createSpyObj('IdeaService', ['addIdea']);
+    mockSwUpdate = jasmine.createSpyObj('SwUpdate', ['checkForUpdate'], {
+      isEnabled: false,
+      versionUpdates: NEVER
+    });
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
@@ -20,7 +26,8 @@ describe('AppComponent', () => {
         provideRouter([]),
         provideAnimationsAsync(),
         { provide: MatDialog, useValue: mockDialog },
-        { provide: IdeaService, useValue: mockIdeaService }
+        { provide: IdeaService, useValue: mockIdeaService },
+        { provide: SwUpdate, useValue: mockSwUpdate }
       ]
     }).compileComponents();
   });
