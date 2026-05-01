@@ -1,14 +1,23 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { ToolbarComponent, ViewMode } from './shared/components/layout/toolbar/toolbar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, MatToolbarModule],
+  imports: [RouterOutlet, ToolbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'Mind Dump';
+  viewMode: ViewMode = 'grid';
+
+  onNewIdea(): void {
+    console.log('New idea clicked');
+  }
+
+  onViewModeChange(mode: ViewMode): void {
+    console.log('View mode changed to:', mode);
+    this.viewMode = mode;
+  }
 }

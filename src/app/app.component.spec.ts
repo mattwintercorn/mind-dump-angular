@@ -20,16 +20,30 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'Mind Dump' title`, () => {
+  it('should initialize with grid view mode', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Mind Dump');
+    expect(app.viewMode).toBe('grid');
   });
 
-  it('should render toolbar with title', () => {
+  it('should handle new idea event', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('mat-toolbar span')?.textContent).toContain('Mind Dump');
+    const app = fixture.componentInstance;
+    spyOn(console, 'log');
+    
+    app.onNewIdea();
+    
+    expect(console.log).toHaveBeenCalledWith('New idea clicked');
+  });
+
+  it('should handle view mode change event', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    spyOn(console, 'log');
+    
+    app.onViewModeChange('list');
+    
+    expect(app.viewMode).toBe('list');
+    expect(console.log).toHaveBeenCalledWith('View mode changed to:', 'list');
   });
 });
