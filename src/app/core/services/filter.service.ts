@@ -10,12 +10,14 @@ export class FilterService {
   private readonly _selectedKeywords = signal<string[]>([]);
   private readonly _selectedStatus = signal<IdeaStatus | null>(null);
   private readonly _selectedComponent = signal<string | null>(null);
+  private readonly _selectedProject = signal<string | null>(null);
 
   // Public read-only signals
   readonly searchQuery = this._searchQuery.asReadonly();
   readonly selectedKeywords = this._selectedKeywords.asReadonly();
   readonly selectedStatus = this._selectedStatus.asReadonly();
   readonly selectedComponent = this._selectedComponent.asReadonly();
+  readonly selectedProject = this._selectedProject.asReadonly();
 
   // Computed values
   readonly activeFilterCount = computed(() => {
@@ -24,6 +26,7 @@ export class FilterService {
     if (this._selectedKeywords().length > 0) count += this._selectedKeywords().length;
     if (this._selectedStatus() !== null) count++;
     if (this._selectedComponent() !== null) count++;
+    if (this._selectedProject() !== null) count++;
     return count;
   });
 
@@ -51,11 +54,16 @@ export class FilterService {
     this._selectedComponent.set(component);
   }
 
+  setProject(project: string | null): void {
+    this._selectedProject.set(project);
+  }
+
   clearFilters(): void {
     this._searchQuery.set('');
     this._selectedKeywords.set([]);
     this._selectedStatus.set(null);
     this._selectedComponent.set(null);
+    this._selectedProject.set(null);
   }
 
   // Apply all filters to an array of ideas
@@ -97,6 +105,12 @@ export class FilterService {
     const component = this._selectedComponent();
     if (component !== null) {
       filtered = filtered.filter((idea) => idea.component === component);
+    }
+
+    // Apply project filter
+    const project = this._selectedProject();
+    if (project !== null) {
+      filtered = filtered.filter((idea) => idea.project === project);
     }
 
     return filtered;

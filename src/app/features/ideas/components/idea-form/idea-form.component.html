@@ -20,15 +20,31 @@
       <input 
         matInput 
         formControlName="component" 
-        [matAutocomplete]="auto"
+        [matAutocomplete]="autoComponent"
         placeholder="e.g., Auth System, User Dashboard..."
       />
-      <mat-autocomplete #auto="matAutocomplete">
+      <mat-autocomplete #autoComponent="matAutocomplete">
         @for (componentName of componentService.componentNames(); track componentName) {
           <mat-option [value]="componentName">{{ componentName }}</mat-option>
         }
       </mat-autocomplete>
       <mat-hint>Link this idea to a system component</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Project</mat-label>
+      <input 
+        matInput 
+        formControlName="project" 
+        [matAutocomplete]="autoProject"
+        placeholder="e.g., Mobile App, API Redesign..."
+      />
+      <mat-autocomplete #autoProject="matAutocomplete">
+        @for (projectName of projectService.projectNames(); track projectName) {
+          <mat-option [value]="projectName">{{ projectName }}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-hint>Link this idea to a project</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline">

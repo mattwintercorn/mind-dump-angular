@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Idea } from '../../../../core/models/idea.model';
 import { ComponentService } from '../../../../core/services/component.service';
+import { ProjectService } from '../../../../core/services/project.service';
 
 @Component({
   selector: 'app-idea-form',
@@ -37,6 +38,7 @@ export class IdeaFormComponent {
   private dialogRef = inject(MatDialogRef<IdeaFormComponent>);
   public data = inject<Idea | null>(MAT_DIALOG_DATA);
   public componentService = inject(ComponentService);
+  public projectService = inject(ProjectService);
 
   ideaForm: FormGroup;
   keywords = signal<string[]>([]);
@@ -46,6 +48,7 @@ export class IdeaFormComponent {
       title: [this.data?.title || '', Validators.required],
       description: [this.data?.description || ''],
       component: [this.data?.component || ''],
+      project: [this.data?.project || ''],
       status: [this.data?.status || 'new'],
       priority: [this.data?.priority || 'medium']
     });

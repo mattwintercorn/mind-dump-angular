@@ -12,6 +12,12 @@
           {{ idea.component }}
         </span>
       }
+      @if (idea.project) {
+        <span class="project-badge">
+          <mat-icon>folder</mat-icon>
+          {{ idea.project }}
+        </span>
+      }
     </mat-card-subtitle>
   </mat-card-header>
 

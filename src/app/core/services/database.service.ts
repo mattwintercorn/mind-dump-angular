@@ -12,6 +12,13 @@ export interface SystemComponent {
   createdAt: Date;
 }
 
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,6 +27,7 @@ export class DatabaseService extends Dexie {
   connections!: Table<Connection, string>;
   settings!: Table<Settings, string>;
   components!: Table<SystemComponent, string>;
+  projects!: Table<Project, string>;
 
   constructor() {
     super('MindDumpDB');
@@ -37,6 +45,15 @@ export class DatabaseService extends Dexie {
       connections: 'id, sourceId, targetId',
       settings: 'id',
       components: 'id, name, createdAt'
+    });
+
+    // Version 3: Add project field to ideas and projects table
+    this.version(3).stores({
+      ideas: 'id, status, component, project, *keywords, createdAt',
+      connections: 'id, sourceId, targetId',
+      settings: 'id',
+      components: 'id, name, createdAt',
+      projects: 'id, name, createdAt'
     });
   }
 }

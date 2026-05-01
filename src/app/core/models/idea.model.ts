@@ -8,6 +8,7 @@ export interface Idea {
   priority: IdeaPriority;
   color: string;
   component?: string; // System component this idea relates to
+  project?: string; // Project this idea belongs to
   createdAt: Date;
   updatedAt: Date;
   attachments?: string[];

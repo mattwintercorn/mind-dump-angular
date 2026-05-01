@@ -72,6 +72,26 @@
     </mat-form-field>
   </mat-expansion-panel>
 
+  <!-- Project Filter -->
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>folder</mat-icon>
+        Project
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Project</mat-label>
+      <mat-select [(ngModel)]="selectedProject">
+        <mat-option [value]="null">All Projects</mat-option>
+        @for (project of projectService.projectNames(); track project) {
+          <mat-option [value]="project">{{ project }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </mat-expansion-panel>
+
   <!-- Keywords Filter -->
   <mat-expansion-panel [expanded]="true">
     <mat-expansion-panel-header>

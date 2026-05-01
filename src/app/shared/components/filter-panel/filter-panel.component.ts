@@ -12,6 +12,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { FilterService } from '../../../core/services/filter.service';
 import { IdeaService } from '../../../core/services/idea.service';
 import { ComponentService } from '../../../core/services/component.service';
+import { ProjectService } from '../../../core/services/project.service';
 import { IdeaStatus } from '../../../core/models/idea.model';
 
 @Component({
@@ -35,6 +36,7 @@ export class FilterPanelComponent {
   filterService = inject(FilterService);
   ideaService = inject(IdeaService);
   componentService = inject(ComponentService);
+  projectService = inject(ProjectService);
 
   statusOptions: IdeaStatus[] = ['new', 'active', 'completed', 'archived'];
 
@@ -60,6 +62,14 @@ export class FilterPanelComponent {
 
   set selectedComponent(value: string | null) {
     this.filterService.setComponent(value);
+  }
+
+  get selectedProject(): string | null {
+    return this.filterService.selectedProject();
+  }
+
+  set selectedProject(value: string | null) {
+    this.filterService.setProject(value);
   }
 
   isKeywordSelected(keyword: string): boolean {

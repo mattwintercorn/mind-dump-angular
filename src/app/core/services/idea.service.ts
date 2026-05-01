@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from './database.service';
 import { ColorService } from './color.service';
 import { ComponentService } from './component.service';
+import { ProjectService } from './project.service';
 import { Idea, CreateIdeaData, UpdateIdeaData } from '../models/idea.model';
 
 @Injectable({
@@ -13,6 +14,7 @@ export class IdeaService {
   private db = inject(DatabaseService);
   private colorService = inject(ColorService);
   private componentService = inject(ComponentService);
+  private projectService = inject(ProjectService);
 
   // Private writable signals
   private ideasSignal = signal<Idea[]>([]);
@@ -71,6 +73,11 @@ export class IdeaService {
         await this.componentService.getOrCreateComponent(data.component);
       }
 
+      // Register project if provided
+      if (data.project) {
+        await this.projectService.getOrCreateProject(data.project);
+      }
+
       await this.db.ideas.add(idea);
       await this.loadIdeas();
       
@@ -97,6 +104,11 @@ export class IdeaService {
       // Register component if provided
       if (data.component) {
         await this.componentService.getOrCreateComponent(data.component);
+      }
+
+      // Register project if provided
+      if (data.project) {
+        await this.projectService.getOrCreateProject(data.project);
       }
 
       await this.db.ideas.update(id, {
@@ -149,15 +161,22 @@ export class IdeaService {
       
       // Extract and register any components from existing ideas
       const components = new Set<string>();
+      const projects = new Set<string>();
       allIdeas.forEach(idea => {
         if (idea.component) {
           components.add(idea.component);
         }
+        if (idea.project) {
+          projects.add(idea.project);
+        }
       });
       
-      // Register all unique components
+      // Register all unique components and projects
       for (const componentName of components) {
         await this.componentService.getOrCreateComponent(componentName);
+      }
+      for (const projectName of projects) {
+        await this.projectService.getOrCreateProject(projectName);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load ideas';

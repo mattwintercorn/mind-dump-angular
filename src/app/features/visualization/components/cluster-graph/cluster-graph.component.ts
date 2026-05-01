@@ -21,7 +21,7 @@ import { FilterService } from '../../../../core/services/filter.service';
 import { ColorService } from '../../../../core/services/color.service';
 import { FilterPanelComponent } from '../../../../shared/components/filter-panel/filter-panel.component';
 
-type ClusterMode = 'keyword' | 'component';
+type ClusterMode = 'keyword' | 'component' | 'project';
 
 interface ClusterNode extends d3.SimulationNodeDatum {
   id: string;
@@ -34,7 +34,7 @@ interface ClusterNode extends d3.SimulationNodeDatum {
 interface ClusterAnchor extends d3.SimulationNodeDatum {
   id: string;
   name: string;
-  type: 'keyword' | 'component';
+  type: 'keyword' | 'component' | 'project';
   color: string;
 }
 
@@ -127,7 +127,7 @@ export class ClusterGraphComponent implements OnInit, OnDestroy {
 
     const clusters = new Map<string, Idea[]>();
 
-    // Group ideas by keyword or component
+    // Group ideas by keyword or component or project
     ideas.forEach(idea => {
       if (mode === 'keyword') {
         idea.keywords.forEach(keyword => {
@@ -136,12 +136,18 @@ export class ClusterGraphComponent implements OnInit, OnDestroy {
           }
           clusters.get(keyword)!.push(idea);
         });
-      } else {
+      } else if (mode === 'component') {
         const component = idea.component || 'Uncategorized';
         if (!clusters.has(component)) {
           clusters.set(component, []);
         }
         clusters.get(component)!.push(idea);
+      } else {
+        const project = idea.project || 'No Project';
+        if (!clusters.has(project)) {
+          clusters.set(project, []);
+        }
+        clusters.get(project)!.push(idea);
       }
     });
 
@@ -152,7 +158,7 @@ export class ClusterGraphComponent implements OnInit, OnDestroy {
       type: mode,
       color: mode === 'keyword' 
         ? this.colorService.getKeywordColor(key)
-        : '#667eea',
+        : mode === 'component' ? '#667eea' : '#3b82f6',
       fx: undefined,
       fy: undefined
     }));

@@ -20,6 +20,10 @@
           <mat-icon>widgets</mat-icon>
           By Component
         </mat-button-toggle>
+        <mat-button-toggle value="project">
+          <mat-icon>folder</mat-icon>
+          By Project
+        </mat-button-toggle>
       </mat-button-toggle-group>
     </div>
 
@@ -31,7 +35,7 @@
         <mat-icon>info</mat-icon>
         Cluster View
       </h4>
-      <p>Ideas are organized around {{ clusterMode() === 'keyword' ? 'keywords' : 'components' }}.</p>
+      <p>Ideas are organized around {{ clusterMode() === 'keyword' ? 'keywords' : clusterMode() === 'component' ? 'components' : 'projects' }}.</p>
       <ul>
         <li>Large circles = cluster anchors</li>
         <li>Small circles = ideas</li>
