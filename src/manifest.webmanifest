@@ -1,6 +1,7 @@
 {
-  "name": "mind-dump-angular",
-  "short_name": "mind-dump-angular",
+  "name": "Mind Dump",
+  "short_name": "Mind Dump",
+  "description": "Quick capture app for thoughts and ideas",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",
