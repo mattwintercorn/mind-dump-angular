@@ -45,6 +45,9 @@ export class IdeaListComponent {
   }
 
   onIdeaDelete(ideaId: string): void {
-    this.ideaService.deleteIdea(ideaId);
+    const confirmed = confirm('Are you sure you want to delete this idea?');
+    if (confirmed) {
+      this.ideaService.deleteIdea(ideaId);
+    }
   }
 }

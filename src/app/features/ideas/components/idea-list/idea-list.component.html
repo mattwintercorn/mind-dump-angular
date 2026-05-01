@@ -19,9 +19,9 @@
       @for (idea of ideas; track idea.id) {
         <app-idea-card
           [idea]="idea"
-          (ideaClick)="onIdeaClick(idea)"
-          (ideaEdit)="onIdeaEdit(idea)"
-          (ideaDelete)="onIdeaDelete(idea.id)"
+          (select)="onIdeaClick(idea)"
+          (edit)="onIdeaEdit(idea)"
+          (delete)="onIdeaDelete($event)"
         />
       }
     </div>
