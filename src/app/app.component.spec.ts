@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatDialog } from '@angular/material/dialog';
 import { IdeaService } from './core/services/idea.service';
@@ -73,11 +73,12 @@ describe('AppComponent', () => {
   it('should handle view mode change event', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    spyOn(console, 'log');
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
     
     app.onViewModeChange('list');
     
     expect(app.viewMode).toBe('list');
-    expect(console.log).toHaveBeenCalledWith('View mode changed to:', 'list');
+    expect(router.navigate).toHaveBeenCalledWith(['/graph']);
   });
 });

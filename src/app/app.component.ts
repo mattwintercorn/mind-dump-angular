@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ToolbarComponent, ViewMode } from './shared/components/layout/toolbar/toolbar.component';
 import { IdeaFormComponent } from './features/ideas/components/idea-form/idea-form.component';
@@ -15,6 +15,7 @@ import { IdeaService } from './core/services/idea.service';
 export class AppComponent {
   private dialog = inject(MatDialog);
   private ideaService = inject(IdeaService);
+  private router = inject(Router);
   
   viewMode: ViewMode = 'grid';
 
@@ -32,7 +33,11 @@ export class AppComponent {
   }
 
   onViewModeChange(mode: ViewMode): void {
-    console.log('View mode changed to:', mode);
     this.viewMode = mode;
+    if (mode === 'grid') {
+      this.router.navigate(['/ideas']);
+    } else {
+      this.router.navigate(['/graph']);
+    }
   }
 }
