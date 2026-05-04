@@ -5,11 +5,24 @@
   padding: 8px 16px;
   min-width: 180px;
   
+  mat-icon {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
   .spinner {
     display: inline-block;
   }
   
   .button-text {
-    margin-left: 4px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
   }
 }
