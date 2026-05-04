@@ -5,16 +5,19 @@ import { DatabaseService } from './database.service';
 import { ColorService } from './color.service';
 import { SyncService } from './sync.service';
 import { AuthService } from './auth.service';
+import { WorkspaceService } from './workspace.service';
 import { CreateIdeaData } from '../models/idea.model';
 import Dexie from 'dexie';
 import indexedDB from 'fake-indexeddb';
 import IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange';
+import { signal } from '@angular/core';
 
 describe('IdeaService', () => {
   let service: IdeaService;
   let db: DatabaseService;
   let mockSyncService: any;
   let mockAuthService: any;
+  let mockWorkspaceService: any;
 
   beforeEach(() => {
     // Configure Dexie to use fake-indexeddb
@@ -32,13 +35,19 @@ describe('IdeaService', () => {
       currentUser: jasmine.createSpy('currentUser').and.returnValue(null)
     };
 
+    // Create mock WorkspaceService with default active workspace
+    mockWorkspaceService = {
+      activeWorkspace: signal({ id: 'local-default', name: 'Default' })
+    };
+
     TestBed.configureTestingModule({
       providers: [
         IdeaService, 
         DatabaseService, 
         ColorService,
         { provide: SyncService, useValue: mockSyncService },
-        { provide: AuthService, useValue: mockAuthService }
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: WorkspaceService, useValue: mockWorkspaceService }
       ]
     });
     service = TestBed.inject(IdeaService);
@@ -293,5 +302,142 @@ describe('IdeaService', () => {
     expect(change.id).toBe(id);
     expect(change.workspaceId).toBeDefined();
     expect(change.timestamp).toBeDefined();
+  });
+
+  describe('Workspace Filtering (Task 7)', () => {
+    it('should filter ideas by active workspace', async () => {
+      // Set active workspace
+      mockWorkspaceService.activeWorkspace.set({ id: 'workspace-1', name: 'Workspace 1' });
+
+      // Add ideas to different workspaces directly to DB
+      await db.ideas.add({
+        id: 'idea-1',
+        title: 'Workspace 1 Idea',
+        description: '',
+        keywords: [],
+        status: 'new',
+        priority: 'low',
+        color: '#3B82F6',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        workspaceId: 'workspace-1',
+        version: 1,
+        createdBy: 'anonymous',
+        lastModifiedBy: 'anonymous'
+      });
+
+      await db.ideas.add({
+        id: 'idea-2',
+        title: 'Workspace 2 Idea',
+        description: '',
+        keywords: [],
+        status: 'new',
+        priority: 'low',
+        color: '#3B82F6',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        workspaceId: 'workspace-2',
+        version: 1,
+        createdBy: 'anonymous',
+        lastModifiedBy: 'anonymous'
+      });
+
+      // Reload ideas (should filter by active workspace)
+      await (service as any).loadIdeas();
+
+      // Should only have idea from workspace-1
+      expect(service.ideas().length).toBe(1);
+      expect(service.ideas()[0].workspaceId).toBe('workspace-1');
+    });
+
+    it('should reload ideas when workspace changes', async () => {
+      // Set up spy on private loadIdeas method
+      spyOn(service as any, 'loadIdeas').and.callThrough();
+
+      // Add ideas to different workspaces
+      await db.ideas.add({
+        id: 'idea-1',
+        title: 'Workspace 1 Idea',
+        description: '',
+        keywords: [],
+        status: 'new',
+        priority: 'low',
+        color: '#3B82F6',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        workspaceId: 'workspace-1',
+        version: 1,
+        createdBy: 'anonymous',
+        lastModifiedBy: 'anonymous'
+      });
+
+      await db.ideas.add({
+        id: 'idea-2',
+        title: 'Workspace 2 Idea',
+        description: '',
+        keywords: [],
+        status: 'new',
+        priority: 'low',
+        color: '#3B82F6',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        workspaceId: 'workspace-2',
+        version: 1,
+        createdBy: 'anonymous',
+        lastModifiedBy: 'anonymous'
+      });
+
+      // Change active workspace
+      mockWorkspaceService.activeWorkspace.set({ id: 'workspace-2', name: 'Workspace 2' });
+
+      // Wait for effect to trigger
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // loadIdeas should have been called when workspace changed
+      expect((service as any).loadIdeas).toHaveBeenCalled();
+    });
+
+    it('should set workspaceId on new ideas', async () => {
+      mockWorkspaceService.activeWorkspace.set({ id: 'workspace-test', name: 'Test Workspace' });
+
+      const id = await service.addIdea({
+        title: 'Test Idea',
+        description: '',
+        keywords: [],
+        status: 'new',
+        priority: 'low',
+        color: '#3B82F6'
+      });
+
+      const idea = await service.getIdea(id);
+      expect(idea?.workspaceId).toBe('workspace-test');
+    });
+
+    it('should return empty array when no active workspace', async () => {
+      // No active workspace set (null)
+      mockWorkspaceService.activeWorkspace.set(null);
+
+      // Add some ideas with workspaceIds
+      await db.ideas.add({
+        id: 'idea-1',
+        title: 'Some Idea',
+        description: '',
+        keywords: [],
+        status: 'new',
+        priority: 'low',
+        color: '#3B82F6',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        workspaceId: 'workspace-1',
+        version: 1,
+        createdBy: 'anonymous',
+        lastModifiedBy: 'anonymous'
+      });
+
+      await (service as any).loadIdeas();
+
+      // Should not load any ideas when no workspace is active
+      expect(service.ideas().length).toBe(0);
+    });
   });
 });

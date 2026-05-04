@@ -1,5 +1,5 @@
 // src/app/core/services/idea.service.ts
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from './database.service';
 import { ColorService } from './color.service';
@@ -7,6 +7,7 @@ import { ComponentService } from './component.service';
 import { ProjectService } from './project.service';
 import { SyncService } from './sync.service';
 import { AuthService } from './auth.service';
+import { WorkspaceService } from './workspace.service';
 import { Idea, CreateIdeaData, UpdateIdeaData } from '../models/idea.model';
 
 @Injectable({
@@ -19,6 +20,7 @@ export class IdeaService {
   private projectService = inject(ProjectService);
   private syncService = inject(SyncService);
   private authService = inject(AuthService);
+  private workspaceService = inject(WorkspaceService);
 
   // Private writable signals
   private ideasSignal = signal<Idea[]>([]);
@@ -42,13 +44,25 @@ export class IdeaService {
 
   constructor() {
     this.loadIdeas();
+    
+    // Reload ideas when workspace changes
+    effect(() => {
+      const activeWorkspace = this.workspaceService.activeWorkspace();
+      // Trigger reload when workspace changes
+      this.loadIdeas();
+    }, { allowSignalWrites: true });
   }
 
   /**
    * Get the active workspace ID
-   * Returns the authenticated user's default workspace, or 'local-default' for anonymous users
+   * Returns the active workspace ID, or 'local-default' if no workspace is active
    */
   private getActiveWorkspaceId(): string {
+    const activeWorkspace = this.workspaceService.activeWorkspace();
+    if (activeWorkspace) {
+      return activeWorkspace.id;
+    }
+    
     const user = this.authService.currentUser();
     if (user && this.authService.isAuthenticated()) {
       // For authenticated users, return their default workspace ID
@@ -238,7 +252,20 @@ export class IdeaService {
    */
   private async loadIdeas(): Promise<void> {
     try {
-      const allIdeas = await this.db.ideas.toArray();
+      const activeWorkspace = this.workspaceService.activeWorkspace();
+      
+      // If no active workspace, don't load any ideas
+      if (!activeWorkspace) {
+        this.ideasSignal.set([]);
+        return;
+      }
+      
+      // Filter ideas by active workspace
+      const allIdeas = await this.db.ideas
+        .where('workspaceId')
+        .equals(activeWorkspace.id)
+        .toArray();
+        
       this.ideasSignal.set(allIdeas);
       
       // Extract and register any components from existing ideas
