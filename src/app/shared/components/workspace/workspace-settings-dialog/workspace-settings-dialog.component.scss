@@ -1,0 +1,166 @@
+.workspace-name-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 24px 0;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 16px 0 12px 0;
+  text-transform: uppercase;
+}
+
+// Rename Section
+.rename-section {
+  margin-bottom: 24px;
+
+  .rename-form {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+
+    .name-input {
+      flex: 1;
+    }
+
+    .rename-button {
+      margin-top: 8px;
+      min-width: 100px;
+    }
+  }
+}
+
+// Danger Zone
+.danger-section {
+  margin: 24px 0;
+
+  .danger-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background-color: #fff3e0;
+    border-radius: 4px;
+    border-left: 4px solid #f57c00;
+
+    .danger-text {
+      flex: 1;
+
+      .danger-title {
+        font-weight: 500;
+        margin: 0 0 4px 0;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .danger-description {
+        font-size: 14px;
+        margin: 0;
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+
+    .delete-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 16px;
+    }
+  }
+}
+
+// Leave Section
+.leave-section {
+  margin: 24px 0;
+
+  .leave-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background-color: #fce4ec;
+    border-radius: 4px;
+    border-left: 4px solid #e91e63;
+
+    .leave-description {
+      flex: 1;
+      font-size: 14px;
+      margin: 0;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .leave-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 16px;
+    }
+  }
+}
+
+// Members Section
+.members-section {
+  mat-list {
+    padding: 0;
+  }
+
+  .member-item {
+    height: auto;
+    padding: 12px 0;
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .member-icon {
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    .member-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .member-email {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .owner-badge,
+    .editor-badge {
+      font-size: 11px;
+      min-height: 24px;
+      padding: 4px 8px;
+    }
+
+    .owner-badge {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .editor-badge {
+      background-color: rgba(0, 0, 0, 0.08);
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+}
+
+mat-dialog-content {
+  min-width: 500px;
+  max-height: 600px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+}
+
+mat-divider {
+  margin: 24px 0;
+}

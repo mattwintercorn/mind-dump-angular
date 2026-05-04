@@ -1,0 +1,116 @@
+<h2 mat-dialog-title>Workspace Settings</h2>
+
+<mat-dialog-content>
+  <h3 class="workspace-name-title">{{ data.workspaceName }}</h3>
+
+  <!-- Owner-only sections -->
+  @if (data.isOwner) {
+    <!-- Rename Section -->
+    <div class="rename-section">
+      <h4 class="section-title">Rename Workspace</h4>
+      <div class="rename-form">
+        <mat-form-field class="name-input" appearance="outline">
+          <mat-label>Workspace Name</mat-label>
+          <input
+            matInput
+            type="text"
+            [formControl]="nameControl"
+            (keyup.enter)="onRename()"
+          />
+          @if (nameControl.hasError('required') && nameControl.touched) {
+            <mat-error>Workspace name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          class="rename-button"
+          [disabled]="!hasNameChanged"
+          (click)="onRename()"
+        >
+          Rename
+        </button>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Delete Section (not for default workspace) -->
+    @if (!data.isDefault) {
+      <div class="danger-section">
+        <h4 class="section-title">Danger Zone</h4>
+        <div class="danger-content">
+          <div class="danger-text">
+            <p class="danger-title">Delete Workspace</p>
+            <p class="danger-description">
+              Permanently delete this workspace and all its ideas. This action cannot be undone.
+            </p>
+          </div>
+          <button
+            mat-raised-button
+            color="warn"
+            class="delete-button"
+            (click)="onDelete()"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+    }
+  }
+
+  <!-- Collaborator-only section -->
+  @if (!data.isOwner) {
+    <div class="leave-section">
+      <h4 class="section-title">Leave Workspace</h4>
+      <div class="leave-content">
+        <p class="leave-description">
+          You will lose access to all ideas in this workspace. The workspace owner can re-invite you later.
+        </p>
+        <button
+          mat-raised-button
+          color="warn"
+          class="leave-button"
+          (click)="onLeave()"
+        >
+          <mat-icon>exit_to_app</mat-icon>
+          Leave Workspace
+        </button>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+  }
+
+  <!-- Members List -->
+  <div class="members-section">
+    <h4 class="section-title">Members</h4>
+    <mat-list>
+      @for (userId of getMemberIds(); track userId) {
+        <mat-list-item class="member-item">
+          <div class="member-info">
+            <mat-icon class="member-icon">person</mat-icon>
+            <div class="member-details">
+              <span class="member-email">{{ getMemberEmail(userId) }}</span>
+              @if (getRole(userId) === 'owner') {
+                <mat-chip class="owner-badge" color="primary">Owner</mat-chip>
+              } @else {
+                <mat-chip class="editor-badge">Editor</mat-chip>
+              }
+            </div>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="close-button" (click)="onClose()">
+    Close
+  </button>
+</mat-dialog-actions>
