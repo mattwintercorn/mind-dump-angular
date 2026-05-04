@@ -1,6 +1,11 @@
 <mat-toolbar color="primary" class="toolbar">
   <span class="toolbar-title">{{ title }}</span>
   
+  <!-- Workspace Switcher (shown when authenticated) -->
+  @if (authService.isAuthenticated()) {
+    <app-workspace-switcher class="workspace-switcher"></app-workspace-switcher>
+  }
+  
   <span class="spacer"></span>
   
   <button 
@@ -41,6 +46,19 @@
       <mat-icon>hub</mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>
+
+  <!-- Share Button (shown when user is workspace owner) -->
+  @if (canShareWorkspace()) {
+    <button 
+      mat-icon-button 
+      aria-label="Share workspace"
+      matTooltip="Share this workspace"
+      matTooltipPosition="below"
+      (click)="onShareWorkspace()"
+      class="share-button">
+      <mat-icon>share</mat-icon>
+    </button>
+  }
 
   <!-- Sync Status (shown when authenticated) -->
   @if (authService.isAuthenticated()) {
