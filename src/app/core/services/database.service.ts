@@ -26,6 +26,7 @@ export interface SystemWorkspace {
   name: string;
   ownerId: string;
   isDefault: boolean;
+  members?: { [userId: string]: 'owner' | 'editor' };
   role: 'owner' | 'admin' | 'member' | 'viewer';
   syncStatus: 'synced' | 'pending' | 'error' | 'local-only';
   lastSyncedAt?: Date;

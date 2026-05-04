@@ -9,7 +9,7 @@ describe('WorkspaceService', () => {
   let service: WorkspaceService;
   let authService: jasmine.SpyObj<AuthService>;
   let databaseService: any;
-  let firebaseService: jasmine.SpyObj<FirebaseService>;
+  let firebaseService: FirebaseService;
 
   beforeEach(() => {
     const authSpy = jasmine.createSpyObj('AuthService', [], {
@@ -35,22 +35,20 @@ describe('WorkspaceService', () => {
         delete: jasmine.createSpy('delete').and.returnValue(Promise.resolve())
       }
     };
-    
-    const firebaseSpy = jasmine.createSpyObj('FirebaseService', ['database']);
 
     TestBed.configureTestingModule({
       providers: [
         WorkspaceService,
         { provide: AuthService, useValue: authSpy },
         { provide: DatabaseService, useValue: dbSpy },
-        { provide: FirebaseService, useValue: firebaseSpy }
+        FirebaseService
       ]
     });
 
     service = TestBed.inject(WorkspaceService);
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     databaseService = TestBed.inject(DatabaseService);
-    firebaseService = TestBed.inject(FirebaseService) as jasmine.SpyObj<FirebaseService>;
+    firebaseService = TestBed.inject(FirebaseService);
   });
 
   it('should be created', () => {
@@ -150,5 +148,85 @@ describe('WorkspaceService', () => {
     await service.renameWorkspace(workspaceId, newName);
     
     expect(databaseService.workspaces.put).toHaveBeenCalled();
+  });
+
+  // Workspace Sharing Tests
+  it('should have shareWorkspace method', () => {
+    expect(service.shareWorkspace).toBeDefined();
+    expect(typeof service.shareWorkspace).toBe('function');
+  });
+
+  it('should have removeCollaborator method', () => {
+    expect(service.removeCollaborator).toBeDefined();
+    expect(typeof service.removeCollaborator).toBe('function');
+  });
+
+  it('should have leaveWorkspace method', () => {
+    expect(service.leaveWorkspace).toBeDefined();
+    expect(typeof service.leaveWorkspace).toBe('function');
+  });
+
+  it('should call put when removing collaborator', async () => {
+    const workspaceId = 'ws-1';
+    const collaboratorId = 'user-2';
+    const workspace = {
+      id: workspaceId,
+      name: 'My Project',
+      ownerId: 'user-1',
+      isDefault: false,
+      members: { 'user-2': 'editor' },
+      role: 'owner',
+      syncStatus: 'synced',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    databaseService.workspaces.get = jasmine.createSpy().and.returnValue(Promise.resolve(workspace));
+    
+    await service.removeCollaborator(workspaceId, collaboratorId);
+    
+    expect(databaseService.workspaces.put).toHaveBeenCalled();
+  });
+
+  it('should throw error when trying to remove workspace owner', async () => {
+    const workspaceId = 'ws-1';
+    const ownerId = 'user-1';
+    const workspace = {
+      id: workspaceId,
+      name: 'My Project',
+      ownerId: 'user-1',
+      isDefault: false,
+      members: {},
+      role: 'owner',
+      syncStatus: 'synced',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    databaseService.workspaces.get = jasmine.createSpy().and.returnValue(Promise.resolve(workspace));
+    
+    await expectAsync(service.removeCollaborator(workspaceId, ownerId))
+      .toBeRejectedWithError('Cannot remove workspace owner');
+  });
+
+  it('should delete workspace locally when leaving', async () => {
+    const workspaceId = 'ws-1';
+    const workspace = {
+      id: workspaceId,
+      name: 'My Project',
+      ownerId: 'user-2', // Different owner
+      isDefault: false,
+      members: { 'user-1': 'editor' },
+      role: 'editor',
+      syncStatus: 'synced',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    databaseService.workspaces.get = jasmine.createSpy().and.returnValue(Promise.resolve(workspace));
+    
+    await service.leaveWorkspace(workspaceId);
+    
+    expect(databaseService.workspaces.delete).toHaveBeenCalledWith(workspaceId);
   });
 });
