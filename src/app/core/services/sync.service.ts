@@ -29,8 +29,11 @@ export class SyncService {
   private batchTimer: any = null;
   private readonly BATCH_DELAY = 3000; // 3 seconds
 
-  // Map to track active Firebase listeners
+  // Map to track active Firebase listeners (legacy)
   private listeners = new Map<string, any>();
+  
+  // Map to track per-workspace listeners
+  private workspaceListeners = new Map<string, any>();
 
   constructor() {
     // Service initialized
@@ -311,6 +314,52 @@ export class SyncService {
   }
 
   /**
+   * Start listening to a workspace (new per-workspace method)
+   */
+  startListeningToWorkspace(workspaceId: string): void {
+    // Only listen if authenticated
+    if (!this.authService.isAuthenticated()) {
+      return;
+    }
+
+    // Don't create duplicate listeners
+    if (this.workspaceListeners.has(workspaceId)) {
+      return;
+    }
+
+    // Create Firebase reference for ideas in this workspace
+    const ideasPath = `workspaces/${workspaceId}/ideas`;
+    const ideasRef = ref(this.firebaseService.database, ideasPath);
+
+    // Set up listener for real-time updates
+    const unsubscribe = onValue(ideasRef, (snapshot) => {
+      const ideas = snapshot.val();
+      if (ideas) {
+        Object.values(ideas).forEach((idea: any) => {
+          this.handleRemoteIdea(idea, workspaceId);
+        });
+      }
+    });
+
+    // Store listener info for cleanup
+    this.workspaceListeners.set(workspaceId, {
+      ref: ideasRef,
+      unsubscribe
+    });
+  }
+
+  /**
+   * Stop listening to a workspace
+   */
+  stopListeningToWorkspace(workspaceId: string): void {
+    const listener = this.workspaceListeners.get(workspaceId);
+    if (listener) {
+      off(listener.ref);
+      this.workspaceListeners.delete(workspaceId);
+    }
+  }
+
+  /**
    * Clean up on service destroy
    */
   ngOnDestroy(): void {
@@ -318,5 +367,11 @@ export class SyncService {
       clearTimeout(this.batchTimer);
     }
     this.stopListening();
+    
+    // Clean up workspace listeners
+    this.workspaceListeners.forEach((listener) => {
+      off(listener.ref);
+    });
+    this.workspaceListeners.clear();
   }
 }

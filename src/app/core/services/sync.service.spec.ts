@@ -533,4 +533,69 @@ describe('SyncService', () => {
       expect((service as any).listeners.size).toBe(0);
     });
   });
+
+  describe('Per-Workspace Listeners (Task 6)', () => {
+    it('should start listening to a workspace', () => {
+      const workspaceId = 'workspace-1';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListeningToWorkspace(workspaceId);
+      
+      expect((service as any).workspaceListeners.has(workspaceId)).toBe(true);
+    });
+
+    it('should stop listening to a workspace', () => {
+      const workspaceId = 'workspace-1';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListeningToWorkspace(workspaceId);
+      expect((service as any).workspaceListeners.has(workspaceId)).toBe(true);
+      
+      service.stopListeningToWorkspace(workspaceId);
+      
+      expect((service as any).workspaceListeners.has(workspaceId)).toBe(false);
+    });
+
+    it('should listen to multiple workspaces simultaneously', () => {
+      const workspaceId1 = 'workspace-1';
+      const workspaceId2 = 'workspace-2';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListeningToWorkspace(workspaceId1);
+      service.startListeningToWorkspace(workspaceId2);
+      
+      expect((service as any).workspaceListeners.has(workspaceId1)).toBe(true);
+      expect((service as any).workspaceListeners.has(workspaceId2)).toBe(true);
+      expect((service as any).workspaceListeners.size).toBe(2);
+    });
+
+    it('should stop one workspace without affecting others', () => {
+      const workspaceId1 = 'workspace-1';
+      const workspaceId2 = 'workspace-2';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListeningToWorkspace(workspaceId1);
+      service.startListeningToWorkspace(workspaceId2);
+      
+      service.stopListeningToWorkspace(workspaceId1);
+      
+      expect((service as any).workspaceListeners.has(workspaceId1)).toBe(false);
+      expect((service as any).workspaceListeners.has(workspaceId2)).toBe(true);
+    });
+
+    it('should not create duplicate listeners for same workspace', () => {
+      const workspaceId = 'workspace-1';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListeningToWorkspace(workspaceId);
+      service.startListeningToWorkspace(workspaceId);
+      
+      expect((service as any).workspaceListeners.size).toBe(1);
+    });
+  });
 });
