@@ -1,0 +1,59 @@
+<button mat-button [matMenuTriggerFor]="workspaceMenu" class="workspace-button">
+  <mat-icon>folder</mat-icon>
+  <span class="workspace-name">{{ workspaceService.activeWorkspace()?.name || 'Select Workspace' }}</span>
+  <mat-icon>arrow_drop_down</mat-icon>
+</button>
+
+<mat-menu #workspaceMenu="matMenu">
+  <!-- Owned Workspaces Section -->
+  @if (workspaceService.ownedWorkspaces().length > 0) {
+    <div class="owned-workspaces menu-section">
+      <div class="section-header">
+        <mat-icon>lock</mat-icon>
+        <span>My Workspaces</span>
+      </div>
+      @for (workspace of workspaceService.ownedWorkspaces(); track workspace.id) {
+        <button 
+          mat-menu-item 
+          class="workspace-item"
+          [class.active]="isActive(workspace.id)"
+          (click)="onWorkspaceClick(workspace.id)">
+          <span class="workspace-name">{{ workspace.name }}</span>
+          @if (isActive(workspace.id)) {
+            <mat-icon class="check-icon">check</mat-icon>
+          }
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Shared Workspaces Section -->
+  @if (workspaceService.sharedWorkspaces().length > 0) {
+    <mat-divider></mat-divider>
+    <div class="shared-workspaces menu-section">
+      <div class="section-header">
+        <mat-icon>people</mat-icon>
+        <span>Shared With Me</span>
+      </div>
+      @for (workspace of workspaceService.sharedWorkspaces(); track workspace.id) {
+        <button 
+          mat-menu-item 
+          class="workspace-item"
+          [class.active]="isActive(workspace.id)"
+          (click)="onWorkspaceClick(workspace.id)">
+          <span class="workspace-name">{{ workspace.name }}</span>
+          @if (isActive(workspace.id)) {
+            <mat-icon class="check-icon">check</mat-icon>
+          }
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Create Workspace -->
+  <mat-divider></mat-divider>
+  <button mat-menu-item class="create-workspace" (click)="onCreateWorkspace()">
+    <mat-icon>add</mat-icon>
+    <span>Create Workspace</span>
+  </button>
+</mat-menu>
