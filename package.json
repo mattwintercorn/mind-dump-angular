@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration production --base-href /mind-dump-angular/",
+    "deploy": "npm run build:prod && npx angular-cli-ghpages --dir=dist/mind-dump-angular/browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
