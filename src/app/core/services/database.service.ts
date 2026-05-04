@@ -138,4 +138,13 @@ export class DatabaseService extends Dexie {
       }
     });
   }
+
+  // Helper methods for sync operations
+  async getIdea(id: string): Promise<Idea | undefined> {
+    return await this.ideas.get(id);
+  }
+
+  async saveIdea(idea: Idea): Promise<void> {
+    await this.ideas.put(idea);
+  }
 }

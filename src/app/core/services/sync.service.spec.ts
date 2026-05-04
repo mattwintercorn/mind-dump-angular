@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
 import { ref, set, onValue } from 'firebase/database';
 import { Change } from '../models/sync.model';
+import { Idea } from '../models/idea.model';
 
 describe('SyncService', () => {
   let service: SyncService;
@@ -486,28 +487,35 @@ describe('SyncService', () => {
       expect((service as any).listeners.has(workspaceId)).toBe(false);
     });
 
-    it('should handle remote idea creation', fakeAsync(() => {
+    it('should handle remote idea creation', async () => {
       const workspaceId = 'workspace-1';
-      const remoteIdea = {
+      const remoteIdea: Idea = {
         id: 'idea-1',
         title: 'Remote Idea',
+        description: 'Remote description',
+        keywords: ['remote'],
+        status: 'active',
+        priority: 'medium',
+        color: '#000000',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         version: 1,
-        updatedAt: new Date().toISOString()
+        workspaceId: 'workspace-1',
+        createdBy: 'user-1',
+        lastModifiedBy: 'user-1'
       };
       
       spyOn(authService, 'isAuthenticated').and.returnValue(true);
       const databaseService = TestBed.inject(DatabaseService);
-      spyOn(databaseService, 'getIdea').and.returnValue(Promise.resolve(undefined));
-      spyOn(databaseService, 'saveIdea').and.returnValue(Promise.resolve());
+      spyOn(databaseService.ideas, 'get').and.returnValue(Promise.resolve(undefined) as any);
+      spyOn(databaseService.ideas, 'put').and.returnValue(Promise.resolve('idea-1') as any);
       
-      // Call handleRemoteIdea directly
-      (service as any).handleRemoteIdea(remoteIdea, workspaceId);
-      
-      tick();
+      // Call handleRemoteIdea directly and await the result
+      await (service as any).handleRemoteIdea(remoteIdea, workspaceId);
       
       // Verify that the new idea was saved to the database
-      expect(databaseService.saveIdea).toHaveBeenCalledWith(remoteIdea);
-    }));
+      expect(databaseService.ideas.put).toHaveBeenCalledWith(remoteIdea);
+    });
 
     it('should cleanup all listeners on stopListening without workspaceId', () => {
       const workspaceId1 = 'workspace-1';
