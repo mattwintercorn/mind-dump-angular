@@ -3,9 +3,7 @@ export interface Workspace {
   name: string;
   ownerId: string;
   isDefault: boolean;
-  role: 'owner' | 'editor';
-  syncStatus: 'synced' | 'pending' | 'error';
-  lastSyncedAt: Date;
+  members?: WorkspaceMembers; // Optional for Phase 2
   createdAt: Date;
   updatedAt: Date;
 }
