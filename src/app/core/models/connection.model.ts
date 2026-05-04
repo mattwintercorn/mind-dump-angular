@@ -6,6 +6,7 @@ export interface Connection {
   label?: string;
   bidirectional: boolean;
   createdAt: Date;
+  workspaceId?: string;
 }
 
-export type CreateConnectionData = Omit<Connection, 'id' | 'createdAt'>;
+export type CreateConnectionData = Omit<Connection, 'id' | 'createdAt' | 'workspaceId'>;
