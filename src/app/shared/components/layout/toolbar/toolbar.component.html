@@ -41,4 +41,47 @@
       <mat-icon>hub</mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>
+
+  <!-- Sync Status (shown when authenticated) -->
+  @if (authService.isAuthenticated()) {
+    <app-sync-status></app-sync-status>
+  }
+
+  <!-- Auth UI -->
+  @if (authService.isAuthenticated()) {
+    <!-- User Menu -->
+    <button 
+      mat-icon-button 
+      [matMenuTriggerFor]="userMenu"
+      aria-label="User menu"
+      class="user-avatar-button">
+      @if (authService.currentUser()?.photoURL) {
+        <img 
+          [src]="authService.currentUser()?.photoURL!" 
+          [alt]="authService.currentUser()?.displayName || 'User'"
+          class="user-avatar">
+      } @else {
+        <mat-icon>account_circle</mat-icon>
+      }
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="user-menu-header" mat-menu-item disabled>
+        <div class="user-info">
+          <div class="user-name">{{ authService.currentUser()?.displayName || 'User' }}</div>
+          @if (authService.currentUser()?.email) {
+            <div class="user-email">{{ authService.currentUser()?.email }}</div>
+          }
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="onSignOut()">
+        <mat-icon>logout</mat-icon>
+        <span>Sign Out</span>
+      </button>
+    </mat-menu>
+  } @else {
+    <!-- Sign In Button -->
+    <app-sign-in-button></app-sign-in-button>
+  }
 </mat-toolbar>

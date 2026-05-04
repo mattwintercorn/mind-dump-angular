@@ -18,3 +18,37 @@
 .view-toggle {
   margin-left: 16px;
 }
+
+// User avatar button
+.user-avatar-button {
+  margin-left: 8px;
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+// User menu
+.user-menu-header {
+  cursor: default;
+  
+  .user-info {
+    padding: 8px 0;
+    
+    .user-name {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    
+    .user-email {
+      font-size: 12px;
+      line-height: 16px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-top: 2px;
+    }
+  }
+}
