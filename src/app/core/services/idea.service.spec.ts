@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { IdeaService } from './idea.service';
 import { DatabaseService } from './database.service';
 import { ColorService } from './color.service';
+import { SyncService } from './sync.service';
+import { AuthService } from './auth.service';
 import { CreateIdeaData } from '../models/idea.model';
 import Dexie from 'dexie';
 import indexedDB from 'fake-indexeddb';
@@ -11,14 +13,33 @@ import IDBKeyRange from 'fake-indexeddb/lib/FDBKeyRange';
 describe('IdeaService', () => {
   let service: IdeaService;
   let db: DatabaseService;
+  let mockSyncService: any;
+  let mockAuthService: any;
 
   beforeEach(() => {
     // Configure Dexie to use fake-indexeddb
     Dexie.dependencies.indexedDB = indexedDB;
     Dexie.dependencies.IDBKeyRange = IDBKeyRange;
 
+    // Create mock SyncService
+    mockSyncService = {
+      queueChange: jasmine.createSpy('queueChange')
+    };
+
+    // Create mock AuthService
+    mockAuthService = {
+      isAuthenticated: jasmine.createSpy('isAuthenticated').and.returnValue(false),
+      currentUser: jasmine.createSpy('currentUser').and.returnValue(null)
+    };
+
     TestBed.configureTestingModule({
-      providers: [IdeaService, DatabaseService, ColorService]
+      providers: [
+        IdeaService, 
+        DatabaseService, 
+        ColorService,
+        { provide: SyncService, useValue: mockSyncService },
+        { provide: AuthService, useValue: mockAuthService }
+      ]
     });
     service = TestBed.inject(IdeaService);
     db = TestBed.inject(DatabaseService);
@@ -197,5 +218,80 @@ describe('IdeaService', () => {
 
     const idea = service.ideas()[0];
     expect(idea.color).toBe(expectedColor);
+  });
+
+  it('should queue sync after creating idea', async () => {
+    const id = await service.addIdea({
+      title: 'Test Sync Idea',
+      description: 'Testing sync',
+      keywords: ['sync'],
+      status: 'new',
+      priority: 'medium',
+      color: '#3B82F6'
+    });
+
+    expect(mockSyncService.queueChange).toHaveBeenCalledTimes(1);
+    const call = mockSyncService.queueChange.calls.mostRecent();
+    const change = call.args[0];
+    
+    expect(change.type).toBe('create');
+    expect(change.entity).toBe('idea');
+    expect(change.id).toBe(id);
+    expect(change.workspaceId).toBeDefined();
+    expect(change.timestamp).toBeDefined();
+    expect(change.data).toBeDefined();
+  });
+
+  it('should queue sync after updating idea', async () => {
+    const id = await service.addIdea({
+      title: 'Original',
+      description: 'Original description',
+      keywords: [],
+      status: 'new',
+      priority: 'low',
+      color: '#3B82F6'
+    });
+
+    // Reset spy to only count update call
+    mockSyncService.queueChange.calls.reset();
+    
+    await service.updateIdea(id, { title: 'Updated' });
+
+    expect(mockSyncService.queueChange).toHaveBeenCalledTimes(1);
+    const call = mockSyncService.queueChange.calls.mostRecent();
+    const change = call.args[0];
+    
+    expect(change.type).toBe('update');
+    expect(change.entity).toBe('idea');
+    expect(change.id).toBe(id);
+    expect(change.workspaceId).toBeDefined();
+    expect(change.timestamp).toBeDefined();
+    expect(change.data).toBeDefined();
+  });
+
+  it('should queue sync after deleting idea', async () => {
+    const id = await service.addIdea({
+      title: 'To Delete',
+      description: '',
+      keywords: [],
+      status: 'new',
+      priority: 'low',
+      color: '#3B82F6'
+    });
+
+    // Reset spy to only count delete call
+    mockSyncService.queueChange.calls.reset();
+    
+    await service.deleteIdea(id);
+
+    expect(mockSyncService.queueChange).toHaveBeenCalledTimes(1);
+    const call = mockSyncService.queueChange.calls.mostRecent();
+    const change = call.args[0];
+    
+    expect(change.type).toBe('delete');
+    expect(change.entity).toBe('idea');
+    expect(change.id).toBe(id);
+    expect(change.workspaceId).toBeDefined();
+    expect(change.timestamp).toBeDefined();
   });
 });

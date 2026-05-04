@@ -5,6 +5,8 @@ import { DatabaseService } from './database.service';
 import { ColorService } from './color.service';
 import { ComponentService } from './component.service';
 import { ProjectService } from './project.service';
+import { SyncService } from './sync.service';
+import { AuthService } from './auth.service';
 import { Idea, CreateIdeaData, UpdateIdeaData } from '../models/idea.model';
 
 @Injectable({
@@ -15,6 +17,8 @@ export class IdeaService {
   private colorService = inject(ColorService);
   private componentService = inject(ComponentService);
   private projectService = inject(ProjectService);
+  private syncService = inject(SyncService);
+  private authService = inject(AuthService);
 
   // Private writable signals
   private ideasSignal = signal<Idea[]>([]);
@@ -41,6 +45,20 @@ export class IdeaService {
   }
 
   /**
+   * Get the active workspace ID
+   * Returns the authenticated user's default workspace, or 'local-default' for anonymous users
+   */
+  private getActiveWorkspaceId(): string {
+    const user = this.authService.currentUser();
+    if (user && this.authService.isAuthenticated()) {
+      // For authenticated users, return their default workspace ID
+      // TODO: In future, allow users to switch workspaces
+      return 'local-default'; // For now, still use local-default during migration
+    }
+    return 'local-default';
+  }
+
+  /**
    * Add a new idea to the database
    */
   async addIdea(data: CreateIdeaData): Promise<string> {
@@ -52,6 +70,9 @@ export class IdeaService {
     try {
       const id = uuidv4();
       const now = new Date();
+      const workspaceId = this.getActiveWorkspaceId();
+      const user = this.authService.currentUser();
+      const userId = user?.uid || 'anonymous';
 
       // Auto-generate color from first keyword if not provided
       const color = data.color || (data.keywords.length > 0 
@@ -63,7 +84,11 @@ export class IdeaService {
         id,
         color,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
+        workspaceId,
+        version: 1,
+        createdBy: userId,
+        lastModifiedBy: userId
       };
 
       console.log('IdeaService.addIdea creating idea:', idea);
@@ -79,6 +104,17 @@ export class IdeaService {
       }
 
       await this.db.ideas.add(idea);
+      
+      // Queue sync change
+      this.syncService.queueChange({
+        type: 'create',
+        entity: 'idea',
+        id,
+        workspaceId,
+        timestamp: now,
+        data: idea
+      });
+      
       await this.loadIdeas();
       
       return id;
@@ -101,6 +137,15 @@ export class IdeaService {
     console.log('IdeaService.updateIdea received data:', data);
 
     try {
+      const now = new Date();
+      const user = this.authService.currentUser();
+      const userId = user?.uid || 'anonymous';
+      
+      // Get existing idea to retrieve current version
+      const existingIdea = await this.db.ideas.get(id);
+      const currentVersion = existingIdea?.version || 1;
+      const workspaceId = existingIdea?.workspaceId || this.getActiveWorkspaceId();
+
       // Register component if provided
       if (data.component) {
         await this.componentService.getOrCreateComponent(data.component);
@@ -111,10 +156,30 @@ export class IdeaService {
         await this.projectService.getOrCreateProject(data.project);
       }
 
-      await this.db.ideas.update(id, {
+      const updateData = {
         ...data,
-        updatedAt: new Date()
-      });
+        updatedAt: now,
+        version: currentVersion + 1,
+        lastModifiedBy: userId
+      };
+
+      await this.db.ideas.update(id, updateData);
+      
+      // Get updated idea for sync
+      const updatedIdea = await this.db.ideas.get(id);
+      
+      // Queue sync change
+      if (updatedIdea) {
+        this.syncService.queueChange({
+          type: 'update',
+          entity: 'idea',
+          id,
+          workspaceId,
+          timestamp: now,
+          data: updatedIdea
+        });
+      }
+      
       await this.loadIdeas();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update idea';
@@ -133,7 +198,24 @@ export class IdeaService {
     this.errorSignal.set(null);
 
     try {
+      const now = new Date();
+      
+      // Get existing idea to retrieve workspace info
+      const existingIdea = await this.db.ideas.get(id);
+      const workspaceId = existingIdea?.workspaceId || this.getActiveWorkspaceId();
+      
       await this.db.ideas.delete(id);
+      
+      // Queue sync change (data is null for delete operations)
+      this.syncService.queueChange({
+        type: 'delete',
+        entity: 'idea',
+        id,
+        workspaceId,
+        timestamp: now,
+        data: null
+      });
+      
       await this.loadIdeas();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to delete idea';
