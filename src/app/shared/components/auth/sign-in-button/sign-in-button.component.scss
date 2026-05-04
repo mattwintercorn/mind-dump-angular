@@ -1,28 +1,15 @@
 .sign-in-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  min-width: 180px;
-  
   mat-icon {
-    margin: 0;
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    line-height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    vertical-align: middle;
+    margin-right: 8px;
   }
   
   .spinner {
-    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
   }
   
   .button-text {
-    line-height: 1;
-    display: flex;
-    align-items: center;
+    vertical-align: middle;
   }
 }
