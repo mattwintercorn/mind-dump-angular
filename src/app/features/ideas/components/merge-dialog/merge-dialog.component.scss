@@ -1,0 +1,104 @@
+.dialog-intro {
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.87);
+
+  strong {
+    font-weight: 600;
+    color: #1976d2;
+  }
+}
+
+.strategies {
+  margin-bottom: 16px;
+}
+
+.strategy-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.strategy-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #1976d2;
+    background-color: rgba(25, 118, 210, 0.04);
+  }
+
+  &.selected {
+    border-color: #1976d2;
+    background-color: rgba(25, 118, 210, 0.08);
+  }
+}
+
+.strategy-radio {
+  width: 100%;
+
+  ::ng-deep .mat-radio-label {
+    width: 100%;
+  }
+
+  ::ng-deep .mat-radio-container {
+    margin-top: 4px;
+  }
+}
+
+.strategy-content {
+  margin-left: 8px;
+  flex: 1;
+}
+
+.strategy-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.strategy-icon {
+  color: #1976d2;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.strategy-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recommended-badge {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.strategy-description {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0;
+  line-height: 1.5;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0 -24px -24px;
+  border-top: 1px solid #e0e0e0;
+}
