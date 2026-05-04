@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777928068023,
+  "timestamp": 1777928467772,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -59,14 +59,14 @@
     }
   ],
   "hashTable": {
-    "/mind-dump-angular/assets/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
-    "/mind-dump-angular/assets/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
-    "/mind-dump-angular/assets/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
-    "/mind-dump-angular/assets/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
-    "/mind-dump-angular/assets/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
-    "/mind-dump-angular/assets/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
-    "/mind-dump-angular/assets/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
-    "/mind-dump-angular/assets/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "/mind-dump-angular/assets/icons/icon-128x128.png": "acc5e1d17886a89e5319cead068654d6cfbc246b",
+    "/mind-dump-angular/assets/icons/icon-144x144.png": "27c0a0dd0d30cdbd0160370bda4d6165d91eda25",
+    "/mind-dump-angular/assets/icons/icon-152x152.png": "505b6e642a1b0442327f3b7be937b2445629152e",
+    "/mind-dump-angular/assets/icons/icon-192x192.png": "661162eb0d4e8072d7f1508aebbaa329e132212d",
+    "/mind-dump-angular/assets/icons/icon-384x384.png": "f574c732991afc5f35e15ba05ab98ca9b4dcbf0e",
+    "/mind-dump-angular/assets/icons/icon-512x512.png": "8f45fd56f975ab03f803ddb5ef83bc58e3d5ad7e",
+    "/mind-dump-angular/assets/icons/icon-72x72.png": "8f45fd56f975ab03f803ddb5ef83bc58e3d5ad7e",
+    "/mind-dump-angular/assets/icons/icon-96x96.png": "cfbf51dfecf052af15998158680194d2d1717c0a",
     "/mind-dump-angular/chunk-JOM5SIFA.js": "76ffa87746cd8af4a123b27ce36b1e06282f1095",
     "/mind-dump-angular/chunk-MLZM3EBU.js": "f840c1caf99f85fc8cec521cbab2e97affe55d4f",
     "/mind-dump-angular/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
