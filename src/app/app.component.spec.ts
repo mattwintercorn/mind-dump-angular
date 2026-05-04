@@ -83,9 +83,9 @@ describe('AppComponent', () => {
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate');
     
-    app.onViewModeChange('list');
+    app.onViewModeChange('grid');
     
-    expect(app.viewMode).toBe('list');
+    expect(app.viewMode).toBe('grid');
     expect(router.navigate).toHaveBeenCalledWith(['/graph']);
   });
 });

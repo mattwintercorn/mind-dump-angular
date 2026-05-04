@@ -60,7 +60,7 @@ describe('ToolbarComponent', () => {
 
   it('should emit viewModeChange event when view mode changes', () => {
     spyOn(component.viewModeChange, 'emit');
-    component.onViewModeChange('list');
-    expect(component.viewModeChange.emit).toHaveBeenCalledWith('list');
+    component.onViewModeChange('grid');
+    expect(component.viewModeChange.emit).toHaveBeenCalledWith('grid');
   });
 });
