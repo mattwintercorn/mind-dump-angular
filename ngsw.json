@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777928903681,
+  "timestamp": 1777929157600,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -11,11 +11,11 @@
         "ignoreVary": true
       },
       "urls": [
-        "/mind-dump-angular/chunk-JOM5SIFA.js",
-        "/mind-dump-angular/chunk-MLZM3EBU.js",
+        "/mind-dump-angular/chunk-6YAIU5SO.js",
+        "/mind-dump-angular/chunk-IFPICKCE.js",
         "/mind-dump-angular/favicon.ico",
         "/mind-dump-angular/index.html",
-        "/mind-dump-angular/main-LKWXKTTP.js",
+        "/mind-dump-angular/main-MMKLHWCS.js",
         "/mind-dump-angular/manifest.webmanifest",
         "/mind-dump-angular/polyfills-FFHMD2TL.js",
         "/mind-dump-angular/styles-KVWL7JUM.css"
@@ -69,11 +69,11 @@
     "/mind-dump-angular/assets/icons/icon-72x72.png": "8f45fd56f975ab03f803ddb5ef83bc58e3d5ad7e",
     "/mind-dump-angular/assets/icons/icon-96x96.png": "cfbf51dfecf052af15998158680194d2d1717c0a",
     "/mind-dump-angular/assets/logo.png": "acc5e1d17886a89e5319cead068654d6cfbc246b",
-    "/mind-dump-angular/chunk-JOM5SIFA.js": "76ffa87746cd8af4a123b27ce36b1e06282f1095",
-    "/mind-dump-angular/chunk-MLZM3EBU.js": "f840c1caf99f85fc8cec521cbab2e97affe55d4f",
+    "/mind-dump-angular/chunk-6YAIU5SO.js": "228b30ccb2855ae8c15bab95b34556173106717e",
+    "/mind-dump-angular/chunk-IFPICKCE.js": "91313cdef113d57cbf67802580aaf8d2af4d6b91",
     "/mind-dump-angular/favicon.ico": "7f0e571bc9c5fa194dd1725c3319b1acbf5da7c6",
-    "/mind-dump-angular/index.html": "c0c309ecd55ab38afa34a1251fc2951423880369",
-    "/mind-dump-angular/main-LKWXKTTP.js": "6dae4b2db3a7c70eadfeeec7166450ad9685ed65",
+    "/mind-dump-angular/index.html": "ef95dd89e68cd15b12addb40a88045b5b36bcf6e",
+    "/mind-dump-angular/main-MMKLHWCS.js": "1016c3e7ac4694f7d351eaffdafaaeddbb6037d4",
     "/mind-dump-angular/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
     "/mind-dump-angular/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/mind-dump-angular/styles-KVWL7JUM.css": "153be74bbaf90e70bafe4289fa82368accb7cbdf"
