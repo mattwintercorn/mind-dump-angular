@@ -1,0 +1,85 @@
+// src/styles/_theme-defi-dark.scss
+@use '@angular/material' as mat;
+@use 'variables-defi' as vars;
+
+// Define custom primary palette
+$defi-primary: (
+  50: #FFF5F2,
+  100: #FFE7DE,
+  200: #FFCFBD,
+  300: #FFB79C,
+  400: #FF8F6B,
+  500: vars.$primary,  // #FF6B35
+  600: vars.$primary-dark,  // #E65A2B
+  700: #CC4A21,
+  800: #B33A17,
+  900: #992A0D,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #FFFFFF,
+    500: #FFFFFF,
+    600: #FFFFFF,
+    700: #FFFFFF,
+    800: #FFFFFF,
+    900: #FFFFFF,
+  )
+);
+
+// Define custom accent palette
+$defi-accent: (
+  50: #F0F9FF,
+  100: #E0F2FE,
+  200: #BAE6FD,
+  300: #7DD3FC,
+  400: #38BDF8,
+  500: #0EA5E9,
+  600: #0284C7,
+  700: #0369A1,
+  800: #075985,
+  900: #0C4A6E,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #FFFFFF,
+    600: #FFFFFF,
+    700: #FFFFFF,
+    800: #FFFFFF,
+    900: #FFFFFF,
+  )
+);
+
+// Create dark theme
+$defi-dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.define-palette($defi-primary),
+    tertiary: mat.define-palette($defi-accent),
+  ),
+  typography: (
+    plain-family: vars.$font-family,
+    brand-family: vars.$font-family,
+    bold-weight: vars.$font-semibold,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// Apply theme to all Material components
+html {
+  @include mat.all-component-themes($defi-dark-theme);
+  
+  // Override specific Material colors
+  --mat-app-background-color: #{vars.$bg-primary};
+  --mat-app-text-color: #{vars.$text-primary};
+  --mat-app-on-surface: #{vars.$text-primary};
+  --mat-app-surface: #{vars.$bg-card};
+  --mat-app-on-surface-variant: #{vars.$text-secondary};
+  --mat-app-outline: #{vars.$border-default};
+}
