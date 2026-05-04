@@ -1,0 +1,15 @@
+.sign-in-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  min-width: 180px;
+  
+  .spinner {
+    display: inline-block;
+  }
+  
+  .button-text {
+    margin-left: 4px;
+  }
+}

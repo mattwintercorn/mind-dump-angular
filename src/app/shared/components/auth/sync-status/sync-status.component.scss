@@ -1,0 +1,75 @@
+.sync-status-container {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &.syncing {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+
+    .spinner {
+      color: #2196f3;
+    }
+  }
+
+  &.error {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+
+    .status-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &.offline {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+
+    .status-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.status-text {
+  line-height: 1;
+}
+
+.pending-count {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.retry-button {
+  margin-left: 4px;
+  padding: 0 8px;
+  min-width: auto;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: inherit;
+
+  &:hover {
+    background-color: rgba(244, 67, 54, 0.1);
+  }
+}
+
+.spinner {
+  display: inline-block;
+}

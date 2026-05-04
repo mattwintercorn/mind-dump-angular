@@ -1,0 +1,36 @@
+@if (shouldShow()) {
+  <div class="sync-status-container" [attr.data-status]="syncStatus()">
+    @switch (syncStatus()) {
+      @case ('syncing') {
+        <div class="sync-status syncing">
+          <mat-spinner diameter="16" class="spinner"></mat-spinner>
+          <span class="status-text">Syncing</span>
+          @if (pendingCount() > 0) {
+            <span class="pending-count">({{ pendingCount() }})</span>
+          }
+        </div>
+      }
+      @case ('error') {
+        <div class="sync-status error">
+          <mat-icon class="status-icon">error</mat-icon>
+          <span class="status-text">Sync Error</span>
+          @if (pendingCount() > 0) {
+            <span class="pending-count">({{ pendingCount() }})</span>
+          }
+          <button mat-button class="retry-button" (click)="retry()">
+            Retry
+          </button>
+        </div>
+      }
+      @case ('offline') {
+        <div class="sync-status offline">
+          <mat-icon class="status-icon">cloud_off</mat-icon>
+          <span class="status-text">Offline</span>
+          @if (pendingCount() > 0) {
+            <span class="pending-count">({{ pendingCount() }})</span>
+          }
+        </div>
+      }
+    }
+  </div>
+}
