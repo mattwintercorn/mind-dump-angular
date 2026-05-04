@@ -1,7 +1,7 @@
 {
   "configVersion": 1,
-  "timestamp": 1777926789487,
-  "index": "/index.html",
+  "timestamp": 1777926978167,
+  "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
       "name": "app",
@@ -11,14 +11,14 @@
         "ignoreVary": true
       },
       "urls": [
-        "/chunk-JOM5SIFA.js",
-        "/chunk-MLZM3EBU.js",
-        "/favicon.ico",
-        "/index.html",
-        "/main-IXXKXYII.js",
-        "/manifest.webmanifest",
-        "/polyfills-FFHMD2TL.js",
-        "/styles-KVWL7JUM.css"
+        "/mind-dump-angular/chunk-JOM5SIFA.js",
+        "/mind-dump-angular/chunk-MLZM3EBU.js",
+        "/mind-dump-angular/favicon.ico",
+        "/mind-dump-angular/index.html",
+        "/mind-dump-angular/main-IXXKXYII.js",
+        "/mind-dump-angular/manifest.webmanifest",
+        "/mind-dump-angular/polyfills-FFHMD2TL.js",
+        "/mind-dump-angular/styles-KVWL7JUM.css"
       ],
       "patterns": []
     },
@@ -30,14 +30,14 @@
         "ignoreVary": true
       },
       "urls": [
-        "/assets/icons/icon-128x128.png",
-        "/assets/icons/icon-144x144.png",
-        "/assets/icons/icon-152x152.png",
-        "/assets/icons/icon-192x192.png",
-        "/assets/icons/icon-384x384.png",
-        "/assets/icons/icon-512x512.png",
-        "/assets/icons/icon-72x72.png",
-        "/assets/icons/icon-96x96.png"
+        "/mind-dump-angular/assets/icons/icon-128x128.png",
+        "/mind-dump-angular/assets/icons/icon-144x144.png",
+        "/mind-dump-angular/assets/icons/icon-152x152.png",
+        "/mind-dump-angular/assets/icons/icon-192x192.png",
+        "/mind-dump-angular/assets/icons/icon-384x384.png",
+        "/mind-dump-angular/assets/icons/icon-512x512.png",
+        "/mind-dump-angular/assets/icons/icon-72x72.png",
+        "/mind-dump-angular/assets/icons/icon-96x96.png"
       ],
       "patterns": []
     }
@@ -59,22 +59,22 @@
     }
   ],
   "hashTable": {
-    "/assets/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
-    "/assets/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
-    "/assets/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
-    "/assets/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
-    "/assets/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
-    "/assets/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
-    "/assets/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
-    "/assets/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
-    "/chunk-JOM5SIFA.js": "76ffa87746cd8af4a123b27ce36b1e06282f1095",
-    "/chunk-MLZM3EBU.js": "f840c1caf99f85fc8cec521cbab2e97affe55d4f",
-    "/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
-    "/index.html": "a16057d72e415071d345f0621ed30add7bf676dc",
-    "/main-IXXKXYII.js": "39a56895b61030bab8dc5859a0e1bd62163fd0de",
-    "/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
-    "/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
-    "/styles-KVWL7JUM.css": "153be74bbaf90e70bafe4289fa82368accb7cbdf"
+    "/mind-dump-angular/assets/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
+    "/mind-dump-angular/assets/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
+    "/mind-dump-angular/assets/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
+    "/mind-dump-angular/assets/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
+    "/mind-dump-angular/assets/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
+    "/mind-dump-angular/assets/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
+    "/mind-dump-angular/assets/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
+    "/mind-dump-angular/assets/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "/mind-dump-angular/chunk-JOM5SIFA.js": "76ffa87746cd8af4a123b27ce36b1e06282f1095",
+    "/mind-dump-angular/chunk-MLZM3EBU.js": "f840c1caf99f85fc8cec521cbab2e97affe55d4f",
+    "/mind-dump-angular/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/mind-dump-angular/index.html": "bddfe0c7f0f273728610e087282ef9103577b95a",
+    "/mind-dump-angular/main-IXXKXYII.js": "39a56895b61030bab8dc5859a0e1bd62163fd0de",
+    "/mind-dump-angular/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
+    "/mind-dump-angular/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
+    "/mind-dump-angular/styles-KVWL7JUM.css": "153be74bbaf90e70bafe4289fa82368accb7cbdf"
   },
   "navigationUrls": [
     {
