@@ -4,7 +4,7 @@ import { SyncService } from './sync.service';
 import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
 import { DatabaseService } from './database.service';
-import { ref, set } from 'firebase/database';
+import { ref, set, onValue } from 'firebase/database';
 import { Change } from '../models/sync.model';
 
 describe('SyncService', () => {
@@ -212,8 +212,317 @@ describe('SyncService', () => {
     expect(service.startListening).toBeDefined();
     expect(service.stopListening).toBeDefined();
     
-    // Should not throw
-    expect(() => service.startListening()).not.toThrow();
-    expect(() => service.stopListening()).not.toThrow();
+    // Should not throw when called with valid arguments
+    expect(() => service.startListening('workspace-1')).not.toThrow();
+    expect(() => service.stopListening('workspace-1')).not.toThrow();
+  });
+
+  describe('Conflict Detection (Task 8)', () => {
+    it('should detect version conflict when local and remote versions differ', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Local Title',
+        description: 'Local description',
+        keywords: ['local'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Remote Title',
+        description: 'Remote description',
+        keywords: ['remote'],
+        status: 'completed' as const,
+        priority: 'high' as const,
+        color: '#ffffff',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-03'),
+        version: 3,
+        workspaceId: 'workspace-1'
+      };
+
+      const conflict = (service as any).detectConflict(localIdea, remoteIdea);
+      expect(conflict).toBe(true);
+    });
+
+    it('should not detect conflict when versions match', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Title',
+        description: 'description',
+        keywords: ['keyword'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = { ...localIdea };
+
+      const conflict = (service as any).detectConflict(localIdea, remoteIdea);
+      expect(conflict).toBe(false);
+    });
+  });
+
+  describe('Conflict Resolution (Task 9)', () => {
+    it('should auto-merge keywords (union of both sets)', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Title',
+        description: 'description',
+        keywords: ['local', 'shared'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Title',
+        description: 'description',
+        keywords: ['remote', 'shared'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-03'),
+        version: 3,
+        workspaceId: 'workspace-1'
+      };
+
+      const merged = (service as any).mergeKeywords(localIdea.keywords, remoteIdea.keywords);
+      expect(merged.sort()).toEqual(['local', 'remote', 'shared']);
+    });
+
+    it('should use newest status on conflict (compare timestamps)', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Title',
+        description: 'description',
+        keywords: ['keyword'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Title',
+        description: 'description',
+        keywords: ['keyword'],
+        status: 'completed' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-03'),
+        version: 3,
+        workspaceId: 'workspace-1'
+      };
+
+      const merged = (service as any).mergeMetadata(localIdea, remoteIdea, 'status');
+      expect(merged).toBe('completed'); // Remote is newer
+    });
+
+    it('should flag title conflict for manual resolution (return true when different)', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Local Title',
+        description: 'Same description',
+        keywords: ['keyword'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Remote Title',
+        description: 'Same description',
+        keywords: ['keyword'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-03'),
+        version: 3,
+        workspaceId: 'workspace-1'
+      };
+
+      const needsManual = (service as any).needsManualResolution('title', localIdea.title, remoteIdea.title);
+      expect(needsManual).toBe(true);
+    });
+
+    it('should not flag conflict when title is same', () => {
+      const needsManual = (service as any).needsManualResolution('title', 'Same Title', 'Same Title');
+      expect(needsManual).toBe(false);
+    });
+
+    it('should resolve conflicts automatically when possible', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Same Title',
+        description: 'Same description',
+        keywords: ['local', 'shared'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Same Title',
+        description: 'Same description',
+        keywords: ['remote', 'shared'],
+        status: 'completed' as const,
+        priority: 'high' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-03'),
+        version: 3,
+        workspaceId: 'workspace-1'
+      };
+
+      const resolved = (service as any).resolveConflict(localIdea, remoteIdea);
+      
+      expect(resolved).toBeTruthy();
+      expect(resolved.keywords.sort()).toEqual(['local', 'remote', 'shared']);
+      expect(resolved.status).toBe('completed'); // Remote is newer
+      expect(resolved.priority).toBe('high'); // Remote is newer
+    });
+
+    it('should return null when manual resolution is needed', () => {
+      const localIdea = {
+        id: 'idea-1',
+        title: 'Local Title',
+        description: 'Local description',
+        keywords: ['keyword'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-02'),
+        version: 2,
+        workspaceId: 'workspace-1'
+      };
+
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Remote Title',
+        description: 'Remote description',
+        keywords: ['keyword'],
+        status: 'active' as const,
+        priority: 'medium' as const,
+        color: '#000000',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-03'),
+        version: 3,
+        workspaceId: 'workspace-1'
+      };
+
+      const resolved = (service as any).resolveConflict(localIdea, remoteIdea);
+      expect(resolved).toBeNull();
+    });
+  });
+
+  describe('Inbound Listeners (Task 8)', () => {
+    it('should start listening to Firebase changes', () => {
+      const workspaceId = 'workspace-1';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListening(workspaceId);
+      
+      // Check that listeners Map has an entry for this workspace
+      expect((service as any).listeners.has(workspaceId)).toBe(true);
+    });
+
+    it('should stop listening when requested', () => {
+      const workspaceId = 'workspace-1';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListening(workspaceId);
+      expect((service as any).listeners.has(workspaceId)).toBe(true);
+      
+      service.stopListening(workspaceId);
+      
+      // Check that listeners Map is cleared
+      expect((service as any).listeners.has(workspaceId)).toBe(false);
+    });
+
+    it('should not start listening when not authenticated', () => {
+      const workspaceId = 'workspace-1';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(false);
+      
+      service.startListening(workspaceId);
+      
+      // Should not have any listeners when not authenticated
+      expect((service as any).listeners.has(workspaceId)).toBe(false);
+    });
+
+    it('should handle remote idea creation', fakeAsync(() => {
+      const workspaceId = 'workspace-1';
+      const remoteIdea = {
+        id: 'idea-1',
+        title: 'Remote Idea',
+        version: 1,
+        updatedAt: new Date().toISOString()
+      };
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      const databaseService = TestBed.inject(DatabaseService);
+      spyOn(databaseService, 'getIdea').and.returnValue(Promise.resolve(undefined));
+      spyOn(databaseService, 'saveIdea').and.returnValue(Promise.resolve());
+      
+      // Call handleRemoteIdea directly
+      (service as any).handleRemoteIdea(remoteIdea, workspaceId);
+      
+      tick();
+      
+      // Verify that the new idea was saved to the database
+      expect(databaseService.saveIdea).toHaveBeenCalledWith(remoteIdea);
+    }));
+
+    it('should cleanup all listeners on stopListening without workspaceId', () => {
+      const workspaceId1 = 'workspace-1';
+      const workspaceId2 = 'workspace-2';
+      
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      
+      service.startListening(workspaceId1);
+      service.startListening(workspaceId2);
+      
+      expect((service as any).listeners.size).toBe(2);
+      
+      service.stopListening();
+      
+      expect((service as any).listeners.size).toBe(0);
+    });
   });
 });
