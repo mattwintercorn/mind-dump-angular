@@ -11,25 +11,25 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 24px;
-  padding: 16px;
   height: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
   overflow: hidden;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 16px;
   }
 }
 
 .filter-sidebar {
   overflow-y: auto;
   overflow-x: hidden;
+  padding-left: 16px;
   
   @media (max-width: 1024px) {
     order: -1;
     max-height: 400px;
+    padding-left: 0;
   }
 }
 
@@ -38,6 +38,11 @@
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
+  padding-right: 16px;
+  
+  @media (max-width: 1024px) {
+    padding-right: 0;
+  }
 }
 
 .active-filters-banner {

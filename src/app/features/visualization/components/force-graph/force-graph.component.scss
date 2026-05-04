@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 24px;
-  padding: 16px;
   height: 100%;
   background: #fafafa;
   overflow: hidden;
@@ -10,6 +9,7 @@
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 16px;
     overflow-y: auto;
   }
 }
@@ -17,10 +17,12 @@
 .filter-sidebar {
   overflow-y: auto;
   overflow-x: hidden;
+  padding-left: 16px;
   
   @media (max-width: 1024px) {
     order: -1;
     max-height: 400px;
+    padding-left: 0;
   }
 }
 
@@ -32,9 +34,11 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  margin-right: 16px;
 
   @media (max-width: 1024px) {
     height: 600px;
+    margin-right: 0;
   }
 }
 
