@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WorkspaceSettingsDialogComponent } from './workspace-settings-dialog.component';
 import { WorkspaceService } from '../../../../core/services/workspace.service';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,12 +12,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { WorkspaceSettingsDialogData } from './workspace-settings-dialog.component';
+import { of } from 'rxjs';
 
 describe('WorkspaceSettingsDialogComponent', () => {
   let component: WorkspaceSettingsDialogComponent;
   let fixture: ComponentFixture<WorkspaceSettingsDialogComponent>;
   let mockWorkspaceService: jasmine.SpyObj<WorkspaceService>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<WorkspaceSettingsDialogComponent>>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   const mockDialogDataOwner: WorkspaceSettingsDialogData = {
     workspaceId: 'ws1',
@@ -45,9 +47,19 @@ describe('WorkspaceSettingsDialogComponent', () => {
     mockWorkspaceService = jasmine.createSpyObj('WorkspaceService', [
       'renameWorkspace',
       'deleteWorkspace',
-      'leaveWorkspace'
+      'leaveWorkspace',
+      'getWorkspaceIdeaCount'
     ]);
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    
+    // Mock dialog to return a confirmation result
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of(false)  // Default to cancelled
+    } as any);
+    
+    // Mock idea count
+    mockWorkspaceService.getWorkspaceIdeaCount.and.returnValue(Promise.resolve(5));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -66,6 +78,7 @@ describe('WorkspaceSettingsDialogComponent', () => {
       providers: [
         { provide: WorkspaceService, useValue: mockWorkspaceService },
         { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MatDialog, useValue: mockDialog },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogDataOwner }
       ]
     }).compileComponents();

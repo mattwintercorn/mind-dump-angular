@@ -115,7 +115,10 @@ describe('ShareWorkspaceDialogComponent', () => {
     expect(input?.placeholder).toContain('Search');
   });
 
-  it('should display current members list', () => {
+  it('should display current members list', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    
     const memberItems = fixture.nativeElement.querySelectorAll('.member-item');
     expect(memberItems.length).toBe(2);
   });
@@ -140,7 +143,10 @@ describe('ShareWorkspaceDialogComponent', () => {
     expect(removeButton).toBeFalsy();
   });
 
-  it('should show remove button for collaborators', () => {
+  it('should show remove button for collaborators', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    
     const memberItems = fixture.nativeElement.querySelectorAll('.member-item');
     const collaboratorItem = Array.from(memberItems).find((item: any) =>
       item.querySelector('.editor-badge')
@@ -236,7 +242,10 @@ describe('ShareWorkspaceDialogComponent', () => {
     expect(component.errorMessage()).toBe('User not found');
   });
 
-  it('should display member names and email addresses', () => {
+  it('should display member names and email addresses', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    
     const memberNames = fixture.nativeElement.querySelectorAll('.member-name');
     const memberEmails = fixture.nativeElement.querySelectorAll('.member-email');
     
