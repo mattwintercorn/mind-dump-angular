@@ -119,6 +119,9 @@ describe('ShareWorkspaceDialogComponent', () => {
   });
 
   it('should display current members list', async () => {
+    // Ensure spies have completed
+    await Promise.resolve();
+    fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
     
@@ -151,6 +154,9 @@ describe('ShareWorkspaceDialogComponent', () => {
   });
 
   it('should show remove button for collaborators', async () => {
+    // Ensure spies have completed
+    await Promise.resolve();
+    fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
     
@@ -250,6 +256,9 @@ describe('ShareWorkspaceDialogComponent', () => {
   });
 
   it('should display member names and email addresses', async () => {
+    // Ensure spies have completed
+    await Promise.resolve();
+    fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
     

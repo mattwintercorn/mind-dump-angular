@@ -172,39 +172,40 @@ describe('WorkspaceSettingsDialogComponent', () => {
     });
 
     it('should show confirmation dialog before deleting', async () => {
-      // Mock dialog to return false (cancelled)
-      mockDialog.open.and.returnValue({
+      // Spy on the component's dialog.open method
+      const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({
         afterClosed: () => of(false)
       } as any);
       
       await component.onDelete();
 
-      expect(mockDialog.open).toHaveBeenCalled();
+      expect(dialogSpy).toHaveBeenCalled();
       expect(mockWorkspaceService.deleteWorkspace).not.toHaveBeenCalled();
     });
 
     it('should call deleteWorkspace when confirmed', async () => {
-      // Mock dialog to return true (confirmed)
-      mockDialog.open.and.returnValue({
+      // Spy on the component's dialog.open method
+      const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({
         afterClosed: () => of(true)
       } as any);
       mockWorkspaceService.deleteWorkspace.and.returnValue(Promise.resolve());
       
       await component.onDelete();
 
-      expect(mockDialog.open).toHaveBeenCalled();
+      expect(dialogSpy).toHaveBeenCalled();
       expect(mockWorkspaceService.deleteWorkspace).toHaveBeenCalledWith('ws1');
     });
 
     it('should close dialog after successful deletion', async () => {
-      // Mock dialog to return true (confirmed)
-      mockDialog.open.and.returnValue({
+      // Spy on the component's dialog.open method  
+      const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({
         afterClosed: () => of(true)
       } as any);
       mockWorkspaceService.deleteWorkspace.and.returnValue(Promise.resolve());
       
       await component.onDelete();
 
+      expect(dialogSpy).toHaveBeenCalled();
       expect(mockDialogRef.close).toHaveBeenCalledWith({ deleted: true });
     });
   });
