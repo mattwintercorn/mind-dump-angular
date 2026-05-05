@@ -54,21 +54,20 @@ $defi-accent: (
   )
 );
 
-// Create dark theme
-$defi-dark-theme: mat.define-theme((
+// Create M2 custom palettes
+$defi-primary-palette: mat.define-palette($defi-primary, 500, 400, 600);
+$defi-accent-palette: mat.define-palette($defi-accent, 500, 400, 600);
+
+// Create dark theme using M2 API
+$defi-dark-theme: mat.define-dark-theme((
   color: (
-    theme-type: dark,
-    primary: mat.define-palette($defi-primary),
-    tertiary: mat.define-palette($defi-accent),
+    primary: $defi-primary-palette,
+    accent: $defi-accent-palette,
   ),
-  typography: (
-    plain-family: vars.$font-family,
-    brand-family: vars.$font-family,
-    bold-weight: vars.$font-semibold,
+  typography: mat.define-typography-config(
+    $font-family: vars.$font-family,
   ),
-  density: (
-    scale: 0,
-  )
+  density: 0,
 ));
 
 // Apply theme to all Material components
