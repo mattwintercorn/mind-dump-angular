@@ -514,7 +514,11 @@ describe('SyncService', () => {
       await (service as any).handleRemoteIdea(remoteIdea, workspaceId);
       
       // Verify that the new idea was saved to the database
-      expect(databaseService.ideas.put).toHaveBeenCalledWith(remoteIdea);
+      // Note: normalizeIdea() adds attachments array if missing
+      expect(databaseService.ideas.put).toHaveBeenCalledWith({
+        ...remoteIdea,
+        attachments: []
+      });
     });
 
     it('should cleanup all listeners on stopListening without workspaceId', () => {

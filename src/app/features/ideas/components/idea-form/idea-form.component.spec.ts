@@ -52,6 +52,8 @@ describe('IdeaFormComponent', () => {
     expect(component.ideaForm.value).toEqual({
       title: '',
       description: '',
+      component: '',
+      project: '',
       status: 'new',
       priority: 'medium'
     });
@@ -103,6 +105,8 @@ describe('IdeaFormComponent', () => {
     expect(component.ideaForm.value).toEqual({
       title: 'Test Idea',
       description: 'Test Description',
+      component: '',
+      project: '',
       status: 'in-progress',
       priority: 'high'
     });
@@ -196,6 +200,8 @@ describe('IdeaFormComponent', () => {
     component.ideaForm.patchValue({
       title: 'New Idea Title',
       description: 'Description',
+      component: '',
+      project: '',
       status: 'new',
       priority: 'high'
     });
@@ -206,6 +212,8 @@ describe('IdeaFormComponent', () => {
     expect(dialogRef.close).toHaveBeenCalledWith({
       title: 'New Idea Title',
       description: 'Description',
+      component: '',
+      project: '',
       keywords: ['keyword1'],
       status: 'new',
       priority: 'high'

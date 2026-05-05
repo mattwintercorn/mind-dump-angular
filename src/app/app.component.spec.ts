@@ -48,11 +48,11 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     const mockDialogRef = { afterClosed: () => of(null) };
-    mockDialog.open.and.returnValue(mockDialogRef as any);
+    spyOn(app['dialog'], 'open').and.returnValue(mockDialogRef as any);
 
     app.onNewIdea();
 
-    expect(mockDialog.open).toHaveBeenCalled();
+    expect(app['dialog'].open).toHaveBeenCalled();
   });
 
   it('should call addIdea when dialog returns data', (done) => {
@@ -67,7 +67,7 @@ describe('AppComponent', () => {
       color: '#3B82F6'
     };
     const mockDialogRef = { afterClosed: () => of(mockIdeaData) };
-    mockDialog.open.and.returnValue(mockDialogRef as any);
+    spyOn(app['dialog'], 'open').and.returnValue(mockDialogRef as any);
 
     app.onNewIdea();
 
@@ -86,6 +86,6 @@ describe('AppComponent', () => {
     app.onViewModeChange('grid');
     
     expect(app.viewMode).toBe('grid');
-    expect(router.navigate).toHaveBeenCalledWith(['/graph']);
+    expect(router.navigate).toHaveBeenCalledWith(['/ideas']);
   });
 });
