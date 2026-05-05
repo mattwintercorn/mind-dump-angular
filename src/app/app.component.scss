@@ -1,15 +1,13 @@
-@import '../styles/variables-defi';
-
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden;
+  overflow: hidden; // Prevent container scroll
 }
 
 .app-content {
   flex: 1;
-  overflow: hidden;
-  background-color: $bg-primary;
+  overflow: hidden; // Let child components handle their own scrolling
+  background-color: #f5f5f5;
   position: relative;
 }

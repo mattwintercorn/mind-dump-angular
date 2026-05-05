@@ -1,34 +1,18 @@
 // src/app/shared/components/layout/toolbar/toolbar.component.scss
-@import '../../../../../styles/variables-defi';
-
 .toolbar {
   display: flex;
   align-items: center;
-  padding: 0 $space-lg;
-  gap: $space-md;
-  background: $bg-card !important;
-  border-bottom: 1px solid $border-subtle;
-  box-shadow: $shadow-md;
-  height: 64px;
-  color: $text-primary !important;
-}
-
-.app-logo {
-  height: 40px;
-  width: 40px;
-  object-fit: contain;
-  margin-right: $space-sm;
+  padding: 0 16px;
+  gap: 16px;
 }
 
 .toolbar-title {
-  font-size: $font-xl;
-  font-weight: $font-semibold;
-  color: $text-primary;
-  letter-spacing: -0.02em;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .workspace-switcher {
-  margin-right: $space-md;
+  margin-right: 16px;
 }
 
 .spacer {
@@ -36,85 +20,43 @@
 }
 
 .view-toggle {
-  margin-left: $space-md;
-  background: $bg-secondary;
-  border-radius: $radius-md;
-  
-  ::ng-deep {
-    .mat-button-toggle {
-      border: none;
-      background: transparent;
-      color: $text-secondary;
-      
-      &.mat-button-toggle-checked {
-        background: $primary;
-        color: $text-primary;
-        
-        .mat-icon {
-          color: $text-primary;
-        }
-      }
-      
-      &:hover:not(.mat-button-toggle-checked) {
-        background: $bg-card-hover;
-      }
-    }
-    
-    .mat-button-toggle-button {
-      height: 40px;
-      padding: 0 $space-md;
-    }
-  }
+  margin-left: 16px;
 }
 
 .share-button {
-  margin-left: $space-sm;
-  color: $text-secondary;
-  
-  &:hover {
-    color: $primary;
-    background: rgba($primary, 0.1);
-  }
+  margin-left: 8px;
 }
 
+// User avatar button
 .user-avatar-button {
-  margin-left: $space-sm;
+  margin-left: 8px;
   
   .user-avatar {
     width: 32px;
     height: 32px;
-    border-radius: $radius-full;
+    border-radius: 50%;
     object-fit: cover;
-    border: 2px solid $border-subtle;
-  }
-  
-  mat-icon {
-    color: $text-secondary;
   }
 }
 
-// User menu styling
-::ng-deep {
-  .user-menu-header {
-    cursor: default;
-    background: $bg-secondary;
+// User menu
+.user-menu-header {
+  cursor: default;
+  
+  .user-info {
+    padding: 8px 0;
     
-    .user-info {
-      padding: $space-sm 0;
-      
-      .user-name {
-        font-weight: $font-medium;
-        font-size: $font-sm;
-        line-height: 1.4;
-        color: $text-primary;
-      }
-      
-      .user-email {
-        font-size: $font-xs;
-        line-height: 1.4;
-        color: $text-secondary;
-        margin-top: $space-xs;
-      }
+    .user-name {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    
+    .user-email {
+      font-size: 12px;
+      line-height: 16px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-top: 2px;
     }
   }
 }

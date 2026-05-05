@@ -1,84 +1,48 @@
-// src/styles.scss
-@import 'styles/variables-defi';
-@import 'styles/theme-defi-dark';
-@import 'styles/components-defi';
+@use '@angular/material' as mat;
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+// Include core Material styles
+@include mat.core();
 
+// Define custom theme
+$mind-dump-primary: mat.define-palette(mat.$indigo-palette);
+$mind-dump-accent: mat.define-palette(mat.$purple-palette, A200, A100, A400);
+$mind-dump-warn: mat.define-palette(mat.$red-palette);
+
+$mind-dump-theme: mat.define-light-theme((
+  color: (
+    primary: $mind-dump-primary,
+    accent: $mind-dump-accent,
+    warn: $mind-dump-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Include theme styles for all components
+@include mat.all-component-themes($mind-dump-theme);
+
+// Global styles
 html, body {
   height: 100%;
   margin: 0;
-  overflow: hidden;
-  background: $bg-primary;
-  color: $text-primary;
-  font-family: $font-family;
-  font-size: $font-base;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; // Prevent body scroll
 }
 
-app-root {
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+#root, app-root {
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-// Fix for Material CDK overlays with overflow: hidden on body
-// The issue is that overflow: hidden creates a new stacking context
-// We need to ensure the overlay container can calculate positions correctly
-::ng-deep {
-  .cdk-overlay-container {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    height: 100% !important;
-    width: 100% !important;
-    z-index: 1000;
-    pointer-events: none;
-  }
-  
-  .cdk-overlay-pane {
-    pointer-events: auto;
-  }
-  
-  .cdk-overlay-backdrop {
-    pointer-events: auto;
-  }
+.full-width {
+  width: 100%;
 }
 
-// Scrollbar styling
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: $bg-secondary;
-}
-
-::-webkit-scrollbar-thumb {
-  background: $border-default;
-  border-radius: $radius-sm;
-  
-  &:hover {
-    background: $text-tertiary;
-  }
-}
-
-// Focus styles
-:focus-visible {
-  outline: 2px solid $primary;
-  outline-offset: 2px;
-}
-
-// Selection styling
-::selection {
-  background: rgba($primary, 0.3);
-  color: $text-primary;
+.spacer {
+  flex: 1 1 auto;
 }
