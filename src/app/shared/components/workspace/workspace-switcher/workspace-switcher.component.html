@@ -13,16 +13,26 @@
         <span>My Workspaces</span>
       </div>
       @for (workspace of workspaceService.ownedWorkspaces(); track workspace.id) {
-        <button 
-          mat-menu-item 
-          class="workspace-item"
-          [class.active]="isActive(workspace.id)"
-          (click)="onWorkspaceClick(workspace.id)">
-          <span class="workspace-name">{{ workspace.name }}</span>
-          @if (isActive(workspace.id)) {
-            <mat-icon class="check-icon">check</mat-icon>
-          }
-        </button>
+        <div class="workspace-item-container">
+          <button 
+            mat-menu-item 
+            class="workspace-item"
+            [class.active]="isActive(workspace.id)"
+            (click)="onWorkspaceClick(workspace.id)">
+            <span class="workspace-name">{{ workspace.name }}</span>
+            @if (isActive(workspace.id)) {
+              <mat-icon class="check-icon">check</mat-icon>
+            }
+          </button>
+          <button 
+            mat-icon-button 
+            class="workspace-settings-button"
+            (click)="onWorkspaceSettings($event, workspace.id, workspace.name, workspace.isDefault)"
+            matTooltip="Workspace settings"
+            matTooltipPosition="left">
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
       }
     </div>
   }
@@ -36,16 +46,26 @@
         <span>Shared With Me</span>
       </div>
       @for (workspace of workspaceService.sharedWorkspaces(); track workspace.id) {
-        <button 
-          mat-menu-item 
-          class="workspace-item"
-          [class.active]="isActive(workspace.id)"
-          (click)="onWorkspaceClick(workspace.id)">
-          <span class="workspace-name">{{ workspace.name }}</span>
-          @if (isActive(workspace.id)) {
-            <mat-icon class="check-icon">check</mat-icon>
-          }
-        </button>
+        <div class="workspace-item-container">
+          <button 
+            mat-menu-item 
+            class="workspace-item"
+            [class.active]="isActive(workspace.id)"
+            (click)="onWorkspaceClick(workspace.id)">
+            <span class="workspace-name">{{ workspace.name }}</span>
+            @if (isActive(workspace.id)) {
+              <mat-icon class="check-icon">check</mat-icon>
+            }
+          </button>
+          <button 
+            mat-icon-button 
+            class="workspace-settings-button"
+            (click)="onWorkspaceSettings($event, workspace.id, workspace.name, workspace.isDefault)"
+            matTooltip="Workspace settings"
+            matTooltipPosition="left">
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
       }
     </div>
   }

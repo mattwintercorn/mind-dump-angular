@@ -1,36 +1,39 @@
 <h2 mat-dialog-title>Share "{{ data.workspaceName }}"</h2>
 
 <mat-dialog-content>
-  <!-- Email Input Section -->
+  <!-- User Autocomplete Section -->
   <div class="invite-section">
-    <mat-form-field class="email-input" appearance="outline">
-      <mat-label>Email address</mat-label>
+    <mat-form-field class="user-input" appearance="outline">
+      <mat-label>Select user</mat-label>
       <input
         matInput
-        type="email"
-        placeholder="colleague@example.com"
-        [formControl]="emailControl"
-        (keyup.enter)="onAddCollaborator()"
+        type="text"
+        placeholder="Search by name or email"
+        [formControl]="userControl"
+        [matAutocomplete]="auto"
       />
-      <mat-icon matPrefix>email</mat-icon>
-      @if (emailControl.hasError('email') && emailControl.touched) {
-        <mat-error>Please enter a valid email</mat-error>
-      }
+      <mat-icon matPrefix>person_add</mat-icon>
+      <mat-autocomplete 
+        #auto="matAutocomplete"
+        [displayWith]="displayUserFn.bind(this)"
+        (optionSelected)="onAddCollaborator()">
+        @for (user of filteredUsers | async; track user.uid) {
+          <mat-option [value]="user">
+            <div class="user-option">
+              @if (user.photoURL) {
+                <img [src]="user.photoURL" [alt]="user.displayName" class="user-avatar">
+              } @else {
+                <mat-icon class="user-avatar-icon">account_circle</mat-icon>
+              }
+              <div class="user-details">
+                <div class="user-name">{{ user.displayName }}</div>
+                <div class="user-email">{{ user.email }}</div>
+              </div>
+            </div>
+          </mat-option>
+        }
+      </mat-autocomplete>
     </mat-form-field>
-
-    <button
-      mat-raised-button
-      color="primary"
-      class="add-button"
-      [disabled]="emailControl.invalid || isLoading()"
-      (click)="onAddCollaborator()"
-    >
-      @if (isLoading()) {
-        <mat-spinner diameter="20"></mat-spinner>
-      } @else {
-        <span>Add</span>
-      }
-    </button>
   </div>
 
   <!-- Error Message -->

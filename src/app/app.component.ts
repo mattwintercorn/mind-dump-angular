@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, effect } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -6,11 +6,14 @@ import { SwUpdate } from '@angular/service-worker';
 import { ToolbarComponent, ViewMode } from './shared/components/layout/toolbar/toolbar.component';
 import { IdeaFormComponent } from './features/ideas/components/idea-form/idea-form.component';
 import { IdeaService } from './core/services/idea.service';
+import { AuthService } from './core/services/auth.service';
+import { WorkspaceService } from './core/services/workspace.service';
+import { LoadingOverlayComponent } from './shared/components/loading-overlay/loading-overlay.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ToolbarComponent],
+  imports: [RouterOutlet, ToolbarComponent, LoadingOverlayComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -20,8 +23,19 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private swUpdate = inject(SwUpdate);
   private snackBar = inject(MatSnackBar);
+  authService = inject(AuthService);
+  workspaceService = inject(WorkspaceService);
   
   viewMode: ViewMode = 'grid';
+
+  constructor() {
+    // Load workspaces when user authenticates
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        this.workspaceService.loadWorkspaces();
+      }
+    });
+  }
 
   ngOnInit(): void {
     if (this.swUpdate.isEnabled) {

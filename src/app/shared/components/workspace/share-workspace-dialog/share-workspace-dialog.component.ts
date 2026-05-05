@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -9,14 +9,27 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { WorkspaceService } from '../../../../core/services/workspace.service';
 import { WorkspaceMembers } from '../../../../core/models/workspace.model';
+import { FirebaseService } from '../../../../core/services/firebase.service';
+import { ref, get } from 'firebase/database';
+import { map, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export interface ShareWorkspaceDialogData {
   workspaceId: string;
   workspaceName: string;
   ownerId: string;
   members: WorkspaceMembers;
+}
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL?: string;
+  githubUsername?: string;
 }
 
 @Component({
@@ -32,23 +45,92 @@ export interface ShareWorkspaceDialogData {
     MatIconModule,
     MatListModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatAutocompleteModule
   ],
   templateUrl: './share-workspace-dialog.component.html',
   styleUrls: ['./share-workspace-dialog.component.scss']
 })
-export class ShareWorkspaceDialogComponent {
+export class ShareWorkspaceDialogComponent implements OnInit {
   dialogRef = inject(MatDialogRef<ShareWorkspaceDialogComponent>);
   data: ShareWorkspaceDialogData = inject(MAT_DIALOG_DATA);
   workspaceService = inject(WorkspaceService);
+  firebaseService = inject(FirebaseService);
 
-  emailControl = new FormControl('', [Validators.required, Validators.email]);
+  userControl = new FormControl<string | UserProfile>('', [Validators.required]);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   memberEmails = signal<Record<string, string>>({});
+  
+  allUsers = signal<UserProfile[]>([]);
+  filteredUsers!: Observable<UserProfile[]>;
+
+  async ngOnInit(): Promise<void> {
+    await this.loadAllUsers();
+    
+    // Setup autocomplete filtering
+    this.filteredUsers = this.userControl.valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        const searchText = typeof value === 'string' ? value : value?.displayName || '';
+        return this._filterUsers(searchText);
+      })
+    );
+  }
+
+  async loadAllUsers(): Promise<void> {
+    try {
+      const usersRef = ref(this.firebaseService.database, 'users');
+      const snapshot = await get(usersRef);
+      
+      if (snapshot.exists()) {
+        const users: UserProfile[] = [];
+        const usersData = snapshot.val();
+        const currentUserId = this.data.ownerId; // Current user (workspace owner)
+        
+        for (const uid in usersData) {
+          const profile = usersData[uid].profile;
+          if (profile && profile.email) {
+            // Exclude users already in workspace AND exclude current user
+            if (!this.data.members[uid] && uid !== currentUserId) {
+              users.push({
+                uid,
+                email: profile.email,
+                displayName: profile.displayName || profile.email,
+                photoURL: profile.photoURL,
+                githubUsername: profile.githubUsername
+              });
+            }
+          }
+        }
+        
+        this.allUsers.set(users);
+      }
+    } catch (error) {
+      console.error('Failed to load users:', error);
+      this.errorMessage.set('Failed to load users');
+    }
+  }
+
+  private _filterUsers(searchText: string): UserProfile[] {
+    const filterValue = searchText.toLowerCase();
+    
+    return this.allUsers().filter(user => 
+      user.displayName.toLowerCase().includes(filterValue) ||
+      user.email.toLowerCase().includes(filterValue) ||
+      (user.githubUsername && user.githubUsername.toLowerCase().includes(filterValue))
+    );
+  }
+
+  displayUserFn(user: UserProfile | string): string {
+    return typeof user === 'string' ? user : user?.displayName || '';
+  }
 
   async onAddCollaborator(): Promise<void> {
-    if (this.emailControl.invalid || !this.emailControl.value) {
+    const selectedUser = this.userControl.value;
+    
+    if (!selectedUser || typeof selectedUser === 'string') {
+      this.errorMessage.set('Please select a user from the list');
       return;
     }
 
@@ -56,12 +138,15 @@ export class ShareWorkspaceDialogComponent {
     this.errorMessage.set(null);
 
     try {
-      await this.workspaceService.shareWorkspace(
+      await this.workspaceService.shareWorkspaceWithUser(
         this.data.workspaceId,
-        this.emailControl.value
+        selectedUser.uid
       );
-      this.emailControl.setValue('');
-      this.emailControl.markAsUntouched();
+      this.userControl.setValue('');
+      this.userControl.markAsUntouched();
+      
+      // Remove added user from available list
+      this.allUsers.set(this.allUsers().filter(u => u.uid !== selectedUser.uid));
       
       // Reload to show new member
       this.dialogRef.close({ refresh: true });

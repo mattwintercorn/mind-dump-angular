@@ -1,9 +1,15 @@
 {
   "rules": {
     "users": {
+      ".read": "auth != null",
+      
       "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+        ".write": "$uid === auth.uid",
+        
+        "workspaces": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid"
+        }
       }
     },
     
@@ -11,13 +17,39 @@
       "$workspaceId": {
         ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
         
-        ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid",
+        "name": {
+          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
+        },
+        
+        "ownerId": {
+          ".write": "auth != null && (newData.val() === auth.uid || root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid)"
+        },
+        
+        "isDefault": {
+          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
+        },
+        
+        "members": {
+          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid",
+          
+          "$memberId": {
+            ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
+          }
+        },
+        
+        "createdAt": {
+          ".write": "auth != null && (newData.parent().child('ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid)"
+        },
+        
+        "updatedAt": {
+          ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
+        },
         
         "ideas": {
           "$ideaId": {
             ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
             
-            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).val() === 'editor')"
+            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
           }
         },
         
@@ -25,7 +57,7 @@
           "$connectionId": {
             ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
             
-            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).val() === 'editor')"
+            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
           }
         },
         
@@ -33,7 +65,7 @@
           "$componentId": {
             ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
             
-            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).val() === 'editor')"
+            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
           }
         },
         
@@ -41,7 +73,7 @@
           "$projectId": {
             ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
             
-            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).val() === 'editor')"
+            ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
           }
         }
       }

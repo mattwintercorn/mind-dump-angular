@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { WorkspaceService } from '../../../../core/services/workspace.service';
 import { WorkspaceMembers } from '../../../../core/models/workspace.model';
+import { DeleteWorkspaceConfirmationDialogComponent } from '../delete-workspace-confirmation-dialog/delete-workspace-confirmation-dialog.component';
 
 export interface WorkspaceSettingsDialogData {
   workspaceId: string;
@@ -42,6 +43,7 @@ export class WorkspaceSettingsDialogComponent {
   dialogRef = inject(MatDialogRef<WorkspaceSettingsDialogComponent>);
   data: WorkspaceSettingsDialogData = inject(MAT_DIALOG_DATA);
   workspaceService = inject(WorkspaceService);
+  dialog = inject(MatDialog);
 
   nameControl = new FormControl(this.data.workspaceName, [Validators.required]);
   memberEmails = signal<Record<string, string>>({});
@@ -67,9 +69,20 @@ export class WorkspaceSettingsDialogComponent {
   }
 
   async onDelete(): Promise<void> {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${this.data.workspaceName}"? This action cannot be undone.`
-    );
+    // Get idea count for confirmation dialog
+    const ideaCount = await this.workspaceService.getWorkspaceIdeaCount(this.data.workspaceId);
+
+    // Open strong confirmation dialog
+    const confirmDialogRef = this.dialog.open(DeleteWorkspaceConfirmationDialogComponent, {
+      width: '600px',
+      data: {
+        workspaceName: this.data.workspaceName,
+        ideaCount: ideaCount
+      },
+      disableClose: true
+    });
+
+    const confirmed = await confirmDialogRef.afterClosed().toPromise();
 
     if (!confirmed) {
       return;

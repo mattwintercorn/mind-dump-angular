@@ -8,3 +8,9 @@
     <router-outlet />
   </main>
 </div>
+
+<!-- Loading overlay for workspaces -->
+<app-loading-overlay 
+  [isVisible]="authService.isAuthenticated() && workspaceService.isLoading()"
+  message="Loading workspaces...">
+</app-loading-overlay>

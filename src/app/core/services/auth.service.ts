@@ -151,32 +151,28 @@ export class AuthService {
   }
 
   /**
-   * Create default "Personal" workspace
+   * Create default "My Workspace" workspace
    */
   async createDefaultWorkspace(userId: string): Promise<string> {
     const workspaceId = uuidv4();
+    const now = new Date();
     
-    // Create workspace in Firebase
+    // Create workspace in Firebase (match WorkspaceService structure)
     const workspaceRef = ref(
       this.firebaseService.database, 
-      `workspaces/${workspaceId}/metadata`
+      `workspaces/${workspaceId}`
     );
     
     await set(workspaceRef, {
-      name: 'Personal',
+      name: 'My Workspace',
       ownerId: userId,
       isDefault: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      members: {
+        [userId]: 'owner'
+      },
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString()
     });
-    
-    // Add user as owner
-    const memberRef = ref(
-      this.firebaseService.database,
-      `workspaces/${workspaceId}/members/${userId}`
-    );
-    
-    await set(memberRef, 'owner');
     
     // Add workspace to user's list
     const userWorkspaceRef = ref(
@@ -189,14 +185,14 @@ export class AuthService {
     // Create workspace in local Dexie
     await this.db.workspaces.add({
       id: workspaceId,
-      name: 'Personal',
+      name: 'My Workspace',
       ownerId: userId,
       isDefault: true,
       role: 'owner',
       syncStatus: 'synced',
-      lastSyncedAt: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date()
+      lastSyncedAt: now,
+      createdAt: now,
+      updatedAt: now
     });
     
     return workspaceId;

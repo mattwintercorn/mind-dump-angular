@@ -14,12 +14,17 @@ export class WorkspaceService {
   private firebaseService = inject(FirebaseService);
   private db = inject(DatabaseService);
 
+  // LocalStorage key for active workspace
+  private readonly ACTIVE_WORKSPACE_KEY = 'mind-dump-active-workspace';
+
   // Signals
   private workspacesSignal = signal<Workspace[]>([]);
   private activeWorkspaceSignal = signal<Workspace | null>(null);
+  private isLoadingSignal = signal<boolean>(false);
   
   readonly workspaces = this.workspacesSignal.asReadonly();
   readonly activeWorkspace = this.activeWorkspaceSignal.asReadonly();
+  readonly isLoading = this.isLoadingSignal.asReadonly();
 
   // Computed - workspaces user owns
   readonly ownedWorkspaces = computed(() => 
@@ -42,6 +47,44 @@ export class WorkspaceService {
     const userId = this.authService.currentUser()?.uid;
     if (!userId) return;
 
+    this.isLoadingSignal.set(true);
+
+    try {
+      // First, get workspace IDs from user profile
+      const userWorkspacesRef = ref(this.firebaseService.database, `users/${userId}/workspaces`);
+      const snapshot = await get(userWorkspacesRef);
+      
+      if (snapshot.exists()) {
+        const workspaceIds = Object.keys(snapshot.val());
+        
+        // Load each workspace from Firebase
+        for (const wsId of workspaceIds) {
+          const wsRef = ref(this.firebaseService.database, `workspaces/${wsId}`);
+          const wsSnapshot = await get(wsRef);
+          
+          if (wsSnapshot.exists()) {
+            const wsData = wsSnapshot.val();
+            const workspace: any = {
+              id: wsId,
+              name: wsData.name,
+              ownerId: wsData.ownerId,
+              isDefault: wsData.isDefault || false,
+              members: wsData.members || {},
+              role: wsData.ownerId === userId ? 'owner' : 'editor',
+              syncStatus: 'synced',
+              createdAt: new Date(wsData.createdAt),
+              updatedAt: new Date(wsData.updatedAt)
+            };
+            
+            // Upsert to local Dexie
+            await this.db.workspaces.put(workspace);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading workspaces from Firebase:', error);
+    }
+
     // Load from local Dexie
     const workspaces = await this.db.workspaces
       .where('ownerId')
@@ -50,11 +93,28 @@ export class WorkspaceService {
 
     this.workspacesSignal.set(workspaces);
 
-    // Set active workspace (default or first)
+    // Set active workspace (restore last, or default, or first)
     if (!this.activeWorkspace()) {
-      const defaultWs = workspaces.find(w => w.isDefault);
-      this.activeWorkspaceSignal.set(defaultWs || workspaces[0] || null);
+      // Try to restore last active workspace from localStorage
+      const lastActiveId = this.getLastActiveWorkspaceId();
+      let workspaceToActivate: Workspace | undefined;
+
+      if (lastActiveId) {
+        workspaceToActivate = workspaces.find(w => w.id === lastActiveId);
+      }
+
+      // Fallback to default or first workspace
+      if (!workspaceToActivate) {
+        const defaultWs = workspaces.find(w => w.isDefault);
+        workspaceToActivate = defaultWs || workspaces[0] || null;
+      }
+
+      if (workspaceToActivate) {
+        this.activeWorkspaceSignal.set(workspaceToActivate);
+      }
     }
+
+    this.isLoadingSignal.set(false);
   }
 
   /**
@@ -95,6 +155,10 @@ export class WorkspaceService {
       updatedAt: workspace.updatedAt.toISOString()
     });
 
+    // Add workspace ID to user's profile
+    const userWorkspaceRef = ref(this.firebaseService.database, `users/${userId}/workspaces/${id}`);
+    await set(userWorkspaceRef, true);
+
     // Reload workspaces
     await this.loadWorkspaces();
 
@@ -113,11 +177,33 @@ export class WorkspaceService {
     this.activeWorkspaceSignal.set(workspace);
 
     // Store preference in localStorage
-    localStorage.setItem('activeWorkspaceId', workspaceId);
+    this.saveLastActiveWorkspaceId(workspaceId);
+  }
+
+  /**
+   * Get last active workspace ID from localStorage
+   */
+  private getLastActiveWorkspaceId(): string | null {
+    return localStorage.getItem(this.ACTIVE_WORKSPACE_KEY);
+  }
+
+  /**
+   * Save last active workspace ID to localStorage
+   */
+  private saveLastActiveWorkspaceId(workspaceId: string): void {
+    localStorage.setItem(this.ACTIVE_WORKSPACE_KEY, workspaceId);
+  }
+
+  /**
+   * Clear last active workspace from localStorage
+   */
+  private clearLastActiveWorkspaceId(): void {
+    localStorage.removeItem(this.ACTIVE_WORKSPACE_KEY);
   }
 
   /**
    * Delete workspace (owner only)
+   * Deletes workspace and ALL associated data (ideas, connections, components, projects)
    */
   async deleteWorkspace(workspaceId: string): Promise<void> {
     const workspace = await this.db.workspaces.get(workspaceId);
@@ -134,12 +220,22 @@ export class WorkspaceService {
       throw new Error('Only workspace owner can delete');
     }
 
-    // Delete from local Dexie
+    // Delete all local data associated with this workspace
+    await this.db.ideas.where('workspaceId').equals(workspaceId).delete();
+    await this.db.connections.where('workspaceId').equals(workspaceId).delete();
+    await this.db.components.where('workspaceId').equals(workspaceId).delete();
+    await this.db.projects.where('workspaceId').equals(workspaceId).delete();
+    
+    // Delete workspace from local Dexie
     await this.db.workspaces.delete(workspaceId);
 
-    // Delete from Firebase
+    // Delete from Firebase (cascades to all nested data)
     const workspaceRef = ref(this.firebaseService.database, `workspaces/${workspaceId}`);
     await remove(workspaceRef);
+    
+    // Remove from user's workspace list
+    const userWorkspaceRef = ref(this.firebaseService.database, `users/${userId}/workspaces/${workspaceId}`);
+    await remove(userWorkspaceRef);
 
     // If this was active workspace, switch to default
     if (this.activeWorkspace()?.id === workspaceId) {
@@ -151,6 +247,13 @@ export class WorkspaceService {
     } else {
       await this.loadWorkspaces();
     }
+  }
+
+  /**
+   * Get idea count for a workspace
+   */
+  async getWorkspaceIdeaCount(workspaceId: string): Promise<number> {
+    return await this.db.ideas.where('workspaceId').equals(workspaceId).count();
   }
 
   /**
@@ -206,6 +309,47 @@ export class WorkspaceService {
     // Get the user ID from the snapshot
     const userData = snapshot.val();
     const collaboratorId = Object.keys(userData)[0];
+
+    // Add member to workspace
+    if (!workspace.members) {
+      workspace.members = {};
+    }
+    workspace.members[collaboratorId] = 'editor';
+    workspace.updatedAt = new Date();
+
+    // Update local Dexie
+    await this.db.workspaces.put(workspace);
+
+    // Update Firebase workspace
+    const memberRef = ref(this.firebaseService.database, `workspaces/${workspaceId}/members/${collaboratorId}`);
+    await set(memberRef, 'editor');
+
+    // Update user's workspace list in Firebase
+    const userWorkspaceRef = ref(this.firebaseService.database, `users/${collaboratorId}/workspaces/${workspaceId}`);
+    await set(userWorkspaceRef, true);
+  }
+
+  /**
+   * Share workspace with collaborator by user ID
+   */
+  async shareWorkspaceWithUser(workspaceId: string, collaboratorId: string): Promise<void> {
+    const workspace = await this.db.workspaces.get(workspaceId);
+    if (!workspace) {
+      throw new Error('Workspace not found');
+    }
+
+    const userId = this.authService.currentUser()?.uid;
+    if (workspace.ownerId !== userId) {
+      throw new Error('Only workspace owner can share');
+    }
+
+    // Check if user exists
+    const userProfileRef = ref(this.firebaseService.database, `users/${collaboratorId}/profile`);
+    const snapshot = await get(userProfileRef);
+    
+    if (!snapshot.exists()) {
+      throw new Error('User not found');
+    }
 
     // Add member to workspace
     if (!workspace.members) {
