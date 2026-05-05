@@ -41,29 +41,39 @@ export class WorkspaceService {
    */
   async loadWorkspaces(): Promise<void> {
     if (!this.authService.isAuthenticated()) {
+      console.log('[WorkspaceService] Not authenticated, skipping load');
       return;
     }
 
     const userId = this.authService.currentUser()?.uid;
-    if (!userId) return;
+    if (!userId) {
+      console.log('[WorkspaceService] No userId, skipping load');
+      return;
+    }
 
+    console.log('[WorkspaceService] Loading workspaces for user:', userId);
     this.isLoadingSignal.set(true);
 
     try {
       // First, get workspace IDs from user profile
       const userWorkspacesRef = ref(this.firebaseService.database, `users/${userId}/workspaces`);
+      console.log('[WorkspaceService] Fetching from path:', `users/${userId}/workspaces`);
       const snapshot = await get(userWorkspacesRef);
       
+      console.log('[WorkspaceService] User workspaces snapshot exists:', snapshot.exists());
       if (snapshot.exists()) {
         const workspaceIds = Object.keys(snapshot.val());
+        console.log('[WorkspaceService] Found workspace IDs in Firebase:', workspaceIds);
         
         // Load each workspace from Firebase
         for (const wsId of workspaceIds) {
           const wsRef = ref(this.firebaseService.database, `workspaces/${wsId}`);
           const wsSnapshot = await get(wsRef);
           
+          console.log(`[WorkspaceService] Workspace ${wsId} exists:`, wsSnapshot.exists());
           if (wsSnapshot.exists()) {
             const wsData = wsSnapshot.val();
+            console.log(`[WorkspaceService] Workspace ${wsId} data:`, wsData);
             const workspace: any = {
               id: wsId,
               name: wsData.name,
@@ -76,25 +86,31 @@ export class WorkspaceService {
               updatedAt: new Date(wsData.updatedAt)
             };
             
+            console.log(`[WorkspaceService] Storing workspace in Dexie:`, workspace);
             // Upsert to local Dexie
             await this.db.workspaces.put(workspace);
           }
         }
+      } else {
+        console.log('[WorkspaceService] No workspaces found in Firebase for user');
       }
     } catch (error) {
-      console.error('Error loading workspaces from Firebase:', error);
+      console.error('[WorkspaceService] Error loading workspaces from Firebase:', error);
     }
 
     // Load from local Dexie - ALL workspaces user has access to
     // (Already filtered by user's workspace list from Firebase above)
     const allWorkspaces = await this.db.workspaces.toArray();
+    console.log('[WorkspaceService] All workspaces in Dexie:', allWorkspaces);
     
     // Filter for workspaces where user is owner OR member
     const workspaces = allWorkspaces.filter(w => 
       w.ownerId === userId || (w.members && w.members[userId])
     );
+    console.log('[WorkspaceService] Filtered workspaces (owner or member):', workspaces);
 
     this.workspacesSignal.set(workspaces);
+    console.log('[WorkspaceService] Signal set with workspaces:', workspaces);
 
     // Set active workspace (restore last, or default, or first)
     if (!this.activeWorkspace()) {
@@ -129,6 +145,7 @@ export class WorkspaceService {
       throw new Error('Must be authenticated to create workspace');
     }
 
+    console.log('[WorkspaceService] Creating workspace:', name, 'for user:', userId);
     const id = uuidv4();
     const now = new Date();
 
@@ -144,9 +161,11 @@ export class WorkspaceService {
       updatedAt: now
     };
 
+    console.log('[WorkspaceService] Saving workspace to Dexie:', workspace);
     // Save to local Dexie
     await this.db.workspaces.add(workspace);
 
+    console.log('[WorkspaceService] Saving workspace to Firebase path:', `workspaces/${id}`);
     // Save to Firebase
     const workspaceRef = ref(this.firebaseService.database, `workspaces/${id}`);
     await set(workspaceRef, {
@@ -158,11 +177,14 @@ export class WorkspaceService {
       updatedAt: workspace.updatedAt.toISOString()
     });
 
+    console.log('[WorkspaceService] Adding workspace to user list:', `users/${userId}/workspaces/${id}`);
     // Add workspace ID to user's profile
     const userWorkspaceRef = ref(this.firebaseService.database, `users/${userId}/workspaces/${id}`);
     await set(userWorkspaceRef, true);
+    console.log('[WorkspaceService] Workspace added to user list successfully');
 
     // Reload workspaces
+    console.log('[WorkspaceService] Reloading workspaces after creation');
     await this.loadWorkspaces();
 
     return workspace;
