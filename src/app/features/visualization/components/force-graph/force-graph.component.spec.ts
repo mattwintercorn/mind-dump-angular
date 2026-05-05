@@ -3,13 +3,32 @@ import { ForceGraphComponent } from './force-graph.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ComponentFixtureAutoDetect } from '@angular/core/testing';
+import { IdeaService } from '../../../../core/services/idea.service';
+import { FilterService } from '../../../../core/services/filter.service';
+import { signal } from '@angular/core';
+import { Idea } from '../../../../core/models/idea.model';
 
 describe('ForceGraphComponent', () => {
   let component: ForceGraphComponent;
   let fixture: ComponentFixture<ForceGraphComponent>;
+  let mockIdeaService: jasmine.SpyObj<IdeaService>;
+  let mockFilterService: jasmine.SpyObj<FilterService>;
+
+  const testIdeas: Idea[] = [];
 
   beforeEach(async () => {
+    mockIdeaService = jasmine.createSpyObj('IdeaService', [], {
+      ideas: signal(testIdeas)
+    });
+    
+    mockFilterService = jasmine.createSpyObj('FilterService', [
+      'filterIdeas',
+      'hasActiveFilters',
+      'clearFilters'
+    ]);
+    mockFilterService.filterIdeas.and.returnValue(testIdeas);
+    mockFilterService.hasActiveFilters.and.returnValue(false);
+
     await TestBed.configureTestingModule({
       imports: [
         ForceGraphComponent,
@@ -18,13 +37,13 @@ describe('ForceGraphComponent', () => {
         MatIconModule
       ],
       providers: [
-        { provide: ComponentFixtureAutoDetect, useValue: true }
+        { provide: IdeaService, useValue: mockIdeaService },
+        { provide: FilterService, useValue: mockFilterService }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ForceGraphComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('ideas', []);
   });
 
   it('should create', () => {
