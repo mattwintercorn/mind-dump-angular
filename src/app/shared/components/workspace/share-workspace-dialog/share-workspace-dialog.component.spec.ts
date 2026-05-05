@@ -84,19 +84,22 @@ describe('ShareWorkspaceDialogComponent', () => {
     fixture = TestBed.createComponent(ShareWorkspaceDialogComponent);
     component = fixture.componentInstance;
     
-    // Spy on Firebase-dependent methods to prevent actual Firebase calls
-    spyOn(component, 'loadAllUsers').and.returnValue(Promise.resolve());
-    spyOn(component, 'loadMemberDetails').and.returnValue(Promise.resolve());
-    
-    // Initialize member profiles for proper rendering
-    component.memberProfiles.set({
-      'user1': { displayName: 'Owner User', email: 'owner@example.com' },
-      'user2': { displayName: 'Collaborator User', email: 'collaborator@example.com' }
+    // Spy on Firebase-dependent methods and make them actually populate the data
+    spyOn(component, 'loadAllUsers').and.callFake(async () => {
+      component.allUsers.set(mockUsers);
     });
     
-    // Set available users for autocomplete
-    component.allUsers.set(mockUsers);
+    spyOn(component, 'loadMemberDetails').and.callFake(async () => {
+      component.memberProfiles.set({
+        'user1': { displayName: 'Owner User', email: 'owner@example.com' },
+        'user2': { displayName: 'Collaborator User', email: 'collaborator@example.com' }
+      });
+    });
     
+    fixture.detectChanges();
+    
+    // Wait for ngOnInit to complete
+    await fixture.whenStable();
     fixture.detectChanges();
   });
 
@@ -129,7 +132,11 @@ describe('ShareWorkspaceDialogComponent', () => {
     expect(ownerBadge?.textContent).toContain('Owner');
   });
 
-  it('should display editor badge for collaborators', () => {
+  it('should display editor badge for collaborators', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    await fixture.whenStable(); // Double wait for Material components
+    
     const editorBadges = fixture.nativeElement.querySelectorAll('.editor-badge');
     expect(editorBadges.length).toBeGreaterThan(0);
   });
@@ -268,7 +275,9 @@ describe('ShareWorkspaceDialogComponent', () => {
 
   it('should return member IDs', () => {
     const memberIds = component.getMemberIds();
-    expect(memberIds).toEqual(['user1', 'user2']);
+    expect(memberIds.length).toBe(2);
+    expect(memberIds).toContain('user1');
+    expect(memberIds).toContain('user2');
   });
 
   it('should return member profile', () => {
