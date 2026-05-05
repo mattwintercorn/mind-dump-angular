@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777997580695,
+  "timestamp": 1777998652988,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -20,7 +20,10 @@
         "/mind-dump-angular/polyfills-5CFQRCPP.js",
         "/mind-dump-angular/styles-W3YQ636U.css"
       ],
-      "patterns": []
+      "patterns": [
+        "https:\\/\\/fonts\\.googleapis\\.com\\/css2\\?family=Roboto:wght@300;400;500&display=swap",
+        "https:\\/\\/fonts\\.googleapis\\.com\\/icon\\?family=Material\\+Icons"
+      ]
     },
     {
       "name": "assets",
@@ -41,6 +44,18 @@
         "/mind-dump-angular/assets/logo.png"
       ],
       "patterns": []
+    },
+    {
+      "name": "fonts",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [],
+      "patterns": [
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
+      ]
     }
   ],
   "dataGroups": [
