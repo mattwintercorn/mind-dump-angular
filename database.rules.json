@@ -17,7 +17,29 @@
       "$workspaceId": {
         ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
         
-        ".write": "auth != null && (newData.child('ownerId').val() === auth.uid || (!root.child('workspaces/' + $workspaceId).exists() && newData.child('ownerId').val() === auth.uid) || (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists()))",
+        "name": {
+          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
+        },
+        
+        "ownerId": {
+          ".write": "auth != null && (!root.child('workspaces/' + $workspaceId).exists() && newData.val() === auth.uid)"
+        },
+        
+        "createdAt": {
+          ".write": "auth != null && (!root.child('workspaces/' + $workspaceId).exists())"
+        },
+        
+        "updatedAt": {
+          ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
+        },
+        
+        "members": {
+          ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
+          
+          "$memberId": {
+            ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
+          }
+        },
         
         "ideas": {
           ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
