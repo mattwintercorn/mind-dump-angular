@@ -171,53 +171,39 @@ describe('WorkspaceSettingsDialogComponent', () => {
       expect(mockWorkspaceService.renameWorkspace).toHaveBeenCalledWith('ws1', 'Updated Name');
     });
 
-    it('should show confirmation dialog before deleting', () => {
-      spyOn(window, 'confirm').and.returnValue(false);
+    it('should show confirmation dialog before deleting', async () => {
+      // Mock dialog to return false (cancelled)
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(false)
+      } as any);
       
-      // Force full render cycle
-      fixture.detectChanges();
-      
-      const compiled = fixture.debugElement.nativeElement;
-      const deleteButton = compiled.querySelector('.delete-button') as HTMLElement;
-      deleteButton.click();
+      await component.onDelete();
 
-      expect(window.confirm).toHaveBeenCalled();
+      expect(mockDialog.open).toHaveBeenCalled();
       expect(mockWorkspaceService.deleteWorkspace).not.toHaveBeenCalled();
     });
 
     it('should call deleteWorkspace when confirmed', async () => {
-      spyOn(window, 'confirm').and.returnValue(true);
+      // Mock dialog to return true (confirmed)
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(true)
+      } as any);
       mockWorkspaceService.deleteWorkspace.and.returnValue(Promise.resolve());
       
-      // Force full render cycle and wait
-      await fixture.whenStable();
-      fixture.detectChanges();
-      await fixture.whenStable();
-      
-      const compiled = fixture.debugElement.nativeElement;
-      const deleteButton = compiled.querySelector('.delete-button') as HTMLElement;
-      expect(deleteButton).toBeTruthy(); // Add assertion to debug
-      deleteButton.click();
+      await component.onDelete();
 
-      await fixture.whenStable();
-
+      expect(mockDialog.open).toHaveBeenCalled();
       expect(mockWorkspaceService.deleteWorkspace).toHaveBeenCalledWith('ws1');
     });
 
     it('should close dialog after successful deletion', async () => {
-      spyOn(window, 'confirm').and.returnValue(true);
+      // Mock dialog to return true (confirmed)
+      mockDialog.open.and.returnValue({
+        afterClosed: () => of(true)
+      } as any);
       mockWorkspaceService.deleteWorkspace.and.returnValue(Promise.resolve());
       
-      // Force full render cycle and wait
-      await fixture.whenStable();
-      fixture.detectChanges();
-      await fixture.whenStable();
-      
-      const compiled = fixture.debugElement.nativeElement;
-      const deleteButton = compiled.querySelector('.delete-button') as HTMLElement;
-      deleteButton.click();
-
-      await fixture.whenStable();
+      await component.onDelete();
 
       expect(mockDialogRef.close).toHaveBeenCalledWith({ deleted: true });
     });
