@@ -40,18 +40,19 @@ export class WorkspaceService {
    * Load all workspaces user has access to
    */
   async loadWorkspaces(): Promise<void> {
-    if (!this.authService.isAuthenticated()) {
-      console.log('[WorkspaceService] Not authenticated, skipping load');
-      return;
-    }
+    try {
+      if (!this.authService.isAuthenticated()) {
+        console.log('[WorkspaceService] Not authenticated, skipping load');
+        return;
+      }
 
-    const userId = this.authService.currentUser()?.uid;
-    if (!userId) {
-      console.log('[WorkspaceService] No userId, skipping load');
-      return;
-    }
+      const userId = this.authService.currentUser()?.uid;
+      if (!userId) {
+        console.log('[WorkspaceService] No userId, skipping load');
+        return;
+      }
 
-    console.log('[WorkspaceService] Loading workspaces for user:', userId);
+      console.log('[WorkspaceService] Loading workspaces for user:', userId);
     this.isLoadingSignal.set(true);
 
     try {
@@ -109,8 +110,10 @@ export class WorkspaceService {
     );
     console.log('[WorkspaceService] Filtered workspaces (owner or member):', workspaces);
 
-    this.workspacesSignal.set(workspaces);
-    console.log('[WorkspaceService] Signal set with workspaces:', workspaces);
+    // Ensure we always set a valid array (never undefined)
+    const validWorkspaces = Array.isArray(workspaces) ? workspaces : [];
+    console.log('[WorkspaceService] Setting signal with:', validWorkspaces);
+    this.workspacesSignal.set(validWorkspaces);
 
     // Set active workspace (restore last, or default, or first)
     if (!this.activeWorkspace()) {
@@ -119,13 +122,13 @@ export class WorkspaceService {
       let workspaceToActivate: Workspace | undefined;
 
       if (lastActiveId) {
-        workspaceToActivate = workspaces.find(w => w.id === lastActiveId);
+        workspaceToActivate = validWorkspaces.find(w => w.id === lastActiveId);
       }
 
       // Fallback to default or first workspace
       if (!workspaceToActivate) {
-        const defaultWs = workspaces.find(w => w.isDefault);
-        workspaceToActivate = defaultWs || workspaces[0] || null;
+        const defaultWs = validWorkspaces.find(w => w.isDefault);
+        workspaceToActivate = defaultWs || validWorkspaces[0] || null;
       }
 
       if (workspaceToActivate) {
@@ -134,6 +137,12 @@ export class WorkspaceService {
     }
 
     this.isLoadingSignal.set(false);
+    } catch (error) {
+      console.error('[WorkspaceService] Fatal error in loadWorkspaces:', error);
+      this.isLoadingSignal.set(false);
+      // Ensure signal is set to empty array on error
+      this.workspacesSignal.set([]);
+    }
   }
 
   /**
