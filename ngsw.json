@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777985226401,
+  "timestamp": 1777985665302,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -11,14 +11,14 @@
         "ignoreVary": true
       },
       "urls": [
-        "/mind-dump-angular/chunk-3H43O42L.js",
-        "/mind-dump-angular/chunk-VPY55LEA.js",
+        "/mind-dump-angular/chunk-5DTE25RO.js",
+        "/mind-dump-angular/chunk-Q7WVLXES.js",
         "/mind-dump-angular/favicon.ico",
         "/mind-dump-angular/index.html",
-        "/mind-dump-angular/main-IQ5VD6GY.js",
+        "/mind-dump-angular/main-VXHGYXG6.js",
         "/mind-dump-angular/manifest.webmanifest",
-        "/mind-dump-angular/polyfills-FFHMD2TL.js",
-        "/mind-dump-angular/styles-KVWL7JUM.css"
+        "/mind-dump-angular/polyfills-5CFQRCPP.js",
+        "/mind-dump-angular/styles-W3YQ636U.css"
       ],
       "patterns": []
     },
@@ -69,14 +69,14 @@
     "/mind-dump-angular/assets/icons/icon-72x72.png": "8f45fd56f975ab03f803ddb5ef83bc58e3d5ad7e",
     "/mind-dump-angular/assets/icons/icon-96x96.png": "cfbf51dfecf052af15998158680194d2d1717c0a",
     "/mind-dump-angular/assets/logo.png": "acc5e1d17886a89e5319cead068654d6cfbc246b",
-    "/mind-dump-angular/chunk-3H43O42L.js": "7d3a21651215ecf45ed4eec9b22918a207a8a239",
-    "/mind-dump-angular/chunk-VPY55LEA.js": "dd9b17188a0dbe0f0342ea65a673f1befec33bb8",
+    "/mind-dump-angular/chunk-5DTE25RO.js": "3864de5f5406ef93fa97aeccf57c8bedb2e4d8ad",
+    "/mind-dump-angular/chunk-Q7WVLXES.js": "676e988b7c462589c6058c2bb19571ec49381275",
     "/mind-dump-angular/favicon.ico": "7f0e571bc9c5fa194dd1725c3319b1acbf5da7c6",
-    "/mind-dump-angular/index.html": "dcc191bb40355a6b4b2b338f1093a3149ac2dcd1",
-    "/mind-dump-angular/main-IQ5VD6GY.js": "dec24cc7c058bf196955def54a4cf9d30454e7b9",
+    "/mind-dump-angular/index.html": "7fcc4d015139d5dfefd267ea2bb642d32888e353",
+    "/mind-dump-angular/main-VXHGYXG6.js": "4c8072f2bd225186012d6532cc596e9f409b72fa",
     "/mind-dump-angular/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
-    "/mind-dump-angular/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
-    "/mind-dump-angular/styles-KVWL7JUM.css": "153be74bbaf90e70bafe4289fa82368accb7cbdf"
+    "/mind-dump-angular/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
+    "/mind-dump-angular/styles-W3YQ636U.css": "6c2dfe9ab0198ec031ad0020423a026e5d6b5fc5"
   },
   "navigationUrls": [
     {
