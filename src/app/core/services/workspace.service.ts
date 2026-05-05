@@ -85,11 +85,14 @@ export class WorkspaceService {
       console.error('Error loading workspaces from Firebase:', error);
     }
 
-    // Load from local Dexie
-    const workspaces = await this.db.workspaces
-      .where('ownerId')
-      .equals(userId)
-      .toArray();
+    // Load from local Dexie - ALL workspaces user has access to
+    // (Already filtered by user's workspace list from Firebase above)
+    const allWorkspaces = await this.db.workspaces.toArray();
+    
+    // Filter for workspaces where user is owner OR member
+    const workspaces = allWorkspaces.filter(w => 
+      w.ownerId === userId || (w.members && w.members[userId])
+    );
 
     this.workspacesSignal.set(workspaces);
 
