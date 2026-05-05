@@ -1,35 +1,73 @@
+// src/app/shared/components/workspace/workspace-switcher/workspace-switcher.component.scss
+@import '../../../../../styles/variables-defi';
+
 .workspace-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  background: $bg-secondary;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-md;
+  color: $text-primary;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: $bg-card-hover;
+    border-color: $border-default;
+  }
+  
+  mat-icon {
+    color: $text-secondary;
+  }
   
   .workspace-name {
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-weight: $font-medium;
+    font-size: $font-sm;
+  }
+}
+
+::ng-deep {
+  .mat-mdc-menu-panel.workspace-menu {
+    min-width: 280px;
+    max-width: 320px;
   }
 }
 
 .menu-section {
-  padding: 8px 0;
+  padding: $space-sm 0;
 
   .section-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.6);
+    gap: $space-sm;
+    padding: $space-sm $space-md;
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $text-tertiary;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
     
     mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: $text-tertiary;
     }
+  }
+}
+
+.workspace-item-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  &:hover .workspace-settings-button {
+    opacity: 1;
   }
 }
 
@@ -37,13 +75,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  flex: 1;
+  padding: $space-sm $space-md;
+  color: $text-secondary;
+  font-size: $font-sm;
+  
+  &:hover {
+    background: $bg-card-hover;
+    color: $text-primary;
+  }
   
   &.active {
-    background-color: rgba(0, 0, 0, 0.04);
+    background: rgba($primary, 0.1);
+    color: $primary;
     
     .workspace-name {
-      font-weight: 500;
+      font-weight: $font-semibold;
     }
   }
   
@@ -51,17 +98,40 @@
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--primary-color, #1976d2);
+    color: $primary;
+  }
+}
+
+.workspace-settings-button {
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: $text-secondary;
+  
+  &:hover {
+    color: $primary;
+    background: rgba($primary, 0.1);
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
 
 .create-workspace {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--primary-color, #1976d2);
+  gap: $space-sm;
+  color: $primary;
+  font-weight: $font-medium;
+  padding: $space-sm $space-md;
+  
+  &:hover {
+    background: rgba($primary, 0.1);
+  }
   
   mat-icon {
-    color: inherit;
+    color: $primary;
   }
 }
