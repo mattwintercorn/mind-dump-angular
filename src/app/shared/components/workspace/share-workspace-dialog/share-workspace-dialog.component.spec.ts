@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ShareWorkspaceDialogComponent } from './share-workspace-dialog.component';
+import { ShareWorkspaceDialogComponent, UserProfile } from './share-workspace-dialog.component';
 import { WorkspaceService } from '../../../../core/services/workspace.service';
+import { FirebaseService } from '../../../../core/services/firebase.service';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ShareWorkspaceDialogData } from './share-workspace-dialog.component';
@@ -17,6 +19,7 @@ describe('ShareWorkspaceDialogComponent', () => {
   let component: ShareWorkspaceDialogComponent;
   let fixture: ComponentFixture<ShareWorkspaceDialogComponent>;
   let mockWorkspaceService: jasmine.SpyObj<WorkspaceService>;
+  let mockFirebaseService: jasmine.SpyObj<FirebaseService>;
   let mockDialogRef: jasmine.SpyObj<MatDialogRef<ShareWorkspaceDialogComponent>>;
 
   const mockDialogData: ShareWorkspaceDialogData = {
@@ -29,11 +32,30 @@ describe('ShareWorkspaceDialogComponent', () => {
     }
   };
 
+  const mockUsers: UserProfile[] = [
+    {
+      uid: 'user3',
+      email: 'user3@example.com',
+      displayName: 'User Three',
+      photoURL: 'https://example.com/photo3.jpg'
+    },
+    {
+      uid: 'user4',
+      email: 'user4@example.com',
+      displayName: 'User Four'
+    }
+  ];
+
   beforeEach(async () => {
     mockWorkspaceService = jasmine.createSpyObj('WorkspaceService', [
-      'shareWorkspace',
+      'shareWorkspaceWithUser',
       'removeCollaborator'
     ]);
+    
+    mockFirebaseService = jasmine.createSpyObj('FirebaseService', [], {
+      database: {} as any
+    });
+
     mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
 
     await TestBed.configureTestingModule({
@@ -47,11 +69,13 @@ describe('ShareWorkspaceDialogComponent', () => {
         MatListModule,
         MatChipsModule,
         MatProgressSpinnerModule,
+        MatAutocompleteModule,
         ReactiveFormsModule,
         NoopAnimationsModule
       ],
       providers: [
         { provide: WorkspaceService, useValue: mockWorkspaceService },
+        { provide: FirebaseService, useValue: mockFirebaseService },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData }
       ]
@@ -60,11 +84,18 @@ describe('ShareWorkspaceDialogComponent', () => {
     fixture = TestBed.createComponent(ShareWorkspaceDialogComponent);
     component = fixture.componentInstance;
     
-    // Initialize member emails for proper rendering
-    component.memberEmails.set({
-      'user1': 'owner@example.com',
-      'user2': 'collaborator@example.com'
+    // Spy on Firebase-dependent methods to prevent actual Firebase calls
+    spyOn(component, 'loadAllUsers').and.returnValue(Promise.resolve());
+    spyOn(component, 'loadMemberDetails').and.returnValue(Promise.resolve());
+    
+    // Initialize member profiles for proper rendering
+    component.memberProfiles.set({
+      'user1': { displayName: 'Owner User', email: 'owner@example.com' },
+      'user2': { displayName: 'Collaborator User', email: 'collaborator@example.com' }
     });
+    
+    // Set available users for autocomplete
+    component.allUsers.set(mockUsers);
     
     fixture.detectChanges();
   });
@@ -78,28 +109,10 @@ describe('ShareWorkspaceDialogComponent', () => {
     expect(title?.textContent).toContain('Test Workspace');
   });
 
-  it('should have email input field', () => {
-    const emailInput = fixture.nativeElement.querySelector('input[type="email"]');
-    expect(emailInput).toBeTruthy();
-  });
-
-  it('should have "Add" button for inviting collaborator', () => {
-    const addButton = fixture.nativeElement.querySelector('.add-button');
-    expect(addButton).toBeTruthy();
-    expect(addButton?.textContent).toContain('Add');
-  });
-
-  it('should disable Add button when email is empty', () => {
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLButtonElement;
-    expect(addButton.disabled).toBe(true);
-  });
-
-  it('should enable Add button when valid email is entered', () => {
-    component.emailControl.setValue('test@example.com');
-    fixture.detectChanges();
-    
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLButtonElement;
-    expect(addButton.disabled).toBe(false);
+  it('should have user autocomplete input field', () => {
+    const input = fixture.nativeElement.querySelector('input[type="text"]');
+    expect(input).toBeTruthy();
+    expect(input?.placeholder).toContain('Search');
   });
 
   it('should display current members list', () => {
@@ -136,106 +149,128 @@ describe('ShareWorkspaceDialogComponent', () => {
     expect(removeButton).toBeTruthy();
   });
 
-  it('should call shareWorkspace when Add button is clicked', async () => {
-    mockWorkspaceService.shareWorkspace.and.returnValue(Promise.resolve());
+  it('should call shareWorkspaceWithUser when user is selected from autocomplete', async () => {
+    mockWorkspaceService.shareWorkspaceWithUser.and.returnValue(Promise.resolve());
+    mockDialogRef.close.and.stub();
     
-    component.emailControl.setValue('newuser@example.com');
-    fixture.detectChanges();
+    // Simulate selecting a user from autocomplete
+    component.userControl.setValue(mockUsers[0]);
+    await component.onAddCollaborator();
 
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLElement;
-    addButton.click();
+    expect(mockWorkspaceService.shareWorkspaceWithUser).toHaveBeenCalledWith('ws1', 'user3');
+  });
+
+  it('should clear user input after successful invitation', async () => {
+    mockWorkspaceService.shareWorkspaceWithUser.and.returnValue(Promise.resolve());
+    mockDialogRef.close.and.stub();
+    
+    component.userControl.setValue(mockUsers[0]);
+    await component.onAddCollaborator();
 
     await fixture.whenStable();
 
-    expect(mockWorkspaceService.shareWorkspace).toHaveBeenCalledWith('ws1', 'newuser@example.com');
+    expect(component.userControl.value).toBe('');
   });
 
-  it('should clear email input after successful invitation', async () => {
-    mockWorkspaceService.shareWorkspace.and.returnValue(Promise.resolve());
+  it('should close dialog with refresh flag after successful invitation', async () => {
+    mockWorkspaceService.shareWorkspaceWithUser.and.returnValue(Promise.resolve());
     
-    component.emailControl.setValue('newuser@example.com');
-    fixture.detectChanges();
+    component.userControl.setValue(mockUsers[0]);
+    await component.onAddCollaborator();
 
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLElement;
-    addButton.click();
-
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    expect(component.emailControl.value).toBe('');
+    expect(mockDialogRef.close).toHaveBeenCalledWith({ refresh: true });
   });
 
-  it('should show loading spinner during invitation', async () => {
-    mockWorkspaceService.shareWorkspace.and.returnValue(
+  it('should show error message when user selection is invalid', async () => {
+    component.userControl.setValue('invalid string');
+    await component.onAddCollaborator();
+
+    expect(component.errorMessage()).toBe('Please select a user from the list');
+  });
+
+  it('should show loading state during invitation', async () => {
+    mockWorkspaceService.shareWorkspaceWithUser.and.returnValue(
       new Promise(resolve => setTimeout(resolve, 100))
     );
+    mockDialogRef.close.and.stub();
     
-    component.emailControl.setValue('newuser@example.com');
-    fixture.detectChanges();
-
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLElement;
-    addButton.click();
-    fixture.detectChanges();
-
+    component.userControl.setValue(mockUsers[0]);
+    const addPromise = component.onAddCollaborator();
+    
     expect(component.isLoading()).toBe(true);
-    const spinner = fixture.nativeElement.querySelector('mat-spinner');
-    expect(spinner).toBeTruthy();
+    
+    await addPromise;
+    
+    expect(component.isLoading()).toBe(false);
   });
 
   it('should call removeCollaborator when remove button is clicked', async () => {
     mockWorkspaceService.removeCollaborator.and.returnValue(Promise.resolve());
     
-    const removeButtons = fixture.nativeElement.querySelectorAll('.remove-button');
-    const firstRemoveButton = removeButtons[0] as HTMLElement;
-    firstRemoveButton.click();
-
-    await fixture.whenStable();
+    await component.onRemoveCollaborator('user2');
 
     expect(mockWorkspaceService.removeCollaborator).toHaveBeenCalledWith('ws1', 'user2');
   });
 
-  it('should close dialog when Close button is clicked', () => {
-    const closeButton = fixture.nativeElement.querySelector('.close-button') as HTMLElement;
-    closeButton.click();
+  it('should update members list after removing collaborator', async () => {
+    mockWorkspaceService.removeCollaborator.and.returnValue(Promise.resolve());
+    
+    await component.onRemoveCollaborator('user2');
+    
+    expect(component.data.members['user2']).toBeUndefined();
+  });
 
+  it('should close dialog when Close button is clicked', () => {
+    component.onClose();
     expect(mockDialogRef.close).toHaveBeenCalled();
   });
 
   it('should show error message when invitation fails', async () => {
-    mockWorkspaceService.shareWorkspace.and.returnValue(
+    mockWorkspaceService.shareWorkspaceWithUser.and.returnValue(
       Promise.reject(new Error('User not found'))
     );
     
-    component.emailControl.setValue('nonexistent@example.com');
-    fixture.detectChanges();
+    component.userControl.setValue(mockUsers[0]);
+    await component.onAddCollaborator();
 
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLElement;
-    addButton.click();
-
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    const errorMessage = fixture.nativeElement.querySelector('.error-message');
-    expect(errorMessage).toBeTruthy();
-    expect(errorMessage?.textContent).toContain('User not found');
+    expect(component.errorMessage()).toBe('User not found');
   });
 
-  it('should validate email format', () => {
-    component.emailControl.setValue('invalid-email');
-    fixture.detectChanges();
-    
-    expect(component.emailControl.invalid).toBe(true);
-    
-    const addButton = fixture.nativeElement.querySelector('.add-button') as HTMLButtonElement;
-    expect(addButton.disabled).toBe(true);
-  });
-
-  it('should display member email addresses', () => {
+  it('should display member names and email addresses', () => {
+    const memberNames = fixture.nativeElement.querySelectorAll('.member-name');
     const memberEmails = fixture.nativeElement.querySelectorAll('.member-email');
+    
+    expect(memberNames.length).toBe(2);
     expect(memberEmails.length).toBe(2);
     
+    const names = Array.from(memberNames).map((el: any) => el.textContent?.trim());
     const emails = Array.from(memberEmails).map((el: any) => el.textContent?.trim());
+    
+    expect(names).toContain('Owner User');
+    expect(names).toContain('Collaborator User');
     expect(emails).toContain('owner@example.com');
     expect(emails).toContain('collaborator@example.com');
+  });
+
+  it('should identify workspace owner correctly', () => {
+    expect(component.isOwner('user1')).toBe(true);
+    expect(component.isOwner('user2')).toBe(false);
+  });
+
+  it('should return member IDs', () => {
+    const memberIds = component.getMemberIds();
+    expect(memberIds).toEqual(['user1', 'user2']);
+  });
+
+  it('should return member profile', () => {
+    const profile = component.getMemberProfile('user1');
+    expect(profile.displayName).toBe('Owner User');
+    expect(profile.email).toBe('owner@example.com');
+  });
+
+  it('should return fallback for missing member profile', () => {
+    const profile = component.getMemberProfile('unknownUser');
+    expect(profile.displayName).toBe('unknownUser');
+    expect(profile.email).toBe('');
   });
 });

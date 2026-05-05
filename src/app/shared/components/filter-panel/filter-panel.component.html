@@ -90,7 +90,7 @@
       <mat-label>Select Component</mat-label>
       <mat-select [(ngModel)]="selectedComponent">
         <mat-option [value]="null">All Components</mat-option>
-        @for (component of componentService.componentNames(); track component) {
+        @for (component of ideaService.allComponents(); track component) {
           <mat-option [value]="component">{{ component }}</mat-option>
         }
       </mat-select>
@@ -110,7 +110,7 @@
       <mat-label>Select Project</mat-label>
       <mat-select [(ngModel)]="selectedProject">
         <mat-option [value]="null">All Projects</mat-option>
-        @for (project of projectService.projectNames(); track project) {
+        @for (project of ideaService.allProjects(); track project) {
           <mat-option [value]="project">{{ project }}</mat-option>
         }
       </mat-select>

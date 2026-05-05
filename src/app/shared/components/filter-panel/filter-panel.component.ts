@@ -11,8 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { FilterService, SortOption } from '../../../core/services/filter.service';
 import { IdeaService } from '../../../core/services/idea.service';
-import { ComponentService } from '../../../core/services/component.service';
-import { ProjectService } from '../../../core/services/project.service';
 import { IdeaStatus } from '../../../core/models/idea.model';
 
 @Component({
@@ -34,8 +32,6 @@ import { IdeaStatus } from '../../../core/models/idea.model';
 export class FilterPanelComponent {
   filterService = inject(FilterService);
   ideaService = inject(IdeaService);
-  componentService = inject(ComponentService);
-  projectService = inject(ProjectService);
 
   // Mobile toggle state
   isCollapsed = signal(this.isMobileView());

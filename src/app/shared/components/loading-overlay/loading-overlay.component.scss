@@ -1,1 +1,34 @@
-// Loading overlay styles - using Material defaults
+// Loading overlay - full screen backdrop
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.loading-text {
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+  font-size: 16px;
+  font-weight: 500;
+}

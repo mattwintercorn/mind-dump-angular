@@ -2,12 +2,14 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService, Project } from './database.service';
+import { WorkspaceService } from './workspace.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
   private db = inject(DatabaseService);
+  private workspaceService = inject(WorkspaceService);
 
   // Private writable signals
   private projectsSignal = signal<Project[]>([]);
@@ -19,10 +21,16 @@ export class ProjectService {
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
 
-  // Computed signals
-  readonly projectNames = computed(() => 
-    this.projectsSignal().map(p => p.name).sort()
-  );
+  // Computed signals - filtered by active workspace
+  readonly projectNames = computed(() => {
+    const activeWorkspace = this.workspaceService.activeWorkspace();
+    if (!activeWorkspace) return [];
+    
+    return this.projectsSignal()
+      .filter(p => p.workspaceId === activeWorkspace.id)
+      .map(p => p.name)
+      .sort();
+  });
 
   constructor() {
     this.loadProjects();
@@ -36,12 +44,18 @@ export class ProjectService {
     this.errorSignal.set(null);
 
     try {
+      const activeWorkspace = this.workspaceService.activeWorkspace();
+      if (!activeWorkspace) {
+        throw new Error('No active workspace');
+      }
+
       const id = uuidv4();
       const project: Project = {
         id,
         name: name.trim(),
         description: description?.trim(),
-        createdAt: new Date()
+        createdAt: new Date(),
+        workspaceId: activeWorkspace.id
       };
 
       await this.db.projects.add(project);

@@ -41,6 +41,24 @@ export class IdeaService {
     });
     return Array.from(keywordSet).sort();
   });
+  readonly allProjects = computed(() => {
+    const projectSet = new Set<string>();
+    this.ideasSignal().forEach(idea => {
+      if (idea.project) {
+        projectSet.add(idea.project);
+      }
+    });
+    return Array.from(projectSet).sort();
+  });
+  readonly allComponents = computed(() => {
+    const componentSet = new Set<string>();
+    this.ideasSignal().forEach(idea => {
+      if (idea.component) {
+        componentSet.add(idea.component);
+      }
+    });
+    return Array.from(componentSet).sort();
+  });
 
   constructor() {
     this.loadIdeas();

@@ -1,3 +1,5 @@
+@use '../../../../../styles/breakpoints' as *;
+
 .invite-section {
   display: flex;
   gap: 12px;
@@ -42,6 +44,7 @@
     .user-email {
       font-size: 12px;
       color: rgba(0, 0, 0, 0.6);
+      word-break: break-word;
     }
   }
 }
@@ -83,32 +86,63 @@
 
     .member-info {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       width: 100%;
+      gap: 8px;
     }
 
     .member-details {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 12px;
       flex: 1;
+      min-width: 0; // Allow text to shrink
+      
+      @include phone-only {
+        gap: 8px;
+      }
     }
 
     .member-icon {
       color: rgba(0, 0, 0, 0.54);
+      flex-shrink: 0; // Don't let icon shrink
     }
 
     .member-text {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 4px;
       flex: 1;
+      min-width: 0; // Allow text to shrink
+      overflow: hidden;
+    }
+
+    .member-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      
+      @include phone-only {
+        font-size: 13px;
+      }
     }
 
     .member-email {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.87);
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+      word-break: break-all;
+      
+      @include phone-only {
+        font-size: 11px;
+      }
+    }
+
+    .member-badges {
+      margin-top: 4px;
     }
 
     .owner-badge,
@@ -116,6 +150,12 @@
       font-size: 11px;
       min-height: 24px;
       padding: 4px 8px;
+      
+      @include phone-only {
+        font-size: 10px;
+        min-height: 20px;
+        padding: 2px 6px;
+      }
     }
 
     .owner-badge {
@@ -130,6 +170,7 @@
 
     .remove-button {
       color: rgba(0, 0, 0, 0.54);
+      flex-shrink: 0; // Don't let button shrink
 
       &:hover {
         color: #c62828;
@@ -141,8 +182,17 @@
 mat-dialog-content {
   min-width: 400px;
   max-height: 500px;
+  
+  @include phone-only {
+    min-width: unset;
+    max-height: calc(100vh - 200px);
+  }
 }
 
 mat-dialog-actions {
   padding: 16px 24px;
+  
+  @include phone-only {
+    padding: 12px 16px;
+  }
 }

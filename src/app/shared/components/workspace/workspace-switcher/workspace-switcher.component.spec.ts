@@ -6,17 +6,20 @@ import { Workspace } from '../../../../core/models/workspace.model';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatMenuHarness } from '@angular/material/menu/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
+import { of } from 'rxjs';
 
 describe('WorkspaceSwitcherComponent', () => {
   let component: WorkspaceSwitcherComponent;
   let fixture: ComponentFixture<WorkspaceSwitcherComponent>;
   let loader: HarnessLoader;
   let mockWorkspaceService: jasmine.SpyObj<WorkspaceService>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   const mockWorkspaces: Workspace[] = [
     {
@@ -50,14 +53,18 @@ describe('WorkspaceSwitcherComponent', () => {
 
   beforeEach(async () => {
     mockWorkspaceService = jasmine.createSpyObj('WorkspaceService', [
-      'switchWorkspace',
-      'createWorkspace'
+      'switchWorkspace'
     ], {
       // Setup readonly signals as properties
       activeWorkspace: signal<Workspace | null>(mockWorkspaces[0]),
       ownedWorkspaces: signal(mockWorkspaces.slice(0, 2)),
       sharedWorkspaces: signal([mockWorkspaces[2]])
     });
+
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
+    mockDialog.open.and.returnValue({
+      afterClosed: () => of(null)
+    } as any);
 
     await TestBed.configureTestingModule({
       imports: [
@@ -68,7 +75,8 @@ describe('WorkspaceSwitcherComponent', () => {
         NoopAnimationsModule
       ],
       providers: [
-        { provide: WorkspaceService, useValue: mockWorkspaceService }
+        { provide: WorkspaceService, useValue: mockWorkspaceService },
+        { provide: MatDialog, useValue: mockDialog }
       ]
     }).compileComponents();
 
@@ -194,20 +202,12 @@ describe('WorkspaceSwitcherComponent', () => {
     expect(createButton?.textContent).toContain('Create Workspace');
   });
 
-  it('should emit createWorkspace event when create option is clicked', async () => {
-    spyOn(component.createWorkspace, 'emit');
+  it('should open create workspace dialog when create option is clicked', async () => {
+    const dialogSpy = spyOn(component['dialog'], 'open');
     
-    const button = await loader.getHarness(MatButtonHarness);
-    await button.click();
-    
-    // Wait for menu to open
-    await fixture.whenStable();
-    fixture.detectChanges();
+    component.onCreateWorkspace();
 
-    const createButton = document.body.querySelector('.create-workspace') as HTMLElement;
-    createButton.click();
-
-    expect(component.createWorkspace.emit).toHaveBeenCalled();
+    expect(dialogSpy).toHaveBeenCalled();
   });
 
   it('should highlight active workspace in menu', async () => {

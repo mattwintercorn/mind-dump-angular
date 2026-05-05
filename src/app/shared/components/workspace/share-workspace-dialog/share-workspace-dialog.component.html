@@ -54,12 +54,17 @@
             <div class="member-details">
               <mat-icon class="member-icon">person</mat-icon>
               <div class="member-text">
-                <span class="member-email">{{ getMemberEmail(userId) }}</span>
-                @if (isOwner(userId)) {
-                  <mat-chip class="owner-badge" color="primary">Owner</mat-chip>
-                } @else {
-                  <mat-chip class="editor-badge">Editor</mat-chip>
+                <div class="member-name">{{ getMemberProfile(userId).displayName }}</div>
+                @if (getMemberProfile(userId).email) {
+                  <div class="member-email">{{ getMemberProfile(userId).email }}</div>
                 }
+                <div class="member-badges">
+                  @if (isOwner(userId)) {
+                    <mat-chip class="owner-badge" color="primary">Owner</mat-chip>
+                  } @else {
+                    <mat-chip class="editor-badge">Editor</mat-chip>
+                  }
+                </div>
               </div>
             </div>
             

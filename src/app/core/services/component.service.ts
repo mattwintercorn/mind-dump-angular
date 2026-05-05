@@ -2,12 +2,14 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService, SystemComponent } from './database.service';
+import { WorkspaceService } from './workspace.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ComponentService {
   private db = inject(DatabaseService);
+  private workspaceService = inject(WorkspaceService);
 
   // Private writable signals
   private componentsSignal = signal<SystemComponent[]>([]);
@@ -19,10 +21,16 @@ export class ComponentService {
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
 
-  // Computed signals
-  readonly componentNames = computed(() => 
-    this.componentsSignal().map(c => c.name).sort()
-  );
+  // Computed signals - filtered by active workspace
+  readonly componentNames = computed(() => {
+    const activeWorkspace = this.workspaceService.activeWorkspace();
+    if (!activeWorkspace) return [];
+    
+    return this.componentsSignal()
+      .filter(c => c.workspaceId === activeWorkspace.id)
+      .map(c => c.name)
+      .sort();
+  });
 
   constructor() {
     this.loadComponents();
@@ -36,12 +44,18 @@ export class ComponentService {
     this.errorSignal.set(null);
 
     try {
+      const activeWorkspace = this.workspaceService.activeWorkspace();
+      if (!activeWorkspace) {
+        throw new Error('No active workspace');
+      }
+
       const id = uuidv4();
       const component: SystemComponent = {
         id,
         name: name.trim(),
         description: description?.trim(),
-        createdAt: new Date()
+        createdAt: new Date(),
+        workspaceId: activeWorkspace.id
       };
 
       await this.db.components.add(component);

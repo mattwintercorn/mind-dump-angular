@@ -10,6 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { WorkspaceService } from '../../../../core/services/workspace.service';
 import { WorkspaceMembers } from '../../../../core/models/workspace.model';
 import { FirebaseService } from '../../../../core/services/firebase.service';
@@ -45,7 +46,8 @@ export interface UserProfile {
         MatListModule,
         MatChipsModule,
         MatProgressSpinnerModule,
-        MatAutocompleteModule
+        MatAutocompleteModule,
+        MatTooltipModule
     ],
     templateUrl: './share-workspace-dialog.component.html',
     styleUrls: ['./share-workspace-dialog.component.scss']
@@ -59,13 +61,16 @@ export class ShareWorkspaceDialogComponent implements OnInit {
   userControl = new FormControl<string | UserProfile>('', [Validators.required]);
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
-  memberEmails = signal<Record<string, string>>({});
+  memberProfiles = signal<Record<string, { displayName: string; email: string }>>({});
   
   allUsers = signal<UserProfile[]>([]);
   filteredUsers!: Observable<UserProfile[]>;
 
   async ngOnInit(): Promise<void> {
-    await this.loadAllUsers();
+    await Promise.all([
+      this.loadAllUsers(),
+      this.loadMemberDetails()
+    ]);
     
     // Setup autocomplete filtering
     this.filteredUsers = this.userControl.valueChanges.pipe(
@@ -108,6 +113,35 @@ export class ShareWorkspaceDialogComponent implements OnInit {
     } catch (error) {
       console.error('Failed to load users:', error);
       this.errorMessage.set('Failed to load users');
+    }
+  }
+
+  async loadMemberDetails(): Promise<void> {
+    try {
+      const memberIds = this.getMemberIds();
+      const profileMap: Record<string, { displayName: string; email: string }> = {};
+      
+      for (const uid of memberIds) {
+        const userRef = ref(this.firebaseService.database, `users/${uid}/profile`);
+        const snapshot = await get(userRef);
+        
+        if (snapshot.exists()) {
+          const profile = snapshot.val();
+          profileMap[uid] = {
+            displayName: profile.displayName || profile.email || uid,
+            email: profile.email || uid
+          };
+        } else {
+          profileMap[uid] = {
+            displayName: uid,
+            email: ''
+          };
+        }
+      }
+      
+      this.memberProfiles.set(profileMap);
+    } catch (error) {
+      console.error('Failed to load member details:', error);
     }
   }
 
@@ -185,7 +219,7 @@ export class ShareWorkspaceDialogComponent implements OnInit {
     return this.data.members[userId];
   }
 
-  getMemberEmail(userId: string): string {
-    return this.memberEmails()[userId] || userId;
+  getMemberProfile(userId: string): { displayName: string; email: string } {
+    return this.memberProfiles()[userId] || { displayName: userId, email: '' };
   }
 }
