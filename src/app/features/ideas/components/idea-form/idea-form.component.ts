@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,10 +15,8 @@ import { ComponentService } from '../../../../core/services/component.service';
 import { ProjectService } from '../../../../core/services/project.service';
 
 @Component({
-  selector: 'app-idea-form',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-idea-form',
+    imports: [
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -29,9 +27,9 @@ import { ProjectService } from '../../../../core/services/project.service';
     MatButtonModule,
     MatIconModule,
     MatAutocompleteModule
-  ],
-  templateUrl: './idea-form.component.html',
-  styleUrls: ['./idea-form.component.scss']
+],
+    templateUrl: './idea-form.component.html',
+    styleUrls: ['./idea-form.component.scss']
 })
 export class IdeaFormComponent {
   private fb = inject(FormBuilder);

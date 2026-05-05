@@ -1,6 +1,6 @@
 // src/app/features/ideas/components/idea-card/idea-card.component.ts
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,17 +9,15 @@ import { Idea } from '../../../../core/models/idea.model';
 import { ColorService } from '../../../../core/services/color.service';
 
 @Component({
-  selector: 'app-idea-card',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-idea-card',
+    imports: [
     MatCardModule,
     MatChipsModule,
     MatButtonModule,
     MatIconModule
-  ],
-  templateUrl: './idea-card.component.html',
-  styleUrl: './idea-card.component.scss'
+],
+    templateUrl: './idea-card.component.html',
+    styleUrl: './idea-card.component.scss'
 })
 export class IdeaCardComponent {
   @Input({ required: true }) idea!: Idea;

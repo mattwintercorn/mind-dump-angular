@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,10 +22,8 @@ export interface WorkspaceSettingsDialogData {
 }
 
 @Component({
-  selector: 'app-workspace-settings-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-workspace-settings-dialog',
+    imports: [
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -35,9 +33,9 @@ export interface WorkspaceSettingsDialogData {
     MatListModule,
     MatChipsModule,
     MatDividerModule
-  ],
-  templateUrl: './workspace-settings-dialog.component.html',
-  styleUrls: ['./workspace-settings-dialog.component.scss']
+],
+    templateUrl: './workspace-settings-dialog.component.html',
+    styleUrls: ['./workspace-settings-dialog.component.scss']
 })
 export class WorkspaceSettingsDialogComponent {
   dialogRef = inject(MatDialogRef<WorkspaceSettingsDialogComponent>);

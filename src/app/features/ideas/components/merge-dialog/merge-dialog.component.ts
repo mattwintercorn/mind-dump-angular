@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
@@ -16,18 +16,16 @@ export interface MergeDialogResult {
 }
 
 @Component({
-  selector: 'app-merge-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-merge-dialog',
+    imports: [
     MatDialogModule,
     MatButtonModule,
     MatRadioModule,
     MatIconModule,
     FormsModule
-  ],
-  templateUrl: './merge-dialog.component.html',
-  styleUrls: ['./merge-dialog.component.scss']
+],
+    templateUrl: './merge-dialog.component.html',
+    styleUrls: ['./merge-dialog.component.scss']
 })
 export class MergeDialogComponent {
   dialogRef = inject(MatDialogRef<MergeDialogComponent>);

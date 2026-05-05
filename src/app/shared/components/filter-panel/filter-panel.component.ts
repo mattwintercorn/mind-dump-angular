@@ -16,21 +16,20 @@ import { ProjectService } from '../../../core/services/project.service';
 import { IdeaStatus } from '../../../core/models/idea.model';
 
 @Component({
-  selector: 'app-filter-panel',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatChipsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatExpansionModule
-  ],
-  templateUrl: './filter-panel.component.html',
-  styleUrls: ['./filter-panel.component.scss']
+    selector: 'app-filter-panel',
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatChipsModule,
+        MatIconModule,
+        MatButtonModule,
+        MatExpansionModule
+    ],
+    templateUrl: './filter-panel.component.html',
+    styleUrls: ['./filter-panel.component.scss']
 })
 export class FilterPanelComponent {
   filterService = inject(FilterService);

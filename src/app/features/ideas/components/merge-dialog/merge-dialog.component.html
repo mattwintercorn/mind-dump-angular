@@ -8,36 +8,39 @@
 
   <div class="strategies">
     <mat-radio-group [(ngModel)]="selectedStrategy" class="strategy-group">
-      <div 
-        *ngFor="let strategy of strategies" 
-        class="strategy-card"
-        [class.selected]="selectedStrategy === strategy.value"
-      >
-        <mat-radio-button [value]="strategy.value" class="strategy-radio">
-          <div class="strategy-content">
-            <div class="strategy-header">
-              <mat-icon class="strategy-icon">{{ strategy.icon }}</mat-icon>
-              <div class="strategy-title">
-                {{ strategy.title }}
-                <span *ngIf="strategy.recommended" class="recommended-badge">Recommended</span>
+      @for (strategy of strategies; track strategy) {
+        <div
+          class="strategy-card"
+          [class.selected]="selectedStrategy === strategy.value"
+          >
+          <mat-radio-button [value]="strategy.value" class="strategy-radio">
+            <div class="strategy-content">
+              <div class="strategy-header">
+                <mat-icon class="strategy-icon">{{ strategy.icon }}</mat-icon>
+                <div class="strategy-title">
+                  {{ strategy.title }}
+                  @if (strategy.recommended) {
+                    <span class="recommended-badge">Recommended</span>
+                  }
+                </div>
               </div>
+              <p class="strategy-description">{{ strategy.description }}</p>
             </div>
-            <p class="strategy-description">{{ strategy.description }}</p>
-          </div>
-        </mat-radio-button>
-      </div>
+          </mat-radio-button>
+        </div>
+      }
     </mat-radio-group>
   </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancel</button>
-  <button 
-    mat-raised-button 
-    color="primary" 
+  <button
+    mat-raised-button
+    color="primary"
     [disabled]="!canContinue"
     (click)="onContinue()"
-  >
+    >
     Continue
   </button>
 </mat-dialog-actions>

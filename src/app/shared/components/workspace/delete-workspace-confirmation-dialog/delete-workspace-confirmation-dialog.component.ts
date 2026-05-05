@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,18 +13,16 @@ export interface DeleteWorkspaceDialogData {
 }
 
 @Component({
-  selector: 'app-delete-workspace-confirmation-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-delete-workspace-confirmation-dialog',
+    imports: [
     FormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule
-  ],
-  template: `
+],
+    template: `
     <div class="dialog-container">
       <div class="warning-header">
         <mat-icon class="warning-icon">warning</mat-icon>
@@ -77,7 +75,7 @@ export interface DeleteWorkspaceDialogData {
       </mat-dialog-actions>
     </div>
   `,
-  styles: [`
+    styles: [`
     .dialog-container {
       min-width: 500px;
     }

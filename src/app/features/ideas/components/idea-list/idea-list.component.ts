@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,18 +12,16 @@ import { FilterService } from '../../../../core/services/filter.service';
 import { Idea } from '../../../../core/models/idea.model';
 
 @Component({
-  selector: 'app-idea-list',
-  standalone: true,
-  imports: [
-    CommonModule, 
-    IdeaCardComponent, 
+    selector: 'app-idea-list',
+    imports: [
+    IdeaCardComponent,
     FilterPanelComponent,
-    MatButtonModule, 
-    MatIconModule, 
+    MatButtonModule,
+    MatIconModule,
     MatChipsModule
-  ],
-  templateUrl: './idea-list.component.html',
-  styleUrls: ['./idea-list.component.scss']
+],
+    templateUrl: './idea-list.component.html',
+    styleUrls: ['./idea-list.component.scss']
 })
 export class IdeaListComponent {
   private ideaService = inject(IdeaService);

@@ -18,23 +18,22 @@ import { ShareWorkspaceDialogComponent, ShareWorkspaceDialogData } from '../../w
 export type ViewMode = 'grid' | 'graph' | 'cluster';
 
 @Component({
-  selector: 'app-toolbar',
-  standalone: true,
-  imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatButtonToggleModule,
-    MatTooltipModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatDialogModule,
-    SignInButtonComponent,
-    SyncStatusComponent,
-    WorkspaceSwitcherComponent
-  ],
-  templateUrl: './toolbar.component.html',
-  styleUrl: './toolbar.component.scss'
+    selector: 'app-toolbar',
+    imports: [
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatButtonToggleModule,
+        MatTooltipModule,
+        MatMenuModule,
+        MatDividerModule,
+        MatDialogModule,
+        SignInButtonComponent,
+        SyncStatusComponent,
+        WorkspaceSwitcherComponent
+    ],
+    templateUrl: './toolbar.component.html',
+    styleUrl: './toolbar.component.scss'
 })
 export class ToolbarComponent {
   @Input() title = 'Mind Dump';

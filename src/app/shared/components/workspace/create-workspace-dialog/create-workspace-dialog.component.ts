@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,17 +8,15 @@ import { MatInputModule } from '@angular/material/input';
 import { WorkspaceService } from '../../../../core/services/workspace.service';
 
 @Component({
-  selector: 'app-create-workspace-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-create-workspace-dialog',
+    imports: [
     FormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule
-  ],
-  template: `
+],
+    template: `
     <h2 mat-dialog-title>Create New Workspace</h2>
     
     <mat-dialog-content>
@@ -48,7 +46,7 @@ import { WorkspaceService } from '../../../../core/services/workspace.service';
       </button>
     </mat-dialog-actions>
   `,
-  styles: [`
+    styles: [`
     .full-width {
       width: 100%;
     }

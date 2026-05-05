@@ -33,23 +33,22 @@ export interface UserProfile {
 }
 
 @Component({
-  selector: 'app-share-workspace-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatAutocompleteModule
-  ],
-  templateUrl: './share-workspace-dialog.component.html',
-  styleUrls: ['./share-workspace-dialog.component.scss']
+    selector: 'app-share-workspace-dialog',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatChipsModule,
+        MatProgressSpinnerModule,
+        MatAutocompleteModule
+    ],
+    templateUrl: './share-workspace-dialog.component.html',
+    styleUrls: ['./share-workspace-dialog.component.scss']
 })
 export class ShareWorkspaceDialogComponent implements OnInit {
   dialogRef = inject(MatDialogRef<ShareWorkspaceDialogComponent>);

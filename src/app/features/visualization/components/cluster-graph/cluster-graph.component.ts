@@ -9,7 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -39,18 +39,16 @@ interface ClusterAnchor extends d3.SimulationNodeDatum {
 }
 
 @Component({
-  selector: 'app-cluster-graph',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-cluster-graph',
+    imports: [
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
     MatButtonToggleModule,
     FilterPanelComponent
-  ],
-  templateUrl: './cluster-graph.component.html',
-  styleUrls: ['./cluster-graph.component.scss']
+],
+    templateUrl: './cluster-graph.component.html',
+    styleUrls: ['./cluster-graph.component.scss']
 })
 export class ClusterGraphComponent implements OnInit, OnDestroy {
   private ideaService = inject(IdeaService);

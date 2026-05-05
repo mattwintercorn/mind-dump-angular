@@ -8,15 +8,14 @@ import { DatabaseService } from '../../../../core/services/database.service';
 import { MergeDialogComponent, MergeDialogResult } from '../../../../features/ideas/components/merge-dialog/merge-dialog.component';
 
 @Component({
-  selector: 'app-sign-in-button',
-  standalone: true,
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule
-  ],
-  templateUrl: './sign-in-button.component.html',
-  styleUrl: './sign-in-button.component.scss'
+    selector: 'app-sign-in-button',
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        MatProgressSpinnerModule
+    ],
+    templateUrl: './sign-in-button.component.html',
+    styleUrl: './sign-in-button.component.scss'
 })
 export class SignInButtonComponent {
   private authService = inject(AuthService);

@@ -8,7 +8,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -33,11 +33,10 @@ interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
 }
 
 @Component({
-  selector: 'app-force-graph',
-  standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatChipsModule, FilterPanelComponent],
-  templateUrl: './force-graph.component.html',
-  styleUrls: ['./force-graph.component.scss'],
+    selector: 'app-force-graph',
+    imports: [MatButtonModule, MatIconModule, MatChipsModule, FilterPanelComponent],
+    templateUrl: './force-graph.component.html',
+    styleUrls: ['./force-graph.component.scss']
 })
 export class ForceGraphComponent implements OnInit, OnDestroy {
   private ideaService = inject(IdeaService);

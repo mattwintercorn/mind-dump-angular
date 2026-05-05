@@ -11,11 +11,10 @@ import { WorkspaceService } from './core/services/workspace.service';
 import { LoadingOverlayComponent } from './shared/components/loading-overlay/loading-overlay.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, ToolbarComponent, LoadingOverlayComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+    selector: 'app-root',
+    imports: [RouterOutlet, ToolbarComponent, LoadingOverlayComponent],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
   private dialog = inject(MatDialog);

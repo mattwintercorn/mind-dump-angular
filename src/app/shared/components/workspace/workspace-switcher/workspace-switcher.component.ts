@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,18 +12,16 @@ import { CreateWorkspaceDialogComponent } from '../create-workspace-dialog/creat
 import { WorkspaceSettingsDialogComponent } from '../workspace-settings-dialog/workspace-settings-dialog.component';
 
 @Component({
-  selector: 'app-workspace-switcher',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-workspace-switcher',
+    imports: [
     MatButtonModule,
     MatMenuModule,
     MatIconModule,
     MatDividerModule,
     MatTooltipModule
-  ],
-  templateUrl: './workspace-switcher.component.html',
-  styleUrls: ['./workspace-switcher.component.scss']
+],
+    templateUrl: './workspace-switcher.component.html',
+    styleUrls: ['./workspace-switcher.component.scss']
 })
 export class WorkspaceSwitcherComponent {
   workspaceService = inject(WorkspaceService);

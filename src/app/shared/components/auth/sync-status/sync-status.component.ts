@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,16 +7,14 @@ import { SyncService } from '../../../../core/services/sync.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-sync-status',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-sync-status',
+    imports: [
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule
-  ],
-  templateUrl: './sync-status.component.html',
-  styleUrl: './sync-status.component.scss'
+],
+    templateUrl: './sync-status.component.html',
+    styleUrl: './sync-status.component.scss'
 })
 export class SyncStatusComponent {
   private syncService = inject(SyncService);

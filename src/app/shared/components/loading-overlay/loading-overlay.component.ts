@@ -1,13 +1,12 @@
 // src/app/shared/components/loading-overlay/loading-overlay.component.ts
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-loading-overlay',
-  standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule],
-  template: `
+    selector: 'app-loading-overlay',
+    imports: [MatProgressSpinnerModule],
+    template: `
     @if (isVisible) {
       <div class="loading-overlay">
         <div class="loading-content">
@@ -17,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       </div>
     }
   `,
-  styleUrls: ['./loading-overlay.component.scss']
+    styleUrls: ['./loading-overlay.component.scss']
 })
 export class LoadingOverlayComponent {
   @Input() isVisible = false;
