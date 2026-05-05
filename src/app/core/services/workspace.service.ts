@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, untracked } from '@angular/core';
 import { ref, set, remove, get, query, orderByChild, equalTo } from 'firebase/database';
 import { AuthService } from './auth.service';
 import { FirebaseService } from './firebase.service';
@@ -113,10 +113,15 @@ export class WorkspaceService {
     // Ensure we always set a valid array (never undefined)
     const validWorkspaces = Array.isArray(workspaces) ? workspaces : [];
     console.log('[WorkspaceService] Setting signal with:', validWorkspaces);
-    this.workspacesSignal.set(validWorkspaces);
+    
+    // Use untracked to prevent signal write errors during effect execution
+    untracked(() => {
+      this.workspacesSignal.set(validWorkspaces);
+    });
 
     // Set active workspace (restore last, or default, or first)
-    if (!this.activeWorkspace()) {
+    const currentActive = untracked(() => this.activeWorkspace());
+    if (!currentActive) {
       // Try to restore last active workspace from localStorage
       const lastActiveId = this.getLastActiveWorkspaceId();
       let workspaceToActivate: Workspace | undefined;
@@ -132,16 +137,22 @@ export class WorkspaceService {
       }
 
       if (workspaceToActivate) {
-        this.activeWorkspaceSignal.set(workspaceToActivate);
+        untracked(() => {
+          this.activeWorkspaceSignal.set(workspaceToActivate);
+        });
       }
     }
 
-    this.isLoadingSignal.set(false);
+    untracked(() => {
+      this.isLoadingSignal.set(false);
+    });
     } catch (error) {
       console.error('[WorkspaceService] Fatal error in loadWorkspaces:', error);
-      this.isLoadingSignal.set(false);
-      // Ensure signal is set to empty array on error
-      this.workspacesSignal.set([]);
+      untracked(() => {
+        this.isLoadingSignal.set(false);
+        // Ensure signal is set to empty array on error
+        this.workspacesSignal.set([]);
+      });
     }
   }
 
