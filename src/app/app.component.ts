@@ -32,7 +32,8 @@ export class AppComponent implements OnInit {
     // Load workspaces when user authenticates
     effect(() => {
       if (this.authService.isAuthenticated()) {
-        this.workspaceService.loadWorkspaces();
+        // Call async function outside effect context to prevent NG0600
+        Promise.resolve().then(() => this.workspaceService.loadWorkspaces());
       }
     });
   }
