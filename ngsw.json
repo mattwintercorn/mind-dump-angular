@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777981534928,
+  "timestamp": 1777982694179,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -11,11 +11,11 @@
         "ignoreVary": true
       },
       "urls": [
-        "/mind-dump-angular/chunk-6YAIU5SO.js",
-        "/mind-dump-angular/chunk-IFPICKCE.js",
+        "/mind-dump-angular/chunk-3H43O42L.js",
+        "/mind-dump-angular/chunk-VPY55LEA.js",
         "/mind-dump-angular/favicon.ico",
         "/mind-dump-angular/index.html",
-        "/mind-dump-angular/main-QJWIG4AD.js",
+        "/mind-dump-angular/main-IUVQMMZO.js",
         "/mind-dump-angular/manifest.webmanifest",
         "/mind-dump-angular/polyfills-FFHMD2TL.js",
         "/mind-dump-angular/styles-7V6QHTNA.css"
@@ -69,11 +69,11 @@
     "/mind-dump-angular/assets/icons/icon-72x72.png": "8f45fd56f975ab03f803ddb5ef83bc58e3d5ad7e",
     "/mind-dump-angular/assets/icons/icon-96x96.png": "cfbf51dfecf052af15998158680194d2d1717c0a",
     "/mind-dump-angular/assets/logo.png": "acc5e1d17886a89e5319cead068654d6cfbc246b",
-    "/mind-dump-angular/chunk-6YAIU5SO.js": "228b30ccb2855ae8c15bab95b34556173106717e",
-    "/mind-dump-angular/chunk-IFPICKCE.js": "91313cdef113d57cbf67802580aaf8d2af4d6b91",
+    "/mind-dump-angular/chunk-3H43O42L.js": "7d3a21651215ecf45ed4eec9b22918a207a8a239",
+    "/mind-dump-angular/chunk-VPY55LEA.js": "dd9b17188a0dbe0f0342ea65a673f1befec33bb8",
     "/mind-dump-angular/favicon.ico": "7f0e571bc9c5fa194dd1725c3319b1acbf5da7c6",
-    "/mind-dump-angular/index.html": "29684df47846b62a563c58ef78bed62321895ec6",
-    "/mind-dump-angular/main-QJWIG4AD.js": "77e25146e118c0ec63d91d226a5eec545750a342",
+    "/mind-dump-angular/index.html": "5f0bb193e69e28abadac788790166e1ae84c3f56",
+    "/mind-dump-angular/main-IUVQMMZO.js": "536aa3ffe05da944715dbd1339853eb48390f64e",
     "/mind-dump-angular/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
     "/mind-dump-angular/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/mind-dump-angular/styles-7V6QHTNA.css": "ccab7fb57587e6c0766a7ed7cf5a96ab70381366"
