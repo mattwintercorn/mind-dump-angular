@@ -17,33 +17,7 @@
       "$workspaceId": {
         ".read": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())",
         
-        "name": {
-          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
-        },
-        
-        "ownerId": {
-          ".write": "auth != null && (newData.val() === auth.uid || root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid)"
-        },
-        
-        "isDefault": {
-          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
-        },
-        
-        "members": {
-          ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid",
-          
-          "$memberId": {
-            ".write": "auth != null && root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
-          }
-        },
-        
-        "createdAt": {
-          ".write": "auth != null && (newData.parent().child('ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid)"
-        },
-        
-        "updatedAt": {
-          ".write": "auth != null && (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists())"
-        },
+        ".write": "auth != null && (newData.child('ownerId').val() === auth.uid || (!root.child('workspaces/' + $workspaceId).exists() && newData.child('ownerId').val() === auth.uid) || (root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid || root.child('workspaces/' + $workspaceId + '/members/' + auth.uid).exists()))",
         
         "ideas": {
           "$ideaId": {
