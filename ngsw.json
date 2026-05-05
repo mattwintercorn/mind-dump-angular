@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777979236357,
+  "timestamp": 1777979802462,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -15,7 +15,7 @@
         "/mind-dump-angular/chunk-IFPICKCE.js",
         "/mind-dump-angular/favicon.ico",
         "/mind-dump-angular/index.html",
-        "/mind-dump-angular/main-6VFCHUB7.js",
+        "/mind-dump-angular/main-GWEEJSCY.js",
         "/mind-dump-angular/manifest.webmanifest",
         "/mind-dump-angular/polyfills-FFHMD2TL.js",
         "/mind-dump-angular/styles-NGICDOCM.css"
@@ -72,8 +72,8 @@
     "/mind-dump-angular/chunk-6YAIU5SO.js": "228b30ccb2855ae8c15bab95b34556173106717e",
     "/mind-dump-angular/chunk-IFPICKCE.js": "91313cdef113d57cbf67802580aaf8d2af4d6b91",
     "/mind-dump-angular/favicon.ico": "7f0e571bc9c5fa194dd1725c3319b1acbf5da7c6",
-    "/mind-dump-angular/index.html": "9a68a5d5af5065878f2ef9183082560b0a1c74ba",
-    "/mind-dump-angular/main-6VFCHUB7.js": "b93d9cf04458c88718673f725aefd3f31e6f9b11",
+    "/mind-dump-angular/index.html": "8567243eda066a90741e1e0d518a2ae3eb972ecc",
+    "/mind-dump-angular/main-GWEEJSCY.js": "0db98ccb02e1e61c566e3850d2661eb1c3657a25",
     "/mind-dump-angular/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
     "/mind-dump-angular/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/mind-dump-angular/styles-NGICDOCM.css": "4b15e39bc6c3619b512ec9b394d7df54b6b04438"
