@@ -1,121 +1,110 @@
 // src/app/features/ideas/components/idea-card/idea-card.component.scss
+@import '../../../../../styles/variables-defi';
+
 :host {
   display: block;
-  height: 100%;
 }
 
-mat-card {
+.idea-card {
+  background: $bg-card;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  transition: all 0.2s ease;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
-
+  
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    background: $bg-card-hover;
+    border-color: $border-default;
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 }
 
-mat-card-content {
-  flex: 1;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $space-md;
 }
 
-.description {
-  margin: 8px 0;
-  color: rgba(0, 0, 0, 0.6);
+.card-title {
+  font-size: $font-lg;
+  font-weight: $font-semibold;
+  color: $text-primary;
+  margin: 0 0 $space-xs 0;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.card-description {
+  font-size: $font-sm;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin-bottom: $space-md;
+  flex: 1;
+  
+  // Limit to 3 lines
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-sm;
+  margin-top: auto;
+}
 
-  &.status-new {
-    background-color: #E0F2FE;
-    color: #0369A1;
+.meta-chip {
+  font-size: $font-xs;
+  padding: $space-xs $space-sm;
+  background: $bg-secondary;
+  color: $text-secondary;
+  border-radius: $radius-sm;
+  border: 1px solid $border-subtle;
+  font-weight: $font-medium;
+  
+  &.status {
+    border-color: $primary;
+    color: $primary;
   }
-
-  &.status-active {
-    background-color: #DCFCE7;
-    color: #15803D;
+  
+  &.priority-high {
+    border-color: $error;
+    color: $error;
   }
-
-  &.status-completed {
-    background-color: #F3E8FF;
-    color: #7C3AED;
+  
+  &.priority-medium {
+    border-color: $warning;
+    color: $warning;
   }
-
-  &.status-archived {
-    background-color: #F1F5F9;
-    color: #64748B;
+  
+  &.priority-low {
+    border-color: $info;
+    color: $info;
   }
 }
 
-.component-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  margin-left: 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background-color: #FEF3C7;
-  color: #92400E;
-
-  mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
-  }
-}
-
-.project-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  margin-left: 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background-color: #DBEAFE;
-  color: #1E40AF;
-
-  mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
-  }
-}
-
-mat-chip-set {
-  margin-top: 12px;
-}
-
-mat-chip {
-  color: white;
-  font-weight: 500;
-
-  &.clickable-chip {
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-
+.card-actions {
+  display: flex;
+  gap: $space-xs;
+  
+  button {
+    color: $text-secondary;
+    
     &:hover {
-      transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    &:active {
-      transform: scale(0.98);
+      color: $primary;
+      background: rgba($primary, 0.1);
     }
   }
 }
