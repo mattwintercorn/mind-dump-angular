@@ -8,7 +8,10 @@
         
         "workspaces": {
           ".read": "$uid === auth.uid",
-          ".write": "$uid === auth.uid"
+          
+          "$workspaceId": {
+            ".write": "$uid === auth.uid || root.child('workspaces/' + $workspaceId + '/ownerId').val() === auth.uid"
+          }
         }
       }
     },
