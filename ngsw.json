@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1777982694179,
+  "timestamp": 1777982845584,
   "index": "/mind-dump-angular/index.html",
   "assetGroups": [
     {
@@ -15,7 +15,7 @@
         "/mind-dump-angular/chunk-VPY55LEA.js",
         "/mind-dump-angular/favicon.ico",
         "/mind-dump-angular/index.html",
-        "/mind-dump-angular/main-IUVQMMZO.js",
+        "/mind-dump-angular/main-47QJGPNF.js",
         "/mind-dump-angular/manifest.webmanifest",
         "/mind-dump-angular/polyfills-FFHMD2TL.js",
         "/mind-dump-angular/styles-7V6QHTNA.css"
@@ -72,8 +72,8 @@
     "/mind-dump-angular/chunk-3H43O42L.js": "7d3a21651215ecf45ed4eec9b22918a207a8a239",
     "/mind-dump-angular/chunk-VPY55LEA.js": "dd9b17188a0dbe0f0342ea65a673f1befec33bb8",
     "/mind-dump-angular/favicon.ico": "7f0e571bc9c5fa194dd1725c3319b1acbf5da7c6",
-    "/mind-dump-angular/index.html": "5f0bb193e69e28abadac788790166e1ae84c3f56",
-    "/mind-dump-angular/main-IUVQMMZO.js": "536aa3ffe05da944715dbd1339853eb48390f64e",
+    "/mind-dump-angular/index.html": "23f14823fd65b80886ed85f486df3a24dc79b3b0",
+    "/mind-dump-angular/main-47QJGPNF.js": "544a5729a06f3ae33cd953474cd6a14ea634d072",
     "/mind-dump-angular/manifest.webmanifest": "a8ceade22ca1ca615968387e2ebbe78dd7473940",
     "/mind-dump-angular/polyfills-FFHMD2TL.js": "f49b49a155bc7d192db62a4c15d0a612b460a667",
     "/mind-dump-angular/styles-7V6QHTNA.css": "ccab7fb57587e6c0766a7ed7cf5a96ab70381366"
