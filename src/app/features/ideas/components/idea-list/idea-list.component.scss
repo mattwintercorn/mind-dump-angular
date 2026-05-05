@@ -13,6 +13,7 @@
   gap: 24px;
   height: 100%;
   overflow: hidden;
+  padding: 24px 0 16px 0; // Top and bottom padding for spacing
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;

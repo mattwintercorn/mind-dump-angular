@@ -4,13 +4,25 @@
       <mat-icon>filter_list</mat-icon>
       Filters
     </h3>
-    @if (filterService.hasActiveFilters()) {
-      <button mat-button color="warn" (click)="clearFilters()">
-        <mat-icon>clear</mat-icon>
-        Clear All
+    <div class="filter-header-actions">
+      @if (filterService.hasActiveFilters()) {
+        <button mat-button color="warn" (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          <span class="hide-on-mobile">Clear All</span>
+        </button>
+      }
+      <button 
+        mat-icon-button 
+        class="mobile-toggle"
+        (click)="toggleFilters()"
+        [attr.aria-expanded]="!isCollapsed()"
+        aria-label="Toggle filters">
+        <mat-icon>{{ isCollapsed() ? 'expand_more' : 'expand_less' }}</mat-icon>
       </button>
-    }
+    </div>
   </div>
+
+  <div class="filter-content" [class.collapsed]="isCollapsed()">
 
   <!-- Search Box -->
   <mat-form-field appearance="outline" class="search-field">
@@ -143,4 +155,5 @@
       <span>{{ filterService.activeFilterCount() }} active filter(s)</span>
     </div>
   }
+  </div>
 </div>

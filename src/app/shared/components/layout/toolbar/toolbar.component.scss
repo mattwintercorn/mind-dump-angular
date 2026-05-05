@@ -1,35 +1,120 @@
 // src/app/shared/components/layout/toolbar/toolbar.component.scss
+@use 'breakpoints' as *;
+
 .toolbar {
   display: flex;
   align-items: center;
   padding: 0 16px;
   gap: 16px;
+
+  @include phone-only {
+    padding: 0 8px;
+    gap: 8px;
+  }
+}
+
+.app-logo {
+  height: 40px;
+  width: auto;
+
+  @include phone-only {
+    display: none; // Hide logo on mobile to save space
+  }
 }
 
 .toolbar-title {
   font-size: 20px;
   font-weight: 500;
+
+  @media (max-width: 767px) {
+    font-size: 16px;
+  }
+
+  @include phone-only {
+    display: none; // Hide title on small phones
+  }
 }
 
 .workspace-switcher {
   margin-right: 16px;
+
+  @include phone-only {
+    margin-right: 4px;
+  }
 }
 
 .spacer {
   flex: 1 1 auto;
 }
 
+// New Idea button - icon only on mobile
+.new-idea-button {
+  @include phone-only {
+    min-width: $touch-target-min !important;
+    padding: 0 12px !important;
+    
+    .button-text {
+      display: none;
+    }
+
+    mat-icon {
+      margin: 0 !important;
+    }
+  }
+}
+
 .view-toggle {
   margin-left: 16px;
+
+  @include phone-only {
+    margin-left: 4px;
+  }
+
+  // Ensure touch targets are large enough
+  ::ng-deep .mat-button-toggle {
+    min-width: $touch-target-min;
+    min-height: $touch-target-min;
+  }
+}
+
+// Desktop view toggle (button group)
+.view-toggle-desktop {
+  display: flex;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+// Mobile view toggle (dropdown)
+.view-toggle-mobile {
+  display: none;
+  min-width: $touch-target-min;
+  min-height: $touch-target-min;
+
+  @media (max-width: 767px) {
+    display: inline-flex;
+    margin-left: 4px;
+  }
 }
 
 .share-button {
   margin-left: 8px;
+
+  @include phone-only {
+    margin-left: 4px;
+  }
 }
 
 // User avatar button
 .user-avatar-button {
   margin-left: 8px;
+  min-width: $touch-target-min;
+  min-height: $touch-target-min;
+
+  @include phone-only {
+    margin-left: 4px;
+  }
   
   .user-avatar {
     width: 32px;

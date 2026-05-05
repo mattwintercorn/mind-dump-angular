@@ -31,7 +31,11 @@ export class IdeaListComponent {
   @Output() ideaSelected = new EventEmitter<Idea>();
 
   get ideas() {
-    return this.filterService.filterIdeas(this.ideaService.ideas());
+    const ideas = this.ideaService.ideas();
+    if (!ideas || !Array.isArray(ideas)) {
+      return [];
+    }
+    return this.filterService.filterIdeas(ideas);
   }
 
   get loading() {

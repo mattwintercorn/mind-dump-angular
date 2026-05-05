@@ -1,20 +1,91 @@
+@use 'breakpoints' as *;
+
 :host {
   display: block;
 }
 
 mat-dialog-content {
   min-width: 500px;
-  padding: 20px;
+  padding: 24px 20px 20px; // Extra top padding for floating labels
+  overflow-y: auto;
+  max-height: 70vh;
+
+  @include tablet-portrait-up {
+    min-width: 500px;
+  }
+
+  @include phone-only {
+    min-width: unset;
+    padding: 20px 12px 24px; // Extra top and bottom padding
+    // Account for header (~80px) + actions (~140px with stacked buttons + padding) + safe margin (40px)
+    max-height: calc(100vh - 260px);
+  }
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-top: 8px; // Extra space at top for first field label
+
+  @include phone-only {
+    gap: 12px;
+    padding-top: 4px;
+  }
 }
 
 mat-form-field {
   width: 100%;
+  
+  // Ensure labels and hints are visible on mobile
+  @include phone-only {
+    ::ng-deep {
+      .mat-mdc-form-field-subscript-wrapper,
+      .mat-mdc-form-field-hint-wrapper,
+      .mat-mdc-form-field-error-wrapper {
+        display: block !important;
+        margin: 0 !important;
+        padding: 4px 16px !important;
+      }
+      
+      .mat-mdc-text-field-wrapper {
+        padding: 0 !important;
+      }
+      
+      .mdc-text-field {
+        padding: 0 12px !important;
+      }
+      
+      .mat-mdc-form-field-infix {
+        min-height: 48px !important;
+        padding-top: 16px !important;
+        padding-bottom: 8px !important;
+      }
+      
+      mat-label {
+        font-size: 14px !important;
+      }
+      
+      input, textarea {
+        font-size: 16px !important; // Prevents iOS zoom on focus
+      }
+      
+      // Fix select dropdown
+      .mat-mdc-select {
+        font-size: 16px !important;
+      }
+    }
+  }
+}
+
+// Keywords chip input styling
+mat-chip-grid {
+  @include phone-only {
+    mat-chip-row {
+      font-size: 12px;
+      min-height: 32px;
+    }
+  }
 }
 
 .priority-section {
@@ -32,10 +103,27 @@ mat-form-field {
   mat-radio-group {
     display: flex;
     gap: 16px;
+
+    @include phone-only {
+      flex-direction: column;
+      gap: 8px;
+    }
   }
 }
 
 mat-dialog-actions {
   padding: 16px 24px;
   gap: 8px;
+  flex-shrink: 0; // Prevent actions from shrinking
+
+  @include phone-only {
+    padding: 16px;
+    flex-direction: column;
+    gap: 12px;
+
+    button {
+      width: 100%;
+      min-height: 48px; // Larger touch target
+    }
+  }
 }

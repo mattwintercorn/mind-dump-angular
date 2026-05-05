@@ -9,6 +9,14 @@ import { IdeaService } from './core/services/idea.service';
 import { AuthService } from './core/services/auth.service';
 import { WorkspaceService } from './core/services/workspace.service';
 import { LoadingOverlayComponent } from './shared/components/loading-overlay/loading-overlay.component';
+import { FirebaseDebugService } from './core/services/firebase-debug.service';
+
+// Expose debug utilities to browser console
+declare global {
+  interface Window {
+    debugFirebase: any;
+  }
+}
 
 @Component({
     selector: 'app-root',
@@ -22,6 +30,7 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private swUpdate = inject(SwUpdate);
   private snackBar = inject(MatSnackBar);
+  private firebaseDebug = inject(FirebaseDebugService);
   authService = inject(AuthService);
   workspaceService = inject(WorkspaceService);
   
@@ -35,6 +44,32 @@ export class AppComponent implements OnInit {
         Promise.resolve().then(() => this.workspaceService.loadWorkspaces());
       }
     });
+
+    // Expose debug utilities to browser console
+    window.debugFirebase = {
+      // Most useful commands
+      syncIdeasFromFirebase: (wsId?: string) => this.firebaseDebug.syncIdeasFromFirebase(wsId),
+      compareIdeas: () => this.firebaseDebug.compareIdeas(),
+      clearLocalData: () => this.firebaseDebug.clearLocalData(),
+      nukeEverything: () => this.firebaseDebug.nukeEverything(),
+      searchForWorkspaces: () => this.firebaseDebug.searchForWorkspaces(),
+      createTestWorkspace: () => this.firebaseDebug.createTestWorkspace(),
+      
+      // Diagnostics
+      diagnostics: () => this.firebaseDebug.diagnostics(),
+      checkConnectivity: () => this.firebaseDebug.checkConnectivity(),
+      
+      // Data inspection
+      getUserProfile: () => this.firebaseDebug.getUserProfile(),
+      getUserWorkspaces: () => this.firebaseDebug.getUserWorkspaces(),
+      getAllWorkspaces: () => this.firebaseDebug.getAllWorkspaces(),
+      getWorkspaceIdeas: (wsId: string) => this.firebaseDebug.getWorkspaceIdeas(wsId),
+      dumpDatabase: () => this.firebaseDebug.dumpDatabase(),
+      
+      // Migration
+      migrateWorkspaces: () => this.firebaseDebug.migrateWorkspaces(),
+      migrateNestedIdeas: () => this.firebaseDebug.migrateNestedIdeas()
+    };
   }
 
   ngOnInit(): void {
@@ -62,8 +97,11 @@ export class AppComponent implements OnInit {
   }
 
   onNewIdea(): void {
+    const isMobile = window.innerWidth < 768;
     const dialogRef = this.dialog.open(IdeaFormComponent, {
-      width: '600px',
+      width: isMobile ? '95vw' : '600px',
+      maxWidth: isMobile ? '95vw' : '600px',
+      maxHeight: isMobile ? '90vh' : '80vh',
       data: null
     });
 

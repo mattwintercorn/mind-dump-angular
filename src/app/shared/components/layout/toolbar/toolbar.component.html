@@ -12,19 +12,21 @@
   <button 
     mat-raised-button 
     color="accent" 
+    class="new-idea-button"
     aria-label="New Idea"
     matTooltip="Create a new idea"
     matTooltipPosition="below"
     (click)="onNewIdea()">
     <mat-icon>add</mat-icon>
-    New Idea
+    <span class="button-text">New Idea</span>
   </button>
   
+  <!-- Desktop: Button toggle group -->
   <mat-button-toggle-group 
     [value]="currentViewMode"
     (change)="onViewModeChange($event.value)"
     aria-label="View mode"
-    class="view-toggle">
+    class="view-toggle view-toggle-desktop">
     <mat-button-toggle 
       value="grid" 
       aria-label="Grid view"
@@ -47,6 +49,38 @@
       <mat-icon>hub</mat-icon>
     </mat-button-toggle>
   </mat-button-toggle-group>
+
+  <!-- Mobile: Dropdown menu -->
+  <button 
+    mat-icon-button 
+    [matMenuTriggerFor]="viewMenu"
+    class="view-toggle-mobile"
+    aria-label="Change view">
+    <mat-icon>
+      @if (currentViewMode === 'grid') {
+        grid_view
+      } @else if (currentViewMode === 'graph') {
+        bubble_chart
+      } @else {
+        hub
+      }
+    </mat-icon>
+  </button>
+
+  <mat-menu #viewMenu="matMenu">
+    <button mat-menu-item (click)="onViewModeChange('grid')">
+      <mat-icon>grid_view</mat-icon>
+      <span>Grid View</span>
+    </button>
+    <button mat-menu-item (click)="onViewModeChange('graph')">
+      <mat-icon>bubble_chart</mat-icon>
+      <span>Graph View</span>
+    </button>
+    <button mat-menu-item (click)="onViewModeChange('cluster')">
+      <mat-icon>hub</mat-icon>
+      <span>Cluster View</span>
+    </button>
+  </mat-menu>
 
   <!-- Share Button (shown when user is workspace owner) -->
   @if (canShareWorkspace()) {

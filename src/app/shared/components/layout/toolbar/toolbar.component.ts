@@ -50,9 +50,10 @@ export class ToolbarComponent {
     this.newIdea.emit();
   }
 
-  onViewModeChange(mode: ViewMode): void {
-    this.currentViewMode = mode;
-    this.viewModeChange.emit(mode);
+  onViewModeChange(mode: ViewMode | string): void {
+    const viewMode = mode as ViewMode;
+    this.currentViewMode = viewMode;
+    this.viewModeChange.emit(viewMode);
   }
 
   canShareWorkspace(): boolean {

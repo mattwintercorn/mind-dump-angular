@@ -1,3 +1,5 @@
+@use 'breakpoints' as *;
+
 .filter-panel {
   display: flex;
   flex-direction: column;
@@ -9,6 +11,11 @@
   height: fit-content;
   position: sticky;
   top: 16px;
+
+  @include phone-only {
+    padding: 12px;
+    gap: 12px;
+  }
 
   .filter-header {
     display: flex;
@@ -26,13 +33,54 @@
       font-weight: 600;
       color: #333;
 
+      @include phone-only {
+        font-size: 16px;
+      }
+
       mat-icon {
         color: #667eea;
       }
     }
 
+    .filter-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .hide-on-mobile {
+        @include phone-only {
+          display: none;
+        }
+      }
+    }
+
+    .mobile-toggle {
+      display: none;
+
+      @media (max-width: 767px) {
+        display: inline-flex;
+      }
+    }
+
     button {
       font-size: 13px;
+    }
+  }
+
+  .filter-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    max-height: 2000px;
+    opacity: 1;
+    overflow: hidden;
+
+    @media (max-width: 767px) {
+      &.collapsed {
+        max-height: 0;
+        opacity: 0;
+      }
     }
   }
 

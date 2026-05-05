@@ -21,6 +21,13 @@ mat-card-content {
   flex: 1;
 }
 
+mat-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .description {
   margin: 8px 0;
   color: rgba(0, 0, 0, 0.6);
@@ -75,6 +82,7 @@ mat-card-content {
     font-size: 14px;
     width: 14px;
     height: 14px;
+    line-height: 14px;
   }
 }
 
@@ -94,16 +102,22 @@ mat-card-content {
     font-size: 14px;
     width: 14px;
     height: 14px;
+    line-height: 14px;
   }
 }
 
 mat-chip-set {
   margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 mat-chip {
   color: white;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
 
   &.clickable-chip {
     cursor: pointer;
@@ -117,5 +131,12 @@ mat-chip {
     &:active {
       transform: scale(0.98);
     }
+  }
+  
+  // Ensure Material's MDC chip content is aligned
+  ::ng-deep .mdc-evolution-chip__cell,
+  ::ng-deep .mdc-evolution-chip__action {
+    display: flex;
+    align-items: center;
   }
 }

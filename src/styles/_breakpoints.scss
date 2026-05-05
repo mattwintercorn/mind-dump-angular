@@ -1,0 +1,37 @@
+// Shared responsive breakpoints
+// Mobile-first approach following Angular Material CDK breakpoints
+
+// Breakpoint values
+$breakpoint-xsmall: 599px;    // Phone
+$breakpoint-small: 767px;     // Tablet portrait
+$breakpoint-medium: 1023px;   // Tablet landscape
+$breakpoint-large: 1279px;    // Desktop
+$breakpoint-xlarge: 1919px;   // Large desktop
+
+// Mixins for common breakpoints
+@mixin phone-only {
+  @media (max-width: $breakpoint-xsmall) {
+    @content;
+  }
+}
+
+@mixin tablet-portrait-up {
+  @media (min-width: 600px) {
+    @content;
+  }
+}
+
+@mixin tablet-landscape-up {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+// Touch target minimum (Apple HIG / Material Design)
+$touch-target-min: 44px;

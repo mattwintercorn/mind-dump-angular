@@ -1,5 +1,5 @@
 // src/app/shared/components/filter-panel/filter-panel.component.ts
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,6 +37,9 @@ export class FilterPanelComponent {
   componentService = inject(ComponentService);
   projectService = inject(ProjectService);
 
+  // Mobile toggle state
+  isCollapsed = signal(this.isMobileView());
+
   statusOptions: IdeaStatus[] = ['new', 'active', 'completed', 'archived'];
   
   sortOptions: { value: SortOption; label: string }[] = [
@@ -49,6 +52,17 @@ export class FilterPanelComponent {
     { value: 'priority-desc', label: 'Priority (High-Low)' },
     { value: 'priority-asc', label: 'Priority (Low-High)' },
   ];
+
+  constructor() {
+    // Listen for window resize to auto-collapse on mobile
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => {
+        if (this.isMobileView()) {
+          this.isCollapsed.set(true);
+        }
+      });
+    }
+  }
 
   get searchQuery(): string {
     return this.filterService.searchQuery();
@@ -100,5 +114,13 @@ export class FilterPanelComponent {
 
   clearFilters(): void {
     this.filterService.clearFilters();
+  }
+
+  toggleFilters(): void {
+    this.isCollapsed.set(!this.isCollapsed());
+  }
+
+  private isMobileView(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth < 768;
   }
 }

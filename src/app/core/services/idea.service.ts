@@ -51,6 +51,14 @@ export class IdeaService {
       // Trigger reload when workspace changes
       this.loadIdeas();
     }, { allowSignalWrites: true });
+
+    // Listen for sync service updates (real-time changes from Firebase)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('ideas-changed', () => {
+        console.log('[IdeaService] Ideas changed event received, reloading...');
+        this.loadIdeas();
+      });
+    }
   }
 
   /**
@@ -245,6 +253,13 @@ export class IdeaService {
    */
   async getIdea(id: string): Promise<Idea | undefined> {
     return await this.db.ideas.get(id);
+  }
+
+  /**
+   * Reload all ideas from database (public for sync service)
+   */
+  async reloadIdeas(): Promise<void> {
+    await this.loadIdeas();
   }
 
   /**

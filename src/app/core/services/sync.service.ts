@@ -34,6 +34,9 @@ export class SyncService {
   
   // Map to track per-workspace listeners
   private workspaceListeners = new Map<string, any>();
+  
+  // Track if we've synced at least once per workspace (to avoid deleting on first load)
+  private workspaceSyncedOnce = new Map<string, boolean>();
 
   constructor() {
     // Service initialized
@@ -141,7 +144,7 @@ export class SyncService {
   }
 
   /**
-   * Start listening for remote changes
+   * Start listening for remote changes (LEGACY - use startListeningToWorkspace)
    */
   startListening(workspaceId: string): void {
     // Only listen if authenticated
@@ -155,16 +158,18 @@ export class SyncService {
     }
 
     // Create Firebase reference for ideas in this workspace
-    const ideasPath = `workspaces/${workspaceId}/ideas`;
+    const ideasPath = `ideas/${workspaceId}`;
     const ideasRef = ref(this.firebaseService.database, ideasPath);
 
     // Set up listener for real-time updates
-    const unsubscribe = onValue(ideasRef, (snapshot) => {
+    const unsubscribe = onValue(ideasRef, async (snapshot) => {
       const ideas = snapshot.val();
       if (ideas) {
-        Object.values(ideas).forEach((idea: any) => {
-          this.handleRemoteIdea(idea, workspaceId);
-        });
+        for (const idea of Object.values(ideas) as any[]) {
+          await this.handleRemoteIdea(idea, workspaceId);
+        }
+        // Trigger UI reload
+        this.notifyIdeasChanged();
       }
     });
 
@@ -176,43 +181,90 @@ export class SyncService {
   }
 
   /**
+   * Notify IdeaService that ideas have changed
+   */
+  private notifyIdeasChanged(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('ideas-changed'));
+    }
+  }
+
+  /**
    * Handle incoming remote idea
    */
   private async handleRemoteIdea(remoteIdea: any, workspaceId: string): Promise<void> {
     try {
+      // Normalize the remote idea to ensure all required fields exist
+      const normalizedIdea = this.normalizeIdea(remoteIdea);
+      
       // Get local version of the idea if it exists
-      const localIdea = await this.databaseService.ideas.get(remoteIdea.id);
+      const localIdea = await this.databaseService.ideas.get(normalizedIdea.id);
 
       if (!localIdea) {
         // New idea - add to local database
-        await this.databaseService.ideas.put(remoteIdea);
+        await this.databaseService.ideas.put(normalizedIdea);
         return;
       }
 
       // Check for version conflict
-      if (this.detectConflict(localIdea, remoteIdea)) {
-        console.warn(`Version conflict detected for idea ${remoteIdea.id}: local=${localIdea.version}, remote=${remoteIdea.version}`);
+      if (this.detectConflict(localIdea, normalizedIdea)) {
+        const localVersion = localIdea.version || 1;
+        const remoteVersion = normalizedIdea.version || 1;
         
-        // Attempt to resolve conflict automatically
-        const resolved = this.resolveConflict(localIdea, remoteIdea);
+        console.warn(`Version mismatch for idea ${normalizedIdea.id}: local=${localVersion}, remote=${remoteVersion}`);
+        
+        // If remote version is newer, accept it (normal update case)
+        if (remoteVersion > localVersion) {
+          console.log(`Accepting newer remote version for idea ${normalizedIdea.id}`);
+          await this.databaseService.ideas.put(normalizedIdea);
+          return;
+        }
+        
+        // If local version is newer, keep local (should not happen in normal flow)
+        if (localVersion > remoteVersion) {
+          console.log(`Local version is newer for idea ${normalizedIdea.id}, keeping local`);
+          return;
+        }
+        
+        // Versions are equal but conflict detected - this shouldn't happen
+        // but if it does, attempt to resolve
+        console.warn(`Same version but conflict detected for idea ${normalizedIdea.id}`);
+        const resolved = this.resolveConflict(localIdea, normalizedIdea);
         
         if (resolved) {
           // Auto-merge succeeded
           await this.databaseService.ideas.put(resolved);
-          console.log(`Auto-merged conflict for idea ${remoteIdea.id}`);
+          console.log(`Auto-merged conflict for idea ${normalizedIdea.id}`);
         } else {
           // Manual resolution needed
-          console.error(`Manual conflict resolution needed for idea ${remoteIdea.id}`);
+          console.error(`Manual conflict resolution needed for idea ${normalizedIdea.id}`);
           // TODO: In later tasks, trigger UI dialog for manual resolution
         }
         return;
       }
 
       // Versions match - safe to update
-      await this.databaseService.ideas.put(remoteIdea);
+      await this.databaseService.ideas.put(normalizedIdea);
     } catch (error) {
       console.error('Error handling remote idea:', error);
     }
+  }
+
+  /**
+   * Normalize idea data from Firebase to ensure all required fields exist
+   */
+  private normalizeIdea(remoteIdea: any): Idea {
+    return {
+      ...remoteIdea,
+      keywords: Array.isArray(remoteIdea.keywords) ? remoteIdea.keywords : [],
+      attachments: Array.isArray(remoteIdea.attachments) ? remoteIdea.attachments : [],
+      createdAt: remoteIdea.createdAt instanceof Date 
+        ? remoteIdea.createdAt 
+        : new Date(remoteIdea.createdAt),
+      updatedAt: remoteIdea.updatedAt instanceof Date 
+        ? remoteIdea.updatedAt 
+        : new Date(remoteIdea.updatedAt),
+    };
   }
 
   /**
@@ -317,28 +369,84 @@ export class SyncService {
    * Start listening to a workspace (new per-workspace method)
    */
   startListeningToWorkspace(workspaceId: string): void {
+    console.log('[SyncService] Starting listener for workspace:', workspaceId);
+    
     // Only listen if authenticated
     if (!this.authService.isAuthenticated()) {
+      console.error('[SyncService] Not authenticated, skipping listener');
       return;
     }
 
     // Don't create duplicate listeners
     if (this.workspaceListeners.has(workspaceId)) {
+      console.log('[SyncService] Listener already exists');
       return;
     }
 
     // Create Firebase reference for ideas in this workspace
     const ideasPath = `workspaces/${workspaceId}/ideas`;
+    console.log('[SyncService] Listening to Firebase path:', ideasPath);
     const ideasRef = ref(this.firebaseService.database, ideasPath);
 
     // Set up listener for real-time updates
-    const unsubscribe = onValue(ideasRef, (snapshot) => {
+    const unsubscribe = onValue(ideasRef, async (snapshot) => {
+      console.log('[SyncService] ✅ Firebase listener triggered!');
+      console.log('[SyncService] Snapshot exists:', snapshot.exists());
+      
       const ideas = snapshot.val();
+      const remoteIdeaIds = new Set<string>();
+      
       if (ideas) {
-        Object.values(ideas).forEach((idea: any) => {
-          this.handleRemoteIdea(idea, workspaceId);
-        });
+        const ideaIds = Object.keys(ideas);
+        console.log('[SyncService] Processing', ideaIds.length, 'ideas:', ideaIds);
+        
+        // Track remote idea IDs
+        ideaIds.forEach(id => remoteIdeaIds.add(id));
+        
+        // Handle adds/updates
+        for (const idea of Object.values(ideas) as any[]) {
+          console.log('[SyncService] Handling idea:', idea.id, idea.title);
+          await this.handleRemoteIdea(idea, workspaceId);
+        }
+      } else {
+        console.log('[SyncService] No ideas in snapshot');
       }
+      
+      // Detect deletions: find local ideas that aren't in remote snapshot
+      // IMPORTANT: Only detect deletions after the first sync to avoid deleting
+      // all local ideas if Firebase is empty on initial load
+      const hasSyncedBefore = this.workspaceSyncedOnce.get(workspaceId);
+      
+      if (hasSyncedBefore && ideas) {
+        // Only detect deletions if we've synced before AND Firebase has ideas
+        const localIdeas = await this.databaseService.ideas
+          .where('workspaceId')
+          .equals(workspaceId)
+          .toArray();
+        
+        const deletedIdeas = localIdeas.filter(localIdea => !remoteIdeaIds.has(localIdea.id));
+        
+        if (deletedIdeas.length > 0) {
+          console.log('[SyncService] Detected', deletedIdeas.length, 'deleted ideas:', deletedIdeas.map(i => i.id));
+          for (const deletedIdea of deletedIdeas) {
+            console.log('[SyncService] Deleting local idea:', deletedIdea.id, deletedIdea.title);
+            await this.databaseService.ideas.delete(deletedIdea.id);
+          }
+        }
+      } else if (!hasSyncedBefore) {
+        console.log('[SyncService] First sync for workspace - skipping deletion detection');
+      }
+      
+      // Mark this workspace as synced
+      if (ideas) {
+        this.workspaceSyncedOnce.set(workspaceId, true);
+      }
+      
+      // Trigger UI reload
+      console.log('[SyncService] Triggering UI reload...');
+      this.notifyIdeasChanged();
+    }, (error) => {
+      console.error('[SyncService] Firebase listener error:', error);
     });
 
     // Store listener info for cleanup
@@ -346,6 +454,8 @@ export class SyncService {
       ref: ideasRef,
       unsubscribe
     });
+    
+    console.log('[SyncService] ✅ Listener registered successfully');
   }
 
   /**

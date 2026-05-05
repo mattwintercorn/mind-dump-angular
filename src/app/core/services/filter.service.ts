@@ -85,6 +85,11 @@ export class FilterService {
 
   // Apply all filters to an array of ideas
   filterIdeas(ideas: Idea[]): Idea[] {
+    // Guard against null/undefined input
+    if (!ideas || !Array.isArray(ideas)) {
+      return [];
+    }
+    
     let filtered = ideas;
 
     // Apply search query filter
@@ -93,9 +98,9 @@ export class FilterService {
       filtered = filtered.filter((idea) => {
         const titleMatch = idea.title.toLowerCase().includes(query);
         const descriptionMatch = idea.description.toLowerCase().includes(query);
-        const keywordMatch = idea.keywords.some((k) =>
-          k.toLowerCase().includes(query)
-        );
+        const keywordMatch = idea.keywords && Array.isArray(idea.keywords) 
+          ? idea.keywords.some((k) => k.toLowerCase().includes(query))
+          : false;
         return titleMatch || descriptionMatch || keywordMatch;
       });
     }
@@ -103,13 +108,16 @@ export class FilterService {
     // Apply keyword filter (AND logic - idea must have ALL selected keywords)
     const keywords = this._selectedKeywords();
     if (keywords.length > 0) {
-      filtered = filtered.filter((idea) =>
-        keywords.every((keyword) =>
+      filtered = filtered.filter((idea) => {
+        if (!idea.keywords || !Array.isArray(idea.keywords)) {
+          return false; // Ideas without keywords can't match keyword filter
+        }
+        return keywords.every((keyword) =>
           idea.keywords.some(
             (k) => k.toLowerCase() === keyword.toLowerCase()
           )
-        )
-      );
+        );
+      });
     }
 
     // Apply status filter

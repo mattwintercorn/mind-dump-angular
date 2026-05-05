@@ -3,6 +3,7 @@ import { ref, set, remove, get, query, orderByChild, equalTo } from 'firebase/da
 import { AuthService } from './auth.service';
 import { FirebaseService } from './firebase.service';
 import { DatabaseService } from './database.service';
+import { SyncService } from './sync.service';
 import { Workspace } from '../models/workspace.model';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,6 +14,7 @@ export class WorkspaceService {
   private authService = inject(AuthService);
   private firebaseService = inject(FirebaseService);
   private db = inject(DatabaseService);
+  private syncService = inject(SyncService);
 
   // LocalStorage key for active workspace
   private readonly ACTIVE_WORKSPACE_KEY = 'mind-dump-active-workspace';
@@ -140,6 +142,10 @@ export class WorkspaceService {
         untracked(() => {
           this.activeWorkspaceSignal.set(workspaceToActivate);
         });
+        
+        // Start sync listener for the active workspace
+        console.log('[WorkspaceService] Starting sync for active workspace:', workspaceToActivate.id);
+        this.syncService.startListeningToWorkspace(workspaceToActivate.id);
       }
     }
 
@@ -219,7 +225,19 @@ export class WorkspaceService {
       throw new Error('Workspace not found');
     }
 
+    // Stop listening to old workspace
+    const currentWorkspace = this.activeWorkspaceSignal();
+    if (currentWorkspace && currentWorkspace.id !== workspaceId) {
+      console.log('[WorkspaceService] Stopping sync for workspace:', currentWorkspace.id);
+      this.syncService.stopListeningToWorkspace(currentWorkspace.id);
+    }
+
+    // Set new active workspace
     this.activeWorkspaceSignal.set(workspace);
+
+    // Start listening to new workspace
+    console.log('[WorkspaceService] Starting sync for workspace:', workspaceId);
+    this.syncService.startListeningToWorkspace(workspaceId);
 
     // Store preference in localStorage
     this.saveLastActiveWorkspaceId(workspaceId);

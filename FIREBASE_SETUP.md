@@ -197,31 +197,68 @@ After deploying, verify access control:
 
 #### Security Rule Structure
 
-```
-/users/{userId}
-  - Read: Own profile only
-  - Write: Own profile only
+**Nested Structure (Current):**
 
-/workspaces/{workspaceId}
-  - Read: Owner OR member
-  - Write: Owner only
-  
-  /ideas/{ideaId}
-    - Read: Owner OR member
-    - Write: Owner OR editor
-  
-  /connections/{connectionId}
-    - Read: Owner OR member
-    - Write: Owner OR editor
-  
-  /components/{componentId}
-    - Read: Owner OR member
-    - Write: Owner OR editor
-  
-  /projects/{projectId}
-    - Read: Owner OR member
-    - Write: Owner OR editor
+All workspace data is nested under `/workspaces/{workspaceId}/` for better organization and isolation.
+
 ```
+/users/{userId}/
+  profile/                          - User profile data
+  workspaces/{workspaceId}: true    - Map of workspace IDs user has access to
+
+/workspaces/{workspaceId}/
+  ownerId                           - Workspace owner user ID
+  name                              - Workspace name
+  isDefault                         - Whether this is default workspace
+  members/                          - Collaborators with roles
+    {userId}: "editor" | "viewer"
+  createdAt                         - Timestamp
+  updatedAt                         - Timestamp
+  
+  ideas/{ideaId}/                   - Ideas nested under workspace
+    id
+    title
+    description
+    keywords[]
+    status
+    priority
+    workspaceId
+    version
+    createdBy
+    lastModifiedBy
+    createdAt
+    updatedAt
+  
+  connections/{connectionId}/       - Connections nested under workspace
+    id
+    sourceId
+    targetId
+    workspaceId
+  
+  components/{componentId}/         - System components nested under workspace
+    id
+    name
+    workspaceId
+  
+  projects/{projectId}/             - Projects nested under workspace
+    id
+    name
+    workspaceId
+```
+
+**Access Control:**
+- `/workspaces/{workspaceId}` - Read: Owner OR member | Write: Owner only
+- `/workspaces/{workspaceId}/ideas/*` - Read: Owner OR member | Write: Owner OR editor
+- `/workspaces/{workspaceId}/connections/*` - Read: Owner OR member | Write: Owner OR editor
+- `/workspaces/{workspaceId}/components/*` - Read: Owner OR member | Write: Owner OR editor
+- `/workspaces/{workspaceId}/projects/*` - Read: Owner OR member | Write: Owner OR editor
+
+**Benefits of Nested Structure:**
+- **Isolation**: All workspace data lives under one path
+- **Organization**: Clear parent-child relationships
+- **Cleanup**: Delete entire workspace by removing one node
+- **Querying**: Easier to fetch all workspace data
+- **Intuitive**: Matches mental model of data ownership
 
 #### Common Issues
 
