@@ -10,14 +10,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { IdeaFormComponent } from './idea-form.component';
+import { IdeaService } from '../../../../core/services/idea.service';
+import { signal } from '@angular/core';
 
 describe('IdeaFormComponent', () => {
   let component: IdeaFormComponent;
   let fixture: ComponentFixture<IdeaFormComponent>;
   let dialogRef: jasmine.SpyObj<MatDialogRef<IdeaFormComponent>>;
+  let mockIdeaService: any;
 
   beforeEach(async () => {
     const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
+    
+    mockIdeaService = {
+      allProjects: signal([]),
+      allComponents: signal([])
+    };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -34,7 +42,8 @@ describe('IdeaFormComponent', () => {
       ],
       providers: [
         { provide: MatDialogRef, useValue: dialogRefSpy },
-        { provide: MAT_DIALOG_DATA, useValue: null }
+        { provide: MAT_DIALOG_DATA, useValue: null },
+        { provide: IdeaService, useValue: mockIdeaService }
       ]
     }).compileComponents();
 

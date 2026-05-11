@@ -11,8 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Idea } from '../../../../core/models/idea.model';
-import { ComponentService } from '../../../../core/services/component.service';
-import { ProjectService } from '../../../../core/services/project.service';
+import { IdeaService } from '../../../../core/services/idea.service';
 
 @Component({
     selector: 'app-idea-form',
@@ -35,8 +34,7 @@ export class IdeaFormComponent {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<IdeaFormComponent>);
   public data = inject<Idea | null>(MAT_DIALOG_DATA);
-  public componentService = inject(ComponentService);
-  public projectService = inject(ProjectService);
+  public ideaService = inject(IdeaService);
 
   ideaForm: FormGroup;
   keywords = signal<string[]>([]);

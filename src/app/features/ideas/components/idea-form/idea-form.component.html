@@ -24,7 +24,7 @@
         placeholder="e.g., Auth System, User Dashboard..."
       />
       <mat-autocomplete #autoComponent="matAutocomplete">
-        @for (componentName of componentService.componentNames(); track componentName) {
+        @for (componentName of ideaService.allComponents(); track componentName) {
           <mat-option [value]="componentName">{{ componentName }}</mat-option>
         }
       </mat-autocomplete>
@@ -40,7 +40,7 @@
         placeholder="e.g., Mobile App, API Redesign..."
       />
       <mat-autocomplete #autoProject="matAutocomplete">
-        @for (projectName of projectService.projectNames(); track projectName) {
+        @for (projectName of ideaService.allProjects(); track projectName) {
           <mat-option [value]="projectName">{{ projectName }}</mat-option>
         }
       </mat-autocomplete>
