@@ -40,4 +40,28 @@ describe('AuthService', () => {
     expect(typeof service.isAuthenticated).toBe('function');
     expect(typeof service.isAuthenticated()).toBe('boolean');
   });
+
+  it('should have null user when not authenticated', () => {
+    if (service.authState() === 'anonymous') {
+      expect(service.currentUser()).toBeNull();
+    }
+  });
+
+  it('should have isAuthenticated false when not authenticated', () => {
+    if (service.authState() !== 'authenticated') {
+      expect(service.isAuthenticated()).toBe(false);
+    }
+  });
+  
+  it('should throw error when handling merge without authenticated user', async () => {
+    // If not authenticated, handleMergeStrategy should throw
+    if (service.authState() !== 'authenticated') {
+      await expectAsync(
+        service.handleMergeStrategy('upload')
+      ).toBeRejectedWithError('No authenticated user');
+    }
+  });
 });
+
+
+
